@@ -1,0 +1,58 @@
+"vim plugin configuration
+
+call plug#begin('~/.vim/plugged')
+
+"Language highlight and syntax
+Plug 'pangloss/vim-javascript'
+Plug 'elzr/vim-json'
+Plug 'davidhalter/jedi-vim'
+Plug 'vim-scripts/L9'
+Plug 'othree/xml.vim'
+Plug 'fatih/vim-go'
+Plug 'tfnico/vim-gradle'
+Plug 'cespare/vim-toml'
+
+"Functions
+Plug 'easymotion/vim-easymotion'
+Plug 'vim-scripts/FuzzyFinder'
+Plug 'scrooloose/nerdtree'
+
+Plug 'tpope/vim-surround'
+Plug 'luochen1990/rainbow'
+Plug 'lokaltog/vim-powerline'
+
+"Grammar checking
+Plug 'scrooloose/syntastic'
+
+"Git config
+Plug 'tpope/vim-fugitive'
+Plug 'airblade/vim-gitgutter'
+
+"Theme config
+Plug 'flazz/vim-colorschemes'
+Plug 'mhinz/vim-startify'
+
+"MarkDown Support
+Plug 'tpope/vim-markdown'
+Plug 'suan/vim-instant-markdown', {'for': 'markdown'}
+
+
+call plug#end()
+
+
+"Uncomment to override defaults:
+let g:instant_markdown_slow = 1
+let g:instant_markdown_autostart = 0
+"let g:instant_markdown_open_to_the_world = 1
+"let g:instant_markdown_allow_unsafe_content = 1
+"let g:instant_markdown_allow_external_content = 0
+let g:instant_markdown_mathjax = 1
+"let g:instant_markdown_browser = "firefox --new-window"
+"let g:instant_markdown_logfile = '/tmp/instant_markdown.log'
+"let g:instant_markdown_autoscroll = 0
+"let g:instant_markdown_port = 8888
+"let g:instant_markdown_python = 1
+"
+noremap <F5> :NERDTreeToggle<cr>
+
+
