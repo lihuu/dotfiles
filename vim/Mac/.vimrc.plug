@@ -4,6 +4,9 @@ call plug#begin('~/.vim/plugged')
 
 "Language highlight and syntax
 Plug 'pangloss/vim-javascript'
+Plug 'mxw/vim-jsx'
+Plug 'isruslan/vim-es6'
+
 Plug 'elzr/vim-json'
 Plug 'davidhalter/jedi-vim'
 Plug 'vim-scripts/L9'
@@ -35,6 +38,10 @@ Plug 'mhinz/vim-startify'
 "MarkDown Support
 Plug 'tpope/vim-markdown'
 Plug 'suan/vim-instant-markdown', {'for': 'markdown'}
+
+
+"Language Server
+"Plug 'neoclide/coc.nvim'
 
 
 call plug#end()

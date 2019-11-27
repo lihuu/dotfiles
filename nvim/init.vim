@@ -35,12 +35,14 @@ filetype off
 call plug#begin('~/.config/nvim/plugged')
 Plug 'easymotion/vim-easymotion'
 "Plug 'Yggdroot/LeaderF', { 'do': '.\install.bat' }
-"Plug 'FuzzyFinder'
-"Plug 'Gundo'
+Plug 'vim-scripts/Gundo'
 Plug 'elzr/vim-json'
-"Plug 'JavaScript-Indent'
-"Plug 'L9'
-"Plug 'Mark'
+Plug 'vim-scripts/FuzzyFinder'
+Plug 'vim-scripts/JavaScript-Indent'
+Plug 'vim-scripts/L9'
+Plug 'vim-scripts/Mark'
+Plug 'vim-scripts/gtags.vim'
+Plug 'vim-scripts/jQuery'
 "Plug 'PasteBin.vim'
 ""'Plug 'VisIncr'
 
@@ -48,11 +50,8 @@ Plug 'elzr/vim-json'
 Plug 'scrooloose/nerdtree'
 "ack命令
 Plug 'mileszs/ack.vim'
-"Plug 'gtags.vim'
 "Plug 'gtk-vim-syntax'
-"Plug 'jQuery'
 "Plug 'matchit.zip'
-"Plug 'xml.vim'
 Plug 'tpope/vim-surround'
 Plug 'Lokaltog/vim-powerline'
 Plug 'othree/html5.vim'
@@ -61,7 +60,6 @@ Plug 'othree/html5.vim'
 Plug 'pangloss/vim-javascript'
 Plug 'mxw/vim-jsx'
 Plug 'isruslan/vim-es6'
-"Plug 'https://github.com/isRuslan/vim-es6.git'
 
 "语法检查
 Plug 'scrooloose/syntastic'
@@ -76,7 +74,6 @@ Plug 'sukima/xmledit'
 
 "Nginx 配置文件高亮
 Plug 'chr4/nginx.vim'
-
 Plug 'calleerlandsson/pick.vim'
 Plug 'hail2u/vim-css3-syntax' 
 Plug 'groenewege/vim-less'
@@ -93,11 +90,8 @@ Plug 'vimwiki/vimwiki'
 "
 Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
-
 Plug 'flazz/vim-colorschemes'
-
 Plug 'mhinz/vim-startify'
-
 
 if has('gui_running')
 "    Plug 'vim-multiple-cursors'
@@ -107,18 +101,10 @@ if v:version < 704
     Plug 'Python-mode-klen'
 endif
 
-
-
 call plug#end()
 filetype plugin indent on
 
 "vim-script的仓库
-
-
-
-
-
-"
 "+---------------------------------------------------------
 "|自定义按键
 "|
