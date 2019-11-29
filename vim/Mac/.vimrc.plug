@@ -38,6 +38,10 @@ Plug 'mhinz/vim-startify'
 "MarkDown Support
 Plug 'tpope/vim-markdown'
 Plug 'suan/vim-instant-markdown', {'for': 'markdown'}
+Plug 'honza/vim-snippets'
+Plug 'airblade/vim-rooter'
+
+Plug 'vim-scripts/DrawIt'
 
 
 "Language Server
@@ -60,6 +64,27 @@ let g:instant_markdown_mathjax = 1
 "let g:instant_markdown_port = 8888
 "let g:instant_markdown_python = 1
 "
+"
+"
 noremap <F5> :NERDTreeToggle<cr>
+
+"Config for vim-root
+"let g:rooter_change_directory_for_non_project_files = 'current'
+"let g:rooter_change_directory_for_non_project_files = 'home'
+"如果没有检测到项目文件例如.git目录等,就使用当前的目录作为根目录
+let g:rooter_change_directory_for_non_project_files = 'current'
+"设置打开哪些文件才会触发自动切换根目录
+let g:rooter_targets = '*,*.js,*.jsx,*.java,*.html,*.css,*.xml,*.less,*.sass'
+"设置为1关闭自动切换
+let g:rooter_manual_only=0
+
+let g:rooter_patterns = ['.git','.git/'] 
+
+let g:rooter_resolve_links = 1
+
+let g:rooter_silent_chdir = 1
+
+let g:rooter_use_lcd = 1
+
 
 
