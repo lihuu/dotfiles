@@ -1,4 +1,6 @@
 #!/bin/sh
-cp init.vim ~/.config/nvim/
-cp -r autoload ~/.config/nvim/autoload
-cp -r colors ~/.config/nvim/colors
+CURRENT_DIR=`dirname "${BASH_SOURCE-$0}"`
+CURRENT_DIR_HOME=`cd "$CURRENT_DIR">/dev/null;cd .; pwd`
+cp $CURRENT_DIR_HOME/init.vim ~/.config/nvim/
+cp -r $CURRENT_DIR_HOME/autoload ~/.config/nvim/autoload
+cp -r $CURRENT_DIR_HOME/colors ~/.config/nvim/colors
