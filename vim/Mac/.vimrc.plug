@@ -89,7 +89,7 @@ let g:rooter_use_lcd = 1
 
 "prettier 配置
 let g:prettier#autoformat = 0
-autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.md,*.vue,*.yaml,*.html Prettier
+autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.vue,*.yaml,*.html Prettier
 
 "g:prettier#config#parser = 'babylon'
 let g:prettier#config#parser='babylon'
