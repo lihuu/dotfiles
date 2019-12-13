@@ -21,6 +21,8 @@ set incsearch
 set nobackup
 set nowritebackup
 set noswapfile
+set noeb
+"set vb
 
 "Set viminfo storage
 "set viminfo='100,<9999,s100
