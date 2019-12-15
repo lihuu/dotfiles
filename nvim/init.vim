@@ -92,6 +92,7 @@ Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
 Plug 'flazz/vim-colorschemes'
 Plug 'mhinz/vim-startify'
+Plug 'prettier/vim-prettier', { 'do': 'yarn install', 'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'gr    aphql', 'markdown', 'vue', 'yaml', 'html'] }
 
 if has('gui_running')
 "    Plug 'vim-multiple-cursors'
