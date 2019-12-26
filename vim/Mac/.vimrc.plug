@@ -19,6 +19,7 @@ Plug 'cespare/vim-toml'
 Plug 'easymotion/vim-easymotion'
 Plug 'vim-scripts/FuzzyFinder'
 Plug 'scrooloose/nerdtree'
+"Plug 'dracula/vim', { 'as': 'dracula' }
 
 Plug 'tpope/vim-surround'
 Plug 'luochen1990/rainbow'
