@@ -42,7 +42,7 @@ noremap <Leader>l <esc>:tabnext<CR>
 "Sort lines
 vnoremap <Leader>s :sort<CR>
 
-nmap <F5> :NERDTreeToggle<cr>
+nmap <Leader>f :NERDTreeToggle<cr>
 
 
 
