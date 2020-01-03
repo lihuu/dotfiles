@@ -47,7 +47,7 @@ Plug 'prettier/vim-prettier', { 'do': 'yarn install', 'for': ['javascript', 'typ
 
 
 "Language Server
-"Plug 'neoclide/coc.nvim'
+Plug 'neoclide/coc.nvim',{'branch':'release'}
 
 
 call plug#end()
