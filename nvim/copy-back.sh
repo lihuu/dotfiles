@@ -2,7 +2,6 @@
 CURRENT_DIR=`dirname "${BASH_SOURCE-$0}"`
 CURRENT_DIR_HOME=`cd "$CURRENT_DIR">/dev/null;cd .; pwd`
 if [ ! -d ~/.config/nvim ];then
-    echo "Target dir not exist"
     mkdir ~/.config/nvim
 fi
 
