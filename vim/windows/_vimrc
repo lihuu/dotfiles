@@ -162,7 +162,8 @@ filetype plugin indent on
 "|
 "+---------------------------------------------------------
 "nerdtree 按键映射
-noremap <F5> :NERDTreeToggle<cr>
+let mapleader="\<space>"
+noremap <leader>f :NERDTreeToggle<cr>
 "insert 模式中删除一行
 inoremap <c-d> <ESC>ddi
 inoremap <c-u>  <ESC>~i
@@ -189,5 +190,4 @@ au FileType vim,html let b:delimitMate_matchpairs = "(:),[:],{:}"
 let g:vim_markdown_folding_disabled=1
 let g:vim_markdown_toc_autofit = 1
 
-let mapleader="\<space>"
 
