@@ -11,7 +11,7 @@ set background=dark
 colorscheme molokai
 set fdm=marker
 set shell=bash\ -i
-"set guifont=Fira\ Code:h20
+set guifont=Fira\ Code:h20
 
 "Search config
 set hlsearch
