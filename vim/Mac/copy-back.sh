@@ -3,7 +3,7 @@ cp .vimrc ~
 cp .gvimrc ~
 cp .vimrc.plug ~
 
-if [ ! -d  ~/.vim] ;then
+if [ ! -d  ~/.vim ] ;then
    mkdir ~/.vim 
 fi
 
