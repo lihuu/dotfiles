@@ -1,0 +1,16 @@
+let mapleader="\<space>"
+
+set easymotion
+set surround
+
+set noerrorbells
+set novisualbell
+"set vb t_vb=""
+"set pythonthreedll=python36.dll
+set visualbell t_vb=
+
+"Custome key mappings
+nnoremap <leader>f :action ReformatCode<CR><esc>
+
+
+
