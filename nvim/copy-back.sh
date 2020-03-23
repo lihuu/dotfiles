@@ -6,5 +6,5 @@ if [ ! -d ~/.config/nvim ];then
 fi
 
 cp $CURRENT_DIR_HOME/init.vim ~/.config/nvim/
-cp -r $CURRENT_DIR_HOME/autoload ~/.config/nvim/autoload
-cp -r $CURRENT_DIR_HOME/colors ~/.config/nvim/colors
+cp -r $CURRENT_DIR_HOME/autoload ~/.config/nvim
+cp -r $CURRENT_DIR_HOME/colors ~/.config/nvim

@@ -2,5 +2,10 @@
 cp .vimrc ~
 cp .gvimrc ~
 cp .vimrc.plug ~
-cp -r autoload ~/.vim/autoload
-cp -r colors/* ~/.vim/colors
+
+if [ ! -d  ~/.vim ] ;then
+   mkdir ~/.vim 
+fi
+
+cp -r autoload ~/.vim
+cp -r colors/* ~/.vim

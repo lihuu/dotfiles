@@ -49,7 +49,6 @@ Plug 'prettier/vim-prettier', { 'do': 'yarn install', 'for': ['javascript', 'typ
 "Language Server
 Plug 'neoclide/coc.nvim',{'branch':'release'}
 
-
 call plug#end()
 
 
@@ -79,20 +78,14 @@ let g:rooter_change_directory_for_non_project_files = 'current'
 let g:rooter_targets = '*,*.js,*.jsx,*.java,*.html,*.css,*.xml,*.less,*.sass'
 "设置为1关闭自动切换
 let g:rooter_manual_only=0
-
 let g:rooter_patterns = ['.git','.git/'] 
-
 let g:rooter_resolve_links = 1
-
 let g:rooter_silent_chdir = 1
-
 let g:rooter_use_lcd = 1
 
 "prettier 配置
 let g:prettier#autoformat = 0
 autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.vue,*.yaml,*.html Prettier
-
-"g:prettier#config#parser = 'babylon'
 let g:prettier#config#parser='babylon'
 
 
