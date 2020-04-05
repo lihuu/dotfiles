@@ -1,16 +1,38 @@
-let mapleader="\<space>"
+let mapleader=" "
 
 set easymotion
 set surround
-
+set showmode
+set showcmd
+set hlsearch
+set incsearch
 set noerrorbells
 set novisualbell
 "set vb t_vb=""
 "set pythonthreedll=python36.dll
 set visualbell t_vb=
+set noundofile
+set nobackup
+set noswapfile
 
 "Custome key mappings
 nnoremap <leader>f :action ReformatCode<CR><esc>
+
+nnoremap <Leader>ga :action GotoAction<CR>
+nnoremap <Leader>gc :action GotoClass<CR>
+nnoremap <Leader>gd :action GotoDeclaration<CR>
+nnoremap <Leader>gf :action GotoFile<CR>
+nnoremap <Leader>gi :action GotoImplementation<CR>
+nnoremap <Leader>oi :action OptimizeImports<CR>
+nnoremap <Leader>gb :action Back<CR>
+nnoremap <Leader>fw :action Forward<CR>
+
+nnoremap <Leader>h <esc>:tabnext<CR>
+nnoremap <Leader>l <esc>:tabprevious<CR>
+nnoremap <c-j> 5j
+nnoremap <c-k> 5k
+nnoremap <c-h> 5h
+nnoremap <c-l> 5l
 
 
 
