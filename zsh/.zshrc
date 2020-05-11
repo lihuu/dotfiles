@@ -62,7 +62,7 @@ ZSH_THEME="ys"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-  git
+  git command-not-found
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -116,3 +116,4 @@ export PATH="/usr/local/opt/openssl/bin:$PATH"
 export LANG=zh_CN.UTF-8
 export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
 set nonomatch
+neofetch
