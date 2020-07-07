@@ -42,7 +42,7 @@ under the License.
  |
  |-->
 <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
-    <!--localRepository>G:\Repositories\Maven\</localRepository-->
+    <localRepository>G:\Repositories\Maven\</localRepository>
     <!-- interactiveMode
    | This will determine whether maven prompts you when it needs input. If set to false,
    | maven will use a sensible default value, perhaps based on some other setting, for
@@ -108,6 +108,12 @@ under the License.
       <password>repopwd</password>
     </server>
     -->
+    <server>
+      <id>deploymentRepo</id>
+      <username>admin</username>
+      <password>07205719</password>
+    </server>
+
         <!-- Another sample, using keys to authenticate.
     <server>
       <id>siteServer</id>
@@ -127,13 +133,8 @@ under the License.
    | repository, to be used as an alternate download site. The mirror site will be the preferred
    | server for that repository.
    |-->
-<mirrors>
-        <mirror>
-    <id>alimaven</id>
-    <mirrorOf>central</mirrorOf>
-        <name>aliyun maven</name>
-    <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
-    </mirror>
+    <mirrors>
+        <!--  如果还需要osc的thirdparty仓库或多个仓库，需要如下修改：-->
         <!--mirror>
         <id>nexus-osc</id>
         <mirrorOf>central</mirrorOf>
@@ -146,7 +147,7 @@ under the License.
         <name>Nexus osc thirdparty</name>
         <url>http://maven.oschina.net/content/repositories/thirdparty/</url>
     </mirror-->
-</mirrors>
+    </mirrors>
     <!-- profiles
    | This is a list of profiles which can be activated in a variety of ways, and which can modify
    | the build process. Profiles provided in the settings.xml are intended to provide local machine-
@@ -172,7 +173,7 @@ under the License.
         <profile>
             <id>jdk-1.8</id>
             <activation>
-            <activeByDefault>false</activeByDefault>
+            <activeByDefault>true</activeByDefault>
                 <jdk>1.8</jdk>
             </activation>
             <properties>
@@ -182,27 +183,31 @@ under the License.
             </properties>
             <repositories>
                 <repository>
-                    <id>maven-local</id>
-                    <name>maven-local</name>
-                    <url>http://li-server.lan:32768/repository/maven-public/</url>
+                    <id>maven-public</id>
+                    <name>maven-public</name>
+                    <!--url>http://li-server.lan:32768/repository/maven-public/</url-->
+                    <!--url>http://192.168.2.17:32768/repository/maven-public/</url-->
+                    <url>http://nas.silentstorm.local:32768/repository/maven-public/</url>
                     <releases>
                         <enabled>true</enabled>
                     </releases>
                     <snapshots>
-                        <enabled>false</enabled>
+                        <enabled>true</enabled>
                     </snapshots>
                 </repository>
             </repositories>
             <pluginRepositories>
                 <pluginRepository>
-                    <id>maven-local</id>
-                    <name>maven-local</name>
-                    <url>http://li-server.lan:32768/repository/maven-public/</url>
+                    <id>maven-public</id>
+                    <name>maven-public</name>
+                    <!--url>http://li-server.lan:32768/repository/maven-public/</url-->
+                    <!--url>http://192.168.2.17:32768/repository/maven-public/</url-->
+                    <url>http://nas.silentstorm.local:32768/repository/maven-public/</url>
                     <releases>
                         <enabled>true</enabled>
                     </releases>
                     <snapshots>
-                        <enabled>false</enabled>
+                        <enabled>true</enabled>
                     </snapshots>
                 </pluginRepository>
             </pluginRepositories>
@@ -280,7 +285,7 @@ under the License.
     -->
     </profiles>
   <activeProfiles>
-    <!--activeProfile>jdk-1.8</activeProfile-->
+    <activeProfile>jdk-1.8</activeProfile>
     <activeProfile>downloadSources</activeProfile>
   </activeProfiles>
 </settings>
