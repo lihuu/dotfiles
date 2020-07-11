@@ -42,7 +42,7 @@ under the License.
  |
  |-->
 <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
-    <!--localRepository>G:\Repositories\Maven\</localRepository-->
+    <localRepository>G:\Repositories\Maven\</localRepository>
     <!-- interactiveMode
    | This will determine whether maven prompts you when it needs input. If set to false,
    | maven will use a sensible default value, perhaps based on some other setting, for
@@ -108,6 +108,12 @@ under the License.
       <password>repopwd</password>
     </server>
     -->
+    <server>
+      <id>deploymentRepo</id>
+      <username>admin</username>
+      <password>07205719</password>
+    </server>
+
         <!-- Another sample, using keys to authenticate.
     <server>
       <id>siteServer</id>
@@ -179,12 +185,14 @@ under the License.
                 <repository>
                     <id>maven-public</id>
                     <name>maven-public</name>
-                    <url>http://li-server.lan:32768/repository/maven-public/</url>
+                    <!--url>http://li-server.lan:32768/repository/maven-public/</url-->
+                    <!--url>http://192.168.2.17:32768/repository/maven-public/</url-->
+                    <url>http://nas.silentstorm.local:32768/repository/maven-public/</url>
                     <releases>
                         <enabled>true</enabled>
                     </releases>
                     <snapshots>
-                        <enabled>false</enabled>
+                        <enabled>true</enabled>
                     </snapshots>
                 </repository>
             </repositories>
@@ -192,12 +200,14 @@ under the License.
                 <pluginRepository>
                     <id>maven-public</id>
                     <name>maven-public</name>
-                    <url>http://li-server.lan:32768/repository/maven-public/</url>
+                    <!--url>http://li-server.lan:32768/repository/maven-public/</url-->
+                    <!--url>http://192.168.2.17:32768/repository/maven-public/</url-->
+                    <url>http://nas.silentstorm.local:32768/repository/maven-public/</url>
                     <releases>
                         <enabled>true</enabled>
                     </releases>
                     <snapshots>
-                        <enabled>false</enabled>
+                        <enabled>true</enabled>
                     </snapshots>
                 </pluginRepository>
             </pluginRepositories>
