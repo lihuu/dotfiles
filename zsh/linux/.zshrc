@@ -100,8 +100,8 @@ source $ZSH/oh-my-zsh.sh
 
 #export http_proxy="socks5://127.0.0.1:1080"
 #export https_proxy="socks5://127.0.0.1:1080"
-export GOROOT=/usr/local/go
-export GOPATH=/Users/lihu/go
+export GOROOT=/lib/go-1.13
+export GOPATH=/home/lihu/go
 export GOBIN=$GOPATH/bin
 export PATH=$PATH:$MYSQL_HOME/bin:$GOBIN:$GOROOT/bin
 export HOMEBREW_NO_AUTO_UPDATE=true
