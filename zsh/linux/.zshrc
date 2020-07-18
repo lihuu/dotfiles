@@ -2,7 +2,7 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH=/Users/lihu/.oh-my-zsh
+export ZSH=/home/lihu/.oh-my-zsh
 
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
@@ -95,11 +95,7 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias gvim='/Applications/MacVim.app/Contents/MacOS/Vim -g'
-alias chrome="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
 
-
-export MYSQL_HOME=/usr/local/mysql-8.0.18-macos10.14-x86_64
 
 
 #export http_proxy="socks5://127.0.0.1:1080"
