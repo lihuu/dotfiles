@@ -29,8 +29,8 @@ nnoremap <Leader>oi :action OptimizeImports<CR>
 nnoremap <Leader>gb :action Back<CR>
 nnoremap <Leader>fw :action Forward<CR>
 
-nnoremap <Leader>h <esc>:tabnext<CR>
-nnoremap <Leader>l <esc>:tabprevious<CR>
+nnoremap <Leader>l <esc>:tabnext<CR>
+nnoremap <Leader>h <esc>:tabprevious<CR>
 nnoremap <c-j> 5j
 nnoremap <c-k> 5k
 nnoremap <c-h> 5h
