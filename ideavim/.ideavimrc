@@ -23,6 +23,8 @@ nnoremap <Leader>gc :action GotoClass<CR>
 nnoremap <Leader>gd :action GotoDeclaration<CR>
 nnoremap <Leader>gf :action GotoFile<CR>
 nnoremap <Leader>gi :action GotoImplementation<CR>
+nnoremap <leader>gs :action GotoSuperMethod<CR>
+nnoremap <Leader>u  :action ShowUsages<CR>
 nnoremap <Leader>oi :action OptimizeImports<CR>
 nnoremap <Leader>gb :action Back<CR>
 nnoremap <Leader>fw :action Forward<CR>
