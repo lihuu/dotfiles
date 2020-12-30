@@ -187,7 +187,7 @@ under the License.
                     <name>maven-public</name>
                     <!--url>http://li-server.lan:32768/repository/maven-public/</url-->
                     <!--url>http://192.168.2.17:32768/repository/maven-public/</url-->
-                    <url>http://nas.silentstorm.local:32768/repository/maven-public/</url>
+                    <url>http://nas.silentstorm.com/repository/maven-public/</url>
                     <releases>
                         <enabled>true</enabled>
                     </releases>
@@ -202,7 +202,7 @@ under the License.
                     <name>maven-public</name>
                     <!--url>http://li-server.lan:32768/repository/maven-public/</url-->
                     <!--url>http://192.168.2.17:32768/repository/maven-public/</url-->
-                    <url>http://nas.silentstorm.local:32768/repository/maven-public/</url>
+                    <url>http://nas.silentstorm.com/repository/maven-public/</url>
                     <releases>
                         <enabled>true</enabled>
                     </releases>
