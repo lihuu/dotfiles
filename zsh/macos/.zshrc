@@ -62,7 +62,7 @@ ZSH_THEME="ys"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-  git command-not-found
+  git
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -103,8 +103,12 @@ export MYSQL_HOME=/usr/local/mysql-8.0.18-macos10.14-x86_64
 
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home
 
-#export http_proxy="socks5://127.0.0.1:1080"
-#export https_proxy="socks5://127.0.0.1:1080"
+#export http_proxy="socks5://127.0.0.1:7890"
+#export https_proxy="socks5://127.0.0.1:7890"
+#export http_proxy="http://127.0.0.1:7890"
+#export https_proxy="http://127.0.0.1:7890"
+#export http_proxy=socks5://127.0.0.1:8001
+#export https_proxy=socks5://127.0.0.1:8001
 export GOROOT=/usr/local/go
 export GOPATH=/Users/lihu/go
 export GOBIN=$GOPATH/bin
@@ -115,5 +119,18 @@ export CPPFLAGS="-I/usr/local/opt/openssl/include"
 export PATH="/usr/local/opt/openssl/bin:$PATH"
 export LANG=zh_CN.UTF-8
 export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
-set nonomatch
-neofetch
+#export http_proxy=http://127.0.0.1:8001
+#export https_proxy=http://127.0.0.1:8001
+export NPM_CONFIG_REGISTRY=https://registry.npm.taobao.org
+source ~/.fzf/key-bindings.zsh
+
+gitlog() {
+  git log --graph --color=always \
+      --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
+  fzf --ansi --no-sort --reverse --tiebreak=index --bind=ctrl-s:toggle-sort \
+      --bind "ctrl-m:execute:
+                (grep -o '[a-f0-9]\{7\}' | head -1 |
+                xargs -I % sh -c 'git show --color=always % | less -R') << 'FZF-EOF'
+                {}
+FZF-EOF"
+}
