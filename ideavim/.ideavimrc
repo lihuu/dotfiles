@@ -28,6 +28,9 @@ nnoremap <Leader>u  :action ShowUsages<CR>
 nnoremap <Leader>oi :action OptimizeImports<CR>
 nnoremap <Leader>gb :action Back<CR>
 nnoremap <Leader>fw :action Forward<CR>
+"折叠代码块
+nnoremap <Leader>zf :action CollapseBlock<CR>
+"展开折叠用idea默认的快捷键 <Ctrl+=> 或者展开所有的<Ctrl+Shift+=>
 
 nnoremap <Leader>l <esc>:tabnext<CR>
 nnoremap <Leader>h <esc>:tabprevious<CR>
