@@ -29,4 +29,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 [GPLv3](LICENSE)
 
 
-https://trojan-gfw.github.io/trojan/config
+
+## 配置文件
+
+配置文件的详细解释可以参考官方文档https://trojan-gfw.github.io/trojan/config
+
