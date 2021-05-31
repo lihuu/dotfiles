@@ -3,12 +3,12 @@
 	br = branch
 	ci = commit
 	cm = commit
+	ck = checkout
 [user]
 	email = 1449488533qq@gmail.com
 	name = SilentStorm
 [credential]
-    #Window 环境下用manager，Linux 环境下面可以使用 store
-	helper = manager
+	helper = manager-core
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
@@ -16,16 +16,18 @@
 	required = true
 [core]
 	autocrlf = input
+	longpaths = true
+    editor = vim
 [http "https://github.com"]
-	proxy = http://127.0.0.1:1081
+	proxy = http://127.0.0.1:7891
 [https "https://github.com"]
-	proxy = https://127.0.0.1:1081
+    proxy = http://127.0.0.1:7891
 [i18n]
 	logoutputencoding = utf-8
 [i18n "commit"]
 	encoding = utf-8
 [gui]
-    encoding = utf-8
-[core]
-    # 这里可以替换为其他的文本编辑器
-    editor = vim
+	encoding = utf-8
+[diff]
+    submodule = log
+
