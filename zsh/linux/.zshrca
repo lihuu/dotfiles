@@ -2,7 +2,7 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH=/home/lihu/.oh-my-zsh
+export ZSH=/Users/lihu/.oh-my-zsh
 
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
@@ -62,7 +62,7 @@ ZSH_THEME="ys"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-  git command-not-found
+  git
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -95,21 +95,35 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+alias gvim='/Applications/MacVim.app/Contents/MacOS/Vim -g'
+alias chrome="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
 
 
+export MYSQL_HOME=/usr/local/mysql-8.0.18-macos10.14-x86_64
 
-#export http_proxy="socks5://127.0.0.1:1080"
-#export https_proxy="socks5://127.0.0.1:1080"
-#export GOROOT=/lib/go-1.13
-#export GOPATH=/home/lihu/go
-#export GOBIN=$GOPATH/bin
-#export PATH=$PATH:$MYSQL_HOME/bin:$GOBIN:$GOROOT/bin
-#export HOMEBREW_NO_AUTO_UPDATE=true
-#export LDFLAGS="-L/usr/local/opt/openssl/lib"
-#export CPPFLAGS="-I/usr/local/opt/openssl/include"
-#export PATH="/usr/local/opt/openssl/bin:$PATH"
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home
+
+#export http_proxy="socks5://127.0.0.1:7890"
+#export https_proxy="socks5://127.0.0.1:7890"
+#export http_proxy="http://127.0.0.1:7890"
+#export https_proxy="http://127.0.0.1:7890"
+#export http_proxy=socks5://127.0.0.1:8001
+#export https_proxy=socks5://127.0.0.1:8001
+export GOROOT=/usr/local/go
+export GOPATH=/Users/lihu/go
+export GOBIN=$GOPATH/bin
+export PATH=$PATH:$MYSQL_HOME/bin:$GOBIN:$GOROOT/bin
+export HOMEBREW_NO_AUTO_UPDATE=true
+export LDFLAGS="-L/usr/local/opt/openssl/lib"
+export CPPFLAGS="-I/usr/local/opt/openssl/include"
+export PATH="/usr/local/opt/openssl/bin:$PATH"
 export LANG=zh_CN.UTF-8
-set nonomatch
+export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
+#export http_proxy=http://127.0.0.1:8001
+#export https_proxy=http://127.0.0.1:8001
+export NPM_CONFIG_REGISTRY=https://registry.npm.taobao.org
+source ~/.fzf/key-bindings.zsh
+
 gitlog() {
   git log --graph --color=always \
       --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
@@ -119,5 +133,4 @@ gitlog() {
                 xargs -I % sh -c 'git show --color=always % | less -R') << 'FZF-EOF'
                 {}
 FZF-EOF"
-neofetch
-
+}
