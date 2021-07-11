@@ -98,18 +98,22 @@ source $ZSH/oh-my-zsh.sh
 
 
 
-#export http_proxy="socks5://127.0.0.1:1080"
-#export https_proxy="socks5://127.0.0.1:1080"
-#export GOROOT=/lib/go-1.13
-#export GOPATH=/home/lihu/go
-#export GOBIN=$GOPATH/bin
-#export PATH=$PATH:$MYSQL_HOME/bin:$GOBIN:$GOROOT/bin
-#export HOMEBREW_NO_AUTO_UPDATE=true
-#export LDFLAGS="-L/usr/local/opt/openssl/lib"
-#export CPPFLAGS="-I/usr/local/opt/openssl/include"
-#export PATH="/usr/local/opt/openssl/bin:$PATH"
+#export http_proxy="http://127.0.0.1:10801"
+#export https_proxy="https://127.0.0.1:10801"
+export GOROOT=/usr/local/go
+export GOPATH=/home/lihu/go
+export GOBIN=$GOPATH/bin
+export PATH=$PATH:$MYSQL_HOME/bin:$GOBIN:$GOROOT/bin:/home/lihu/.config/yarn/global/node_modules/.bin
+export HOMEBREW_NO_AUTO_UPDATE=true
+export LDFLAGS="-L/usr/local/opt/openssl/lib"
+export CPPFLAGS="-I/usr/local/opt/openssl/include"
+export PATH="/usr/local/opt/openssl/bin:/usr/local/go/bin:$PATH"
+export ANDROID_NDK_HOME=/home/lihu/Android/Sdk/ndk/22.1.7171670
+export ANDROID_HOME=/home/lihu/Android/Sdk
 export LANG=zh_CN.UTF-8
+export LC_CTYPE=zh_CN.UTF-8
 set nonomatch
+neofetch
 gitlog() {
   git log --graph --color=always \
       --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
@@ -119,5 +123,10 @@ gitlog() {
                 xargs -I % sh -c 'git show --color=always % | less -R') << 'FZF-EOF'
                 {}
 FZF-EOF"
-neofetch
+}
 
+alias emacs='env LC_CTYPE=zh_CN.UTF-8 emacs'
+export NVM_DIR="/home/lihu/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+#export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+#[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
