@@ -107,12 +107,12 @@ export PATH=$PATH:$MYSQL_HOME/bin:$GOBIN:$GOROOT/bin:/home/lihu/.config/yarn/glo
 export HOMEBREW_NO_AUTO_UPDATE=true
 export LDFLAGS="-L/usr/local/opt/openssl/lib"
 export CPPFLAGS="-I/usr/local/opt/openssl/include"
-export PATH="/usr/local/opt/openssl/bin:/usr/local/go/bin:$PATH"
+export PATH="/usr/local/opt/openssl/bin:/usr/local/go/bin:$HOME/.deno/bin:$PATH"
 export ANDROID_NDK_HOME=/home/lihu/Android/Sdk/ndk/22.1.7171670
 export ANDROID_HOME=/home/lihu/Android/Sdk
 export LANG=zh_CN.UTF-8
 export LC_CTYPE=zh_CN.UTF-8
-set nonomatch
+
 neofetch
 gitlog() {
   git log --graph --color=always \
@@ -130,3 +130,7 @@ export NVM_DIR="/home/lihu/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 #export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
 #[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+setopt nonomatch
