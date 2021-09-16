@@ -26,7 +26,8 @@ nnoremap <Leader>gi :action GotoImplementation<CR>
 nnoremap <leader>gs :action GotoSuperMethod<CR>
 nnoremap <Leader>u  :action ShowUsages<CR>
 nnoremap <Leader>oi :action OptimizeImports<CR>
-nnoremap <Leader>gb :action Back<CR>
+"nnoremap <Leader>gb :action Back<CR>
+nmap <Leader>gb <Action>(Back)
 nnoremap <Leader>fw :action Forward<CR>
 "折叠代码块
 nnoremap <Leader>zf :action CollapseBlock<CR>
