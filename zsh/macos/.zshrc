@@ -134,3 +134,5 @@ gitlog() {
                 {}
 FZF-EOF"
 }
+
+setopt nonomatch
