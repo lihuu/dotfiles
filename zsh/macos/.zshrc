@@ -95,16 +95,22 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias gvim='/Applications/MacVim.app/Contents/MacOS/Vim -g'
+#alias gvim='/Applications/MacVim.app/Contents/MacOS/Vim -g'
 alias chrome="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
+alias gnvim='nvim-qt'
+#alias code="/Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code"
+
+code () { VSCODE_CWD="$PWD" open -n -b "com.microsoft.VSCode" --args $* ;}
+export DOOM_EMACS_HOME=/Users/lihu/.emacs.d
+export EMACS_HOME=/Applications/Emacs.app/Contents/MacOS
 
 
-export MYSQL_HOME=/usr/local/mysql-8.0.18-macos10.14-x86_64
+#export MYSQL_HOME=/usr/local/mysql-8.0.18-macos10.14-x86_64
 
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home
+#export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-17.0.1.jdk/Contents/Home
 
-#export http_proxy="socks5://127.0.0.1:7890"
-#export https_proxy="socks5://127.0.0.1:7890"
+#export http_proxy="127.0.0.1:7890"
+#export https_proxy="127.0.0.1:7890"
 #export http_proxy="http://127.0.0.1:7890"
 #export https_proxy="http://127.0.0.1:7890"
 #export http_proxy=socks5://127.0.0.1:8001
@@ -112,7 +118,7 @@ export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Hom
 export GOROOT=/usr/local/go
 export GOPATH=/Users/lihu/go
 export GOBIN=$GOPATH/bin
-export PATH=$PATH:$MYSQL_HOME/bin:$GOBIN:$GOROOT/bin
+export PATH=$PATH:$MYSQL_HOME/bin:$GOBIN:$GOROOT/bin:$DOOM_EMACS_HOME/bin:$EMACS_HOME
 export HOMEBREW_NO_AUTO_UPDATE=true
 export LDFLAGS="-L/usr/local/opt/openssl/lib"
 export CPPFLAGS="-I/usr/local/opt/openssl/include"
@@ -122,7 +128,7 @@ export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bott
 #export http_proxy=http://127.0.0.1:8001
 #export https_proxy=http://127.0.0.1:8001
 export NPM_CONFIG_REGISTRY=https://registry.npm.taobao.org
-source ~/.fzf/key-bindings.zsh
+#source ~/.fzf/key-bindings.zsh
 
 gitlog() {
   git log --graph --color=always \
@@ -135,4 +141,5 @@ gitlog() {
 FZF-EOF"
 }
 
+eval $(thefuck --alias)
 setopt nonomatch
