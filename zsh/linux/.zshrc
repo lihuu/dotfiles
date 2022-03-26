@@ -105,6 +105,7 @@ export GOPATH=/home/lihu/go
 export GOBIN=$GOPATH/bin
 export PATH=$PATH:$MYSQL_HOME/bin:$GOBIN:$GOROOT/bin:/home/lihu/.config/yarn/global/node_modules/.bin
 export HOMEBREW_NO_AUTO_UPDATE=true
+export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles"
 export LDFLAGS="-L/usr/local/opt/openssl/lib"
 export CPPFLAGS="-I/usr/local/opt/openssl/include"
 export PATH="/usr/local/opt/openssl/bin:/usr/local/go/bin:$HOME/.deno/bin:$PATH"
