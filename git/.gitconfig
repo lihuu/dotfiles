@@ -4,11 +4,12 @@
 	ci = commit
 	cm = commit
 	ck = checkout
+	ad = add
 [user]
 	email = 1449488533qq@gmail.com
-	name = SilentStorm
-[credential]
-	helper = manager-core
+	name = lihu
+#[credential]
+#	helper = manager-core
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
@@ -19,9 +20,11 @@
 	longpaths = true
     editor = vim
 [http "https://github.com"]
-	proxy = http://127.0.0.1:7891
+	proxy = http://127.0.0.1:7890
 [https "https://github.com"]
-    proxy = http://127.0.0.1:7891
+    proxy = http://127.0.0.1:7890
+[https "https://git.savannah.gnu.org"]
+    proxy = http://127.0.0.1:7890
 [i18n]
 	logoutputencoding = utf-8
 [i18n "commit"]
@@ -36,3 +39,5 @@
 	lowSpeedTime = 999999
 [pull]
 	rebase = true
+[init]
+	defaultBranch = master
