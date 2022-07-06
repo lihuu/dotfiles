@@ -98,6 +98,8 @@ source $ZSH/oh-my-zsh.sh
 #alias gvim='/Applications/MacVim.app/Contents/MacOS/Vim -g'
 alias chrome="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
 alias gnvim='nvim-qt'
+alias python=/opt/homebrew/bin/python3
+alias pip=/opt/homebrew/bin/pip3
 #alias code="/Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code"
 
 code () { VSCODE_CWD="$PWD" open -n -b "com.microsoft.VSCode" --args $* ;}
@@ -107,22 +109,23 @@ export EMACS_HOME=/Applications/Emacs.app/Contents/MacOS
 
 #export MYSQL_HOME=/usr/local/mysql-8.0.18-macos10.14-x86_64
 
-#export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-17.0.1.jdk/Contents/Home
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-17.0.3.1.jdk/Contents/Home
 
-#export http_proxy="127.0.0.1:7890"
-#export https_proxy="127.0.0.1:7890"
+export http_proxy="127.0.0.1:7890"
+export https_proxy="127.0.0.1:7890"
 #export http_proxy="http://127.0.0.1:7890"
 #export https_proxy="http://127.0.0.1:7890"
 #export http_proxy=socks5://127.0.0.1:8001
 #export https_proxy=socks5://127.0.0.1:8001
-export GOROOT=/usr/local/go
+#export GOROOT=/usr/local/go
 export GOPATH=/Users/lihu/go
 export GOBIN=$GOPATH/bin
-export PATH=$PATH:$MYSQL_HOME/bin:$GOBIN:$GOROOT/bin:$DOOM_EMACS_HOME/bin:$EMACS_HOME
+export IDEA_HOME="/Applications/IntelliJ IDEA.app/Contents/MacOS"
+export PATH=$PATH:$MYSQL_HOME/bin:$GOBIN:$GOROOT/bin:$DOOM_EMACS_HOME/bin:$EMACS_HOME:$IDEA_HOME
 export HOMEBREW_NO_AUTO_UPDATE=true
 export LDFLAGS="-L/usr/local/opt/openssl/lib"
 export CPPFLAGS="-I/usr/local/opt/openssl/include"
-export PATH="/usr/local/opt/openssl/bin:$PATH"
+export PATH="/usr/local/opt/openssl/bin:/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
 export LANG=zh_CN.UTF-8
 export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
 #export http_proxy=http://127.0.0.1:8001
@@ -143,3 +146,7 @@ FZF-EOF"
 
 eval $(thefuck --alias)
 setopt nonomatch
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
