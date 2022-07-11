@@ -113,6 +113,7 @@ export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-17.0.3.1.jdk/Contents/Hom
 
 export http_proxy="127.0.0.1:7890"
 export https_proxy="127.0.0.1:7890"
+export no_proxy="127.0.0.1,localhost,*.marketup.local"
 #export http_proxy="http://127.0.0.1:7890"
 #export https_proxy="http://127.0.0.1:7890"
 #export http_proxy=socks5://127.0.0.1:8001
