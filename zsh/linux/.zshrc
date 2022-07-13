@@ -62,7 +62,7 @@ ZSH_THEME="ys"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-  git command-not-found
+  git command-not-found kubectl kubectx minikube
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -144,6 +144,6 @@ PERL_MB_OPT="--install_base \"/home/lihu/perl5\""; export PERL_MB_OPT;
 PERL_MM_OPT="INSTALL_BASE=/home/lihu/perl5"; export PERL_MM_OPT;
 
 
+#source <(minikube kubectl completion zsh)
 alias emacs='env LC_CTYPE=zh_CN.UTF-8 emacs'
-alias minikubectl="minikube kubectl -- "
-source <(minikubectl completion zsh)
+alias kubectl="minikube kubectl --"
