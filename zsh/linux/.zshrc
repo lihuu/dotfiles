@@ -146,3 +146,4 @@ PERL_MM_OPT="INSTALL_BASE=/home/lihu/perl5"; export PERL_MM_OPT;
 
 alias emacs='env LC_CTYPE=zh_CN.UTF-8 emacs'
 alias minikubectl="minikube kubectl -- "
+source <(minikubectl completion zsh)
