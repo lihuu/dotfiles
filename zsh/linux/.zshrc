@@ -96,16 +96,17 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
+setopt nonomatch
 
-
-#export http_proxy="http://127.0.0.1:10801"
-#export https_proxy="https://127.0.0.1:10801"
-export GOROOT=/usr/local/go
+#export http_proxy="socks5h://127.0.0.1:7890"
+#export https_proxy="socks5h://127.0.0.1:7890"
+#export no_proxy=localhost,127.0.0.1,10.96.0.0/12
+export GOROOT=/usr/lib/go
 export GOPATH=/home/lihu/go
 export GOBIN=$GOPATH/bin
-export PATH=$PATH:$MYSQL_HOME/bin:$GOBIN:$GOROOT/bin:/home/lihu/.config/yarn/global/node_modules/.bin
+export PATH=$PATH:$MYSQL_HOME/bin:$GOBIN:$GOROOT/bin:/home/lihu/.config/yarn/global/node_modules/.bin:/home/lihu/.local/bin
 export HOMEBREW_NO_AUTO_UPDATE=true
-export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles"
+export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
 export LDFLAGS="-L/usr/local/opt/openssl/lib"
 export CPPFLAGS="-I/usr/local/opt/openssl/include"
 export PATH="/usr/local/opt/openssl/bin:/usr/local/go/bin:$HOME/.deno/bin:$PATH"
@@ -125,7 +126,7 @@ gitlog() {
 FZF-EOF"
 }
 
-alias emacs='env LC_CTYPE=zh_CN.UTF-8 emacs'
+
 export NVM_DIR="/home/lihu/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 #export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
@@ -135,3 +136,13 @@ export NVM_DIR="/home/lihu/.nvm"
 
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+PATH="/home/lihu/perl5/bin${PATH:+:${PATH}}"; export PATH;
+PERL5LIB="/home/lihu/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
+PERL_LOCAL_LIB_ROOT="/home/lihu/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
+PERL_MB_OPT="--install_base \"/home/lihu/perl5\""; export PERL_MB_OPT;
+PERL_MM_OPT="INSTALL_BASE=/home/lihu/perl5"; export PERL_MM_OPT;
+
+
+alias emacs='env LC_CTYPE=zh_CN.UTF-8 emacs'
+alias minikubectl="minikube kubectl -- "
