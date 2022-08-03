@@ -62,7 +62,7 @@ ZSH_THEME="ys"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-  git command-not-found kubectl minikube
+  git command-not-found kubectl
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -98,8 +98,8 @@ source $ZSH/oh-my-zsh.sh
 
 setopt nonomatch
 
-#export http_proxy="socks5h://127.0.0.1:7890"
-#export https_proxy="socks5h://127.0.0.1:7890"
+export http_proxy="socks5h://127.0.0.1:7890"
+export https_proxy="socks5h://127.0.0.1:7890"
 #export no_proxy=localhost,127.0.0.1,10.96.0.0/12
 export GOROOT=/usr/lib/go
 export GOPATH=/home/lihu/go
@@ -126,6 +126,7 @@ gitlog() {
 FZF-EOF"
 }
 
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 
 export NVM_DIR="/home/lihu/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
