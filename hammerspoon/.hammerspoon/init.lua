@@ -71,11 +71,6 @@ hs.hotkey.bind({"cmd", "alt", "ctrl"}, "T", function()
   spoon.AClock:toggleShow()
 end)
 
-hs.hotkey.bind({"cmd", "alt", "ctrl"}, "W", function()
-  hs.alert.show("hello,world")
-  -- hs.notify.new({title="Hammerspoon",informativeText="Hello, world"}):send()
-end)
-
 -- 移动到下一个显示器
 hs.hotkey.bind({'alt', 'ctrl', 'cmd'}, 'n', function()
   local win = hs.window.focusedWindow()
