@@ -81,7 +81,7 @@ hs.hotkey.bind({'alt', 'ctrl', 'cmd'}, 'n', function()
   win:move(win:frame():toUnitRect(screen:frame()), screen:next(), true, 0)
 end)
 
-hs.hotkey.bind({'ctrl', 'alt', 'cmd', 'shift'}, '`', function()
+hs.hotkey.bind({'ctrl', 'alt', 'cmd'}, 'p', function()
   local screen = hs.mouse.getCurrentScreen()
   local nextScreen = screen:next()
   local rect = nextScreen:fullFrame()
