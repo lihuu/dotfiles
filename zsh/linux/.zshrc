@@ -98,9 +98,11 @@ source $ZSH/oh-my-zsh.sh
 
 setopt nonomatch
 
-export http_proxy="socks5h://127.0.0.1:7890"
-export https_proxy="socks5h://127.0.0.1:7890"
-#export no_proxy=localhost,127.0.0.1,10.96.0.0/12
+#export http_proxy="socks5h://127.0.0.1:7890"
+#export https_proxy="socks5h://127.0.0.1:7890"
+#export http_proxy="http://127.0.0.1:7890"
+#export https_proxy="http://127.0.0.1:7890"
+export no_proxy=localhost,127.0.0.1,10.96.0.0/12,192.168.3.0/24,192.168.2.0/24,192.168.1.0/24,172.18.0.0/24
 export GOROOT=/usr/lib/go
 export GOPATH=/home/lihu/go
 export GOBIN=$GOPATH/bin
