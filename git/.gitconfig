@@ -4,12 +4,12 @@
 	ci = commit
 	cm = commit
 	ck = checkout
-	ad = add
 [user]
 	email = 1449488533qq@gmail.com
-	name = lihu
-#[credential]
-#	helper = manager-core
+	name = SilentStorm
+[credential]
+	helper = /usr/local/share/gcm-core/git-credential-manager-core
+	credentialStore = gpg
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
@@ -20,11 +20,9 @@
 	longpaths = true
     editor = vim
 [http "https://github.com"]
-	proxy = http://127.0.0.1:7890
+	proxy = http://127.0.0.1:1080
 [https "https://github.com"]
-    proxy = http://127.0.0.1:7890
-[https "https://git.savannah.gnu.org"]
-    proxy = http://127.0.0.1:7890
+    proxy = http://127.0.0.1:1080
 [i18n]
 	logoutputencoding = utf-8
 [i18n "commit"]
@@ -39,5 +37,7 @@
 	lowSpeedTime = 999999
 [pull]
 	rebase = true
-[init]
-	defaultBranch = master
+[credential "https://dev.azure.com"]
+	useHttpPath = true
+[credential "https://gitee.com"]
+	provider = generic
