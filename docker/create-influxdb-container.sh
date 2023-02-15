@@ -1,0 +1,2 @@
+#!/bin/sh
+docker run -d --name influxdb -p 8086:8086 -p 8083:8083 influxdb:1.8
