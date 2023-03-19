@@ -4,5 +4,6 @@
 ../zsh/install-zsh-ubuntu.sh
 ../zsh/install.sh
 ../homebrew/install.sh
+../vim/install-ubuntu.sh
 
 
