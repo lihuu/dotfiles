@@ -1,0 +1,18 @@
+[
+  {
+    "resource": {
+      "name": "hello",
+      "get": [
+        {
+          "id": "lihu",
+          "response": {
+            "json": {
+              "code": 200,
+              "message": "hello,lihu"
+            }
+          }
+        }
+      ]
+    }
+  }
+]
