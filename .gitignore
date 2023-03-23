@@ -34,3 +34,7 @@ src/main/resources/static/node_modules/
 
 ### Frontend files
 **/node_modules/
+
+
+### log files
+*.log
