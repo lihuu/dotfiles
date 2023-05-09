@@ -151,3 +151,5 @@ PERL_MM_OPT="INSTALL_BASE=/home/lihu/perl5"; export PERL_MM_OPT;
 alias emacs='env LC_CTYPE=zh_CN.UTF-8 emacs'
 alias kubectl="minikube kubectl --"
 #alias k="kubectl"
+export GO111MODULE=on
+export GOPROXY=https://goproxy.cn
