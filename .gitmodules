@@ -1,0 +1,3 @@
+[submodule "power-shell-config"]
+	path = power-shell-config
+	url = https://github.com/lihuu/power-shell-config.git

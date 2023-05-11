@@ -38,3 +38,8 @@ src/main/resources/static/node_modules/
 
 ### log files
 *.log
+
+
+### ingore submodules
+power-shell-config/
+power-shell-config
