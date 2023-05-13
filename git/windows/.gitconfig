@@ -8,7 +8,7 @@
 	email = 1449488533qq@gmail.com
 	name = SilentStorm
 [credential]
-	helper = manager-core
+	helper = manager
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
