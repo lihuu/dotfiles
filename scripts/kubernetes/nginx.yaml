@@ -1,0 +1,14 @@
+apiVesion: v1
+kind: Pod
+metadata:
+  name: my-ngx-Pod
+  labels:
+    env: demo
+    owner: lihu
+
+spec:
+  containers:
+    - image: nginx:alpine
+      name: ngx
+      ports:
+        - containerPort: 8080
