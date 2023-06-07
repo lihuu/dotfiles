@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: wp-pod
+  labels:
+    app: wordpress
+    role: website
+
+spec:
+  containers:
+    - image: wordpress:5
+      name: wp-pod
+      imagePullPolicy: IfNotPresent
+      ports:
+        - containerPort: 80
+      envFrom:
+        - prefix: "WORDPRESS_DB_"
+          configMapRef:
+            name: wp-cm
