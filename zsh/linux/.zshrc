@@ -62,7 +62,7 @@ ZSH_THEME="ys"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-  git command-not-found kubectl
+  git command-not-found minikube kubectl
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -96,22 +96,21 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-setopt nonomatch
 
-#export http_proxy="socks5h://127.0.0.1:7890"
-#export https_proxy="socks5h://127.0.0.1:7890"
-#export http_proxy="http://127.0.0.1:7890"
-#export https_proxy="http://127.0.0.1:7890"
-export no_proxy=localhost,127.0.0.1,10.96.0.0/12,192.168.3.0/24,192.168.2.0/24,192.168.1.0/24,172.18.0.0/24
-export GOROOT=/usr/lib/go
+
+#export http_proxy="http://192.168.2.33:7891"
+export http_proxy="http://localhost:1080"
+export https_proxy="http://localhost:1080"
+#export GOROOT=/usr/local/go
 export GOPATH=/home/lihu/go
 export GOBIN=$GOPATH/bin
-export PATH=$PATH:$MYSQL_HOME/bin:$GOBIN:$GOROOT/bin:/home/lihu/.config/yarn/global/node_modules/.bin:/home/lihu/.local/bin
+export DOCKER_PLUGIN=$HOME/.docker/cli-plugins
+export PATH=$PATH:$DOCKER_PLUGIN:$MYSQL_HOME/bin:$GOBIN:$GOROOT/bin:/home/lihu/.config/yarn/global/node_modules/.bin
 export HOMEBREW_NO_AUTO_UPDATE=true
-export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
+export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles"
 export LDFLAGS="-L/usr/local/opt/openssl/lib"
 export CPPFLAGS="-I/usr/local/opt/openssl/include"
-export PATH="/usr/local/opt/openssl/bin:/usr/local/go/bin:$HOME/.deno/bin:$PATH"
+export PATH="/usr/local/opt/openssl/bin:/usr/local/go/bin:$HOME/.deno/bin:$PATH":$HOME/.local/bin
 export ANDROID_NDK_HOME=/home/lihu/Android/Sdk/ndk/22.1.7171670
 export ANDROID_HOME=/home/lihu/Android/Sdk
 export LANG=zh_CN.UTF-8
@@ -128,8 +127,7 @@ gitlog() {
 FZF-EOF"
 }
 
-export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-
+alias emacs='env LC_CTYPE=zh_CN.UTF-8 emacs'
 export NVM_DIR="/home/lihu/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 #export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
@@ -140,16 +138,9 @@ export NVM_DIR="/home/lihu/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
-PATH="/home/lihu/perl5/bin${PATH:+:${PATH}}"; export PATH;
-PERL5LIB="/home/lihu/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
-PERL_LOCAL_LIB_ROOT="/home/lihu/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
-PERL_MB_OPT="--install_base \"/home/lihu/perl5\""; export PERL_MB_OPT;
-PERL_MM_OPT="INSTALL_BASE=/home/lihu/perl5"; export PERL_MM_OPT;
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+export PATH=$JAVA_HOME/bin:$PATH
 
-
-#source <(minikube kubectl completion zsh)
-alias emacs='env LC_CTYPE=zh_CN.UTF-8 emacs'
-alias kubectl="minikube kubectl --"
-#alias k="kubectl"
-export GO111MODULE=on
-export GOPROXY=https://goproxy.cn
+#alias kubectl="minikube kubectl --"
+alias sel = "kubectl get pods"
+[[ $commands[kubectl] ]] && source <(kubectl completion zsh)
