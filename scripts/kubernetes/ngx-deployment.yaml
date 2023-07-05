@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ngx-dep
+  name: ngx-dep
+spec:
+  replicas: 2 # 副本的数量，表示在Kubernates集群里面运行多少个Pod实例
+  selector:
+    matchLabels:
+      app: ngx-dep
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: ngx-dep
+    spec:
+      containers:
+        - image: nginx:alpine
+          name: nginx
+          resources: {}
+status: {}
