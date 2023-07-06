@@ -17,8 +17,19 @@ spec:
       labels:
         app: ngx-dep
     spec:
+      volumes:
+        - name: ngx-conf-vol
+          configMap:
+            name: ngx-conf
+
       containers:
         - image: nginx:alpine
           name: nginx
+          ports:
+            - containerPort: 80
+
           resources: {}
+          volumeMounts:
+            - mountPath: /etc/nginx/conf.d
+              name: ngx-conf-vol
 status: {}

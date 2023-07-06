@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ngx-conf
+
+data:
+  default.conf: |
+    server {
+      listen 80;
+      location / {
+        default_type text/plain;
+        return 200 'srv : $server_addr:$server_port\nhost: $hostname\nuri : $request_method $host $request_uri\ndate: $time_iso8601\n';
+      }
+    }
