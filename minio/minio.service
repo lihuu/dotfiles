@@ -1,0 +1,42 @@
+[Unit]
+Description=MinIO
+Documentation=https://docs.min.io
+Wants=network-online.target
+After=network-online.target
+
+# 指向minio的存在路径
+AssertFileIsExecutable=/usr/local/minio/minio
+
+[Service]
+# 工作目录，指minio文件的存放目录
+
+WorkingDirectory=/usr/local/minio/
+
+ProtectProc=invisible
+
+User=minio
+Group=minio
+
+# 指向minio的配置文件
+EnvironmentFile=/etc/minio/minio.conf
+
+ExecStartPre=/bin/bash -c "if [ -z \"${MINIO_VOLUMES}\" ]; then echo \"Variable MINIO_VOLUMES not set in /etc/minio/minio.conf\"; exit 1; fi"
+ExecStart=/usr/local/minio/minio server $MINIO_OPTS $MINIO_VOLUMES
+
+# Let systemd restart this service always
+Restart=always
+
+# Specifies the maximum (1M) file descriptor number that can be opened by this process
+LimitNOFILE=1048576
+
+# Specifies the maximum number of threads this process can create
+TasksMax=infinity
+
+# Disable timeout logic and wait until process is stopped
+TimeoutStopSec=infinity
+SendSIGKILL=no
+SuccessExitStatus=0
+
+[Install]
+WantedBy=multi-user.target
+Alias=minio.service
