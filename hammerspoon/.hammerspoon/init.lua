@@ -89,4 +89,7 @@ hs.hotkey.bind({'ctrl', 'alt', 'cmd'}, 'p', function()
   hs.mouse.setAbsolutePosition(center)
 end)
 
-
+hs.hotkey.bind({'ctrl', 'cmd', 'alt'}, 'i', function()
+  -- switch windows of the same application
+  hs.eventtap.keyStroke({'cmd'}, '`')
+end)

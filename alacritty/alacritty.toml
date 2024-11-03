@@ -613,13 +613,11 @@ mouse = "Middle"
 
 
 [scrolling]
-auto_scroll = false
-faux_multiplier = 3
 history = 10000
 multiplier = 3
 
 [selection]
-save_to_clipboard = false
+save_to_clipboard = true
 semantic_escape_chars = ",│`|:\"' ()[]{}<>"
 
 [visual_bell]
@@ -631,7 +629,7 @@ duration = 0
 decorations = "full"
 dynamic_padding = false
 opacity = 0.9
-startup_mode = "Windowed"
+startup_mode = "Maximized"
 
 [window.padding]
 x = 0
