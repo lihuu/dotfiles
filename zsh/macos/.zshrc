@@ -64,6 +64,7 @@ ZSH_THEME="ys"
 plugins=(
   git
 )
+# zsh-vi-mode
 
 source $ZSH/oh-my-zsh.sh
 
@@ -77,8 +78,7 @@ source $ZSH/oh-my-zsh.sh
 # Preferred editor for local and remote sessions
 # if [[ -n $SSH_CONNECTION ]]; then
 #   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
+# else export EDITOR='mvim'
 # fi
 
 # Compilation flags
@@ -109,20 +109,22 @@ export EMACS_HOME=/Applications/Emacs.app/Contents/MacOS
 
 #export MYSQL_HOME=/usr/local/mysql-8.0.18-macos10.14-x86_64
 
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-17.0.3.1.jdk/Contents/Home
+export JAVA_HOME=/opt/homebrew/opt/openjdk@21
 
-export http_proxy="127.0.0.1:7890"
-export https_proxy="127.0.0.1:7890"
+#export http_proxy="127.0.0.1:7890"
+#export https_proxy="127.0.0.1:7890"
 export no_proxy="127.0.0.1,localhost,*.marketup.local"
 #export http_proxy="http://127.0.0.1:7890"
 #export https_proxy="http://127.0.0.1:7890"
-#export http_proxy=socks5://127.0.0.1:8001
-#export https_proxy=socks5://127.0.0.1:8001
+#export https_proxy="http://127.0.0.1:8001"
+#export https_proxy="http://127.0.0.1:8001"
+#export http_proxy=socks5://127.0.0.1:1080
+#export https_proxy=socks5://127.0.0.1:1080
 #export GOROOT=/usr/local/go
 export GOPATH=/Users/lihu/go
 export GOBIN=$GOPATH/bin
 export IDEA_HOME="/Applications/IntelliJ IDEA.app/Contents/MacOS"
-export PATH=$PATH:$MYSQL_HOME/bin:$GOBIN:$GOROOT/bin:$DOOM_EMACS_HOME/bin:$EMACS_HOME:$IDEA_HOME
+export PATH=$PATH:$MYSQL_HOME/bin:$GOBIN:$DOOM_EMACS_HOME/bin:$EMACS_HOME:$IDEA_HOME
 export HOMEBREW_NO_AUTO_UPDATE=true
 export LDFLAGS="-L/usr/local/opt/openssl/lib"
 export CPPFLAGS="-I/usr/local/opt/openssl/include"
@@ -131,8 +133,9 @@ export LANG=zh_CN.UTF-8
 export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
 #export http_proxy=http://127.0.0.1:8001
 #export https_proxy=http://127.0.0.1:8001
-export NPM_CONFIG_REGISTRY=https://registry.npm.taobao.org
+#export NPM_CONFIG_REGISTRY=https://registry.npm.taobao.org
 #source ~/.fzf/key-bindings.zsh
+#export DOCKER_HOST=tcp://localhost:2375
 
 gitlog() {
   git log --graph --color=always \
@@ -151,3 +154,42 @@ setopt nonomatch
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+
+listening() {
+    if [ $# -eq 0 ]; then
+        sudo lsof -iTCP -sTCP:LISTEN -n -P
+    elif [ $# -eq 1 ]; then
+        sudo lsof -iTCP -sTCP:LISTEN -n -P | grep -i --color $1
+    else
+        echo "Usage: listening [pattern]"
+    fi
+}
+
+PATH="/Users/lihu/perl5/bin${PATH:+:${PATH}}"; 
+export PATH=$PATH:/Users/lihu/Library/Android/sdk/platform-tools:/Users/lihu/Library/Python/3.9/bin;
+PERL5LIB="/Users/lihu/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
+PERL_LOCAL_LIB_ROOT="/Users/lihu/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
+PERL_MB_OPT="--install_base \"/Users/lihu/perl5\""; export PERL_MB_OPT;
+PERL_MM_OPT="INSTALL_BASE=/Users/lihu/perl5"; export PERL_MM_OPT;
+#export SSLKEYLOGFILE=~/.ssl-key.log
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/Users/lihu/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/Users/lihu/anaconda3/etc/profile.d/conda.sh" ]; then
+        . "/Users/lihu/anaconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/Users/lihu/anaconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+#
+export GROOVY_HOME=/opt/homebrew/opt/groovy/libexec
+
+eval "$(fzf --zsh)"
+

@@ -3,7 +3,7 @@
 local function left_move_window()
   local win = hs.window.focusedWindow()
   local f = win:frame()
-  f.x = f.x - 20
+  f.x = f.x - 40
   win:setFrame(f)
 end
 
@@ -13,7 +13,7 @@ hs.hotkey.bind({"cmd", "alt", "ctrl"}, "H", left_move_window, nil,
 local function right_move_window()
   local win = hs.window.focusedWindow()
   local f = win:frame()
-  f.x = f.x + 20
+  f.x = f.x + 40
   win:setFrame(f)
 end
 
@@ -24,7 +24,7 @@ hs.hotkey.bind({"cmd", "alt", "ctrl"}, "L", right_move_window, nil,
 local function down_move_window()
   local win = hs.window.focusedWindow()
   local f = win:frame()
-  f.y = f.y + 20
+  f.y = f.y + 40
   win:setFrame(f)
 end
 
@@ -35,7 +35,7 @@ hs.hotkey.bind({"cmd", "alt", "ctrl"}, "J", down_move_window, nil,
 local function up_move_window()
   local win = hs.window.focusedWindow()
   local f = win:frame()
-  f.y = f.y - 20
+  f.y = f.y - 40
   win:setFrame(f)
 end
 
