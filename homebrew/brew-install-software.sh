@@ -18,3 +18,10 @@ brew install font-jetbrains-mono --cask
 brew install neovide --cask
 brew install font-jetbrains-mono-nerd-font --cask
 brew install picgo --cask
+brew install raven-reader --cask
+brew install tabby --cask
+brew install typora --cask
+brew install v2rayx --cask
+brew install warp --cask
+brew install wireshark --cask
+brew install zed --cask
