@@ -68,7 +68,7 @@ hs.hotkey.bind({ "cmd", "alt", "ctrl" }, "T", function()
 	spoon.AClock:toggleShow()
 end)
 
--- 移动到下一个显示器
+-- 窗口移动到下一个显示器
 hs.hotkey.bind({ "alt", "ctrl", "cmd" }, "n", function()
 	local win = hs.window.focusedWindow()
 	-- get the screen where the focused window is displayed, a.k.a. current screen
@@ -78,8 +78,8 @@ hs.hotkey.bind({ "alt", "ctrl", "cmd" }, "n", function()
 	win:move(win:frame():toUnitRect(screen:frame()), screen:next(), true, 0)
 end)
 
--- 屏幕
-hs.hotkey.bind({ "cmd", "alt", "ctrl" }, "F", function()
+-- 屏幕全屏
+hs.hotkey.bind({ "cmd", "alt", "ctrl" }, "O", function()
 	local win = hs.window.focusedWindow()
 	if win:isFullScreen() then
 		win:setFullScreen(false)
@@ -88,6 +88,7 @@ hs.hotkey.bind({ "cmd", "alt", "ctrl" }, "F", function()
 	end
 end)
 
+-- 鼠标移动到上一个显示器
 hs.hotkey.bind({ "ctrl", "alt", "cmd" }, "p", function()
 	local screen = hs.mouse.getCurrentScreen()
 	local nextScreen = screen:next()
@@ -96,7 +97,9 @@ hs.hotkey.bind({ "ctrl", "alt", "cmd" }, "p", function()
 	hs.mouse.setAbsolutePosition(center)
 end)
 
+-- 切换窗口
 hs.hotkey.bind({ "ctrl", "cmd", "alt" }, "i", function()
 	-- switch windows of the same application
 	hs.eventtap.keyStroke({ "cmd" }, "`")
 end)
+
