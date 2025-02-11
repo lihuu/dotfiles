@@ -99,7 +99,40 @@ end)
 
 -- 切换窗口
 hs.hotkey.bind({ "ctrl", "cmd", "alt" }, "i", function()
-	-- switch windows of the same application
 	hs.eventtap.keyStroke({ "cmd" }, "`")
 end)
 
+local function isTableEmpty(t)
+	if t == nil then
+		return true
+	end
+	for _, _ in ipairs(t) do
+		return true
+	end
+	return false
+end
+
+-- list connected usb devices
+local devices = hs.usb.attachedDevices()
+if isTableEmpty(devices) then
+	print("No USB devices found")
+else
+	for i, device in ipairs(devices) do
+		print(string.format("Device %d:", i))
+		print(string.format("  Vendor ID: 0x%x", device:vendorID()))
+		print(string.format("  Product ID: 0x%x", device:productID()))
+		print(string.format("  Manufacturer: %s", device:manufacturer()))
+		print(string.format("  Product Name: %s", device:productName()))
+		print("--------------------")
+	end
+end
+
+
+local command = "system_profiler SPBluetoothDataType"
+
+local a,b,c,d = hs.execute(command, false)
+
+print(a)
+print(b)
+print(c)
+print(d)

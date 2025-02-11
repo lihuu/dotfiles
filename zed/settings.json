@@ -39,6 +39,21 @@
     },
     "JSON": {
       "tab_size": 2
+    },
+    "JavaScript": {
+      "tab_size": 2,
+      "formatter": {
+        "external": {
+          "command": "prettier",
+          "args": ["--stdin-filepath", "{file}"]
+        }
+      },
+      "format_on_save": "on"
+    },
+    "Python": {
+      "tab_size": 4,
+      "formatter": "language_server",
+      "format_on_save": "on"
     }
   },
   "file_scan_exclusions": [
@@ -50,5 +65,6 @@
     "**/Thumbs.db",
     "**/.classpath",
     "**/.settings"
-  ]
+  ],
+  "format_on_save": "on"
 }
