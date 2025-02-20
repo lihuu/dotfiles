@@ -113,29 +113,33 @@ local inputMethod = {
 	Pinyin = { layout = "Pinyin - Simplified", method = "Pinyin - Simplified" },
 }
 
+local abcMethod = {
+	shouldSwitchBack = false,
+	inputMethod = inputMethod["ABC"],
+}
+
+local pinyinMethod = {
+	shouldSwitchBack = true,
+	inputMethod = inputMethod["Pinyin"],
+}
+
 -- 自动切换输入法
 local inputMethodConfig = {
-	kitty = { layout = "ABC", method = nil, shouldSwitchBack = false, inputMethod = inputMethod["ABC"] },
-	VSCode = { layout = "ABC", method = nil, shouldSwitchBack = false, inputMethod = inputMethod["ABC"] },
-	doubao = {
-		layout = "Pinyin - Simplified",
-		method = "Pinyin - Simplified",
-		shouldSwitchBack = true,
-		inputMethod = inputMethod["Pinyin"],
-	},
-	xinWeChat = {
-		layout = "Pinyin - Simplified",
-		method = "Pinyin - Simplified",
-		shouldSwitchBack = true,
-		inputMethod = inputMethod["Pinyin"],
-	},
+	kitty = abcMethod,
+	VSCode = abcMethod,
+	Zed = abcMethod,
+	MacVim = abcMethod,
+	intellij = abcMethod,
+	doubao = pinyinMethod,
+	xinWeChat = pinyinMethod,
+	Typora = pinyinMethod,
+	chat = pinyinMethod,
 }
 
 local inputMethodBeforeSwitch = {}
 
 local getAppName = function(win)
 	local bundleId = win:application():bundleID()
-	print("Bunele Id:", bundleId)
 	return extractLastWord(bundleId)
 end
 
