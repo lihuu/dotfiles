@@ -102,37 +102,85 @@ hs.hotkey.bind({ "ctrl", "cmd", "alt" }, "i", function()
 	hs.eventtap.keyStroke({ "cmd" }, "`")
 end)
 
-local function isTableEmpty(t)
-	if t == nil then
-		return true
-	end
-	for _, _ in ipairs(t) do
-		return true
-	end
-	return false
+local extractLastWord = function(str)
+	local last_dot = str:match(".*%.") -- 查找最后一个句点的位置
+	local last_word = str:sub(#last_dot + 1) -- 截取最后一个单词
+	return last_word
 end
 
--- list connected usb devices
-local devices = hs.usb.attachedDevices()
-if isTableEmpty(devices) then
-	print("No USB devices found")
-else
-	for i, device in ipairs(devices) do
-		print(string.format("Device %d:", i))
-		print(string.format("  Vendor ID: 0x%x", device:vendorID()))
-		print(string.format("  Product ID: 0x%x", device:productID()))
-		print(string.format("  Manufacturer: %s", device:manufacturer()))
-		print(string.format("  Product Name: %s", device:productName()))
-		print("--------------------")
+local inputMethod = {
+	ABC = { layout = "ABC", method = nil },
+	Pinyin = { layout = "Pinyin - Simplified", method = "Pinyin - Simplified" },
+}
+
+-- 自动切换输入法
+local inputMethodConfig = {
+	kitty = { layout = "ABC", method = nil, shouldSwitchBack = false, inputMethod = inputMethod["ABC"] },
+	VSCode = { layout = "ABC", method = nil, shouldSwitchBack = false, inputMethod = inputMethod["ABC"] },
+	doubao = {
+		layout = "Pinyin - Simplified",
+		method = "Pinyin - Simplified",
+		shouldSwitchBack = true,
+		inputMethod = inputMethod["Pinyin"],
+	},
+	xinWeChat = {
+		layout = "Pinyin - Simplified",
+		method = "Pinyin - Simplified",
+		shouldSwitchBack = true,
+		inputMethod = inputMethod["Pinyin"],
+	},
+}
+
+local inputMethodBeforeSwitch = {}
+
+local getAppName = function(win)
+	local bundleId = win:application():bundleID()
+	print("Bunele Id:", bundleId)
+	return extractLastWord(bundleId)
+end
+
+-- 不知道中文的设置的时候，设置layout不能实现输入法切换，必须使用setMethod来实现，这里做一下兼容
+-- 其实在mac系统中，我的中文输入法使用的就是系统自带的，可以直接使用固定的值
+local changeInputMethod = function(config)
+	local layout = config.layout
+	local method = config.method
+	local currentLayout = hs.keycodes.currentLayout()
+	if currentLayout == layout then
+		return
+	end
+	if method == nil then
+		hs.keycodes.setLayout(layout)
+	else
+		hs.keycodes.setMethod(method)
 	end
 end
 
+-- 根据窗口自动切换输入法
+hs.window.filter.default:subscribe(hs.window.filter.windowFocused, function(win)
+	local appName = getAppName(win)
+	local config = inputMethodConfig[appName]
+	if config == nil then
+		return
+	end
+	if config.shouldSwitchBack then
+		inputMethodBeforeSwitch[appName] =
+			{ layout = hs.keycodes.currentLayout(), method = hs.keycodes.currentMethod() }
+	end
+	changeInputMethod(config.inputMethod)
+end)
 
-local command = "system_profiler SPBluetoothDataType"
-
-local a,b,c,d = hs.execute(command, false)
-
-print(a)
-print(b)
-print(c)
-print(d)
+-- 开启自动切换输入法之后，要不要切换回去
+hs.window.filter.default:subscribe(hs.window.filter.windowUnfocused, function(win)
+	local appName = getAppName(win)
+	local config = inputMethodConfig[appName]
+	if config == nil then
+		return
+	end
+	if config.shouldSwitchBack then
+		local oldInputMethod = inputMethodBeforeSwitch[appName]
+		if oldInputMethod == nil then
+			return
+		end
+		changeInputMethod(oldInputMethod)
+	end
+end)
