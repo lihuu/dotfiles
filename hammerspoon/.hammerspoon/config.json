@@ -1,0 +1,29 @@
+{
+  "inputMethod": [
+    {
+      "apps": [
+        "com.neovide.neovide",
+        "net.kovidgoyal.kitty",
+        "dev.zed.Zed",
+        "com.microsoft.VSCode",
+        "org.vim.MacVim",
+        "com.jetbrains.intellij"
+      ],
+      "layout": "ABC",
+      "shouldSwitchBack": false
+    },
+    {
+      "apps": [
+        "com.bot.pc.doubao",
+        "com.tencent.xinWeChat",
+        "abnerworks.Typora",
+        "com.openai.chat",
+        "com.yinxiang.Mac",
+        "ai.elementlabs.lmstudio"
+      ],
+      "layout": "Pinyin - Simplified",
+      "method": "Pinyin - Simplified",
+      "shouldSwitchBack": true
+    }
+  ]
+}

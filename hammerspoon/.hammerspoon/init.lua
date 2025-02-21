@@ -102,49 +102,27 @@ hs.hotkey.bind({ "ctrl", "cmd", "alt" }, "i", function()
 	hs.eventtap.keyStroke({ "cmd" }, "`")
 end)
 
-local extractLastWord = function(str)
-	local last_dot = str:match(".*%.") -- 查找最后一个句点的位置
-	local last_word = str:sub(#last_dot + 1) -- 截取最后一个单词
-	return last_word
+local initConfig = hs.json.read("./config.json")
+
+local inputMethodConfig = {}
+
+for _, value in ipairs(initConfig.inputMethod) do
+	local inputMethod =
+		{ shouldSwitchBack = value.shouldSwitchBack, inputMethod = { layout = value.layout, method = value.method } }
+	for _, app in ipairs(value.apps) do
+		inputMethodConfig[app] = inputMethod
+	end
 end
 
-local inputMethod = {
-	ABC = { layout = "ABC", method = nil },
-	Pinyin = { layout = "Pinyin - Simplified", method = "Pinyin - Simplified" },
-}
-
-local abcMethod = {
-	shouldSwitchBack = false,
-	inputMethod = inputMethod["ABC"],
-}
-
-local pinyinMethod = {
-	shouldSwitchBack = true,
-	inputMethod = inputMethod["Pinyin"],
-}
-
 -- 自动切换输入法
-local inputMethodConfig = {
-	kitty = abcMethod,
-	VSCode = abcMethod,
-	Zed = abcMethod,
-	MacVim = abcMethod,
-	intellij = abcMethod,
-	doubao = pinyinMethod,
-	xinWeChat = pinyinMethod,
-	Typora = pinyinMethod,
-	chat = pinyinMethod,
-}
 
 local inputMethodBeforeSwitch = {}
 
-local getAppName = function(win)
-	local bundleId = win:application():bundleID()
-	return extractLastWord(bundleId)
+local getAppBundleId = function(win)
+	return win:application():bundleID()
 end
 
 -- 不知道中文的设置的时候，设置layout不能实现输入法切换，必须使用setMethod来实现，这里做一下兼容
--- 其实在mac系统中，我的中文输入法使用的就是系统自带的，可以直接使用固定的值
 local changeInputMethod = function(config)
 	local layout = config.layout
 	local method = config.method
@@ -161,7 +139,7 @@ end
 
 -- 根据窗口自动切换输入法
 hs.window.filter.default:subscribe(hs.window.filter.windowFocused, function(win)
-	local appName = getAppName(win)
+	local appName = getAppBundleId(win)
 	local config = inputMethodConfig[appName]
 	if config == nil then
 		return
@@ -175,13 +153,13 @@ end)
 
 -- 开启自动切换输入法之后，要不要切换回去
 hs.window.filter.default:subscribe(hs.window.filter.windowUnfocused, function(win)
-	local appName = getAppName(win)
-	local config = inputMethodConfig[appName]
+	local bundleId = getAppBundleId(win)
+	local config = inputMethodConfig[bundleId]
 	if config == nil then
 		return
 	end
 	if config.shouldSwitchBack then
-		local oldInputMethod = inputMethodBeforeSwitch[appName]
+		local oldInputMethod = inputMethodBeforeSwitch[bundleId]
 		if oldInputMethod == nil then
 			return
 		end
