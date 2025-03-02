@@ -12,13 +12,18 @@
       "layout": "ABC",
       "shouldSwitchBack": false
     },
+
+    {
+      "apps": ["abnerworks.Typora", "com.yinxiang.Mac"],
+      "layout": "ABC",
+      "method": "Squirrel - Simplified",
+      "shouldSwitchBack": true
+    },
     {
       "apps": [
         "com.bot.pc.doubao",
         "com.tencent.xinWeChat",
-        "abnerworks.Typora",
         "com.openai.chat",
-        "com.yinxiang.Mac",
         "ai.elementlabs.lmstudio"
       ],
       "layout": "Pinyin - Simplified",

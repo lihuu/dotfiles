@@ -129,7 +129,7 @@ local changeInputMethod = function(config)
 	local method = config.method
 	local currentLayout = hs.keycodes.currentLayout()
 	local currentMethod = hs.keycodes.currentMethod()
-	if currentLayout == layout and (currentMethod == method or currentMethod == nil) then
+	if currentLayout == layout and (currentMethod == method) then
 		return
 	end
 	hs.keycodes.setLayout(layout)
