@@ -1,4 +1,7 @@
--- hammerspoon
+hs.loadSpoon("ModalMgr")
+hs.loadSpoon("AClock")
+hs.loadSpoon("CountDown")
+--hs.hotkey.bind(mods, key, [message,] pressedfn, releasedfn, repeatfn) -> hs.hotkey object
 -- 向左移动窗口位置
 local function left_move_window()
 	local win = hs.window.focusedWindow()
@@ -7,7 +10,9 @@ local function left_move_window()
 	win:setFrame(f)
 end
 
-hs.hotkey.bind({ "cmd", "alt", "ctrl" }, "H", left_move_window, nil, left_move_window)
+local mods = { "cmd", "alt", "ctrl" }
+
+hs.hotkey.bind(mods, "H", left_move_window, nil, left_move_window)
 
 local function right_move_window()
 	local win = hs.window.focusedWindow()
@@ -17,7 +22,7 @@ local function right_move_window()
 end
 
 -- 向右移动窗口位置
-hs.hotkey.bind({ "cmd", "alt", "ctrl" }, "L", right_move_window, nil, right_move_window)
+hs.hotkey.bind(mods, "L", right_move_window, nil, right_move_window)
 
 local function down_move_window()
 	local win = hs.window.focusedWindow()
@@ -27,7 +32,7 @@ local function down_move_window()
 end
 
 -- 向下移动窗口位置
-hs.hotkey.bind({ "cmd", "alt", "ctrl" }, "J", down_move_window, nil, down_move_window)
+hs.hotkey.bind(mods, "J", down_move_window, nil, down_move_window)
 
 local function up_move_window()
 	local win = hs.window.focusedWindow()
@@ -37,10 +42,10 @@ local function up_move_window()
 end
 
 -- 向上移动窗口位置
-hs.hotkey.bind({ "cmd", "alt", "ctrl" }, "K", up_move_window, nil, up_move_window)
+hs.hotkey.bind(mods, "K", up_move_window, nil, up_move_window)
 
 -- 最小化所有的窗口
-hs.hotkey.bind({ "cmd", "alt", "ctrl" }, "M", function()
+hs.hotkey.bind(mods, "M", function()
 	local allWindows = hs.window.allWindows()
 	for _, win in ipairs(allWindows) do
 		if not win:isMinimized() then
@@ -50,7 +55,7 @@ hs.hotkey.bind({ "cmd", "alt", "ctrl" }, "M", function()
 end)
 
 -- 取消最小化的窗口
-hs.hotkey.bind({ "cmd", "alt", "ctrl" }, "U", function()
+hs.hotkey.bind(mods, "U", function()
 	local allWindows = hs.window.allWindows()
 	for _, win in ipairs(allWindows) do
 		if win:isMinimized() then
@@ -59,17 +64,13 @@ hs.hotkey.bind({ "cmd", "alt", "ctrl" }, "U", function()
 	end
 end)
 
-hs.loadSpoon("ModalMgr")
-hs.loadSpoon("AClock")
-hs.loadSpoon("CountDown")
-
 -- 在屏幕上显示时间
-hs.hotkey.bind({ "cmd", "alt", "ctrl" }, "T", function()
+hs.hotkey.bind(mods, "T", function()
 	spoon.AClock:toggleShow()
 end)
 
 -- 窗口移动到下一个显示器
-hs.hotkey.bind({ "alt", "ctrl", "cmd" }, "n", function()
+hs.hotkey.bind(mods, "n", function()
 	local win = hs.window.focusedWindow()
 	-- get the screen where the focused window is displayed, a.k.a. current screen
 	local screen = win:screen()
@@ -79,7 +80,7 @@ hs.hotkey.bind({ "alt", "ctrl", "cmd" }, "n", function()
 end)
 
 -- 屏幕全屏
-hs.hotkey.bind({ "cmd", "alt", "ctrl" }, "O", function()
+hs.hotkey.bind(mods, "O", function()
 	local win = hs.window.focusedWindow()
 	if win:isFullScreen() then
 		win:setFullScreen(false)
@@ -89,7 +90,7 @@ hs.hotkey.bind({ "cmd", "alt", "ctrl" }, "O", function()
 end)
 
 -- 鼠标移动到上一个显示器
-hs.hotkey.bind({ "ctrl", "alt", "cmd" }, "p", function()
+hs.hotkey.bind(mods, "p", function()
 	local screen = hs.mouse.getCurrentScreen()
 	local nextScreen = screen:next()
 	local rect = nextScreen:fullFrame()
@@ -98,7 +99,7 @@ hs.hotkey.bind({ "ctrl", "alt", "cmd" }, "p", function()
 end)
 
 -- 切换窗口
-hs.hotkey.bind({ "ctrl", "cmd", "alt" }, "i", function()
+hs.hotkey.bind(mods, "i", function()
 	hs.eventtap.keyStroke({ "cmd" }, "`")
 end)
 
@@ -122,17 +123,17 @@ local getAppBundleId = function(win)
 	return win:application():bundleID()
 end
 
--- 不知道中文的设置的时候，设置layout不能实现输入法切换，必须使用setMethod来实现，这里做一下兼容
+-- 设置的时候，layout和method都要设置
 local changeInputMethod = function(config)
 	local layout = config.layout
 	local method = config.method
 	local currentLayout = hs.keycodes.currentLayout()
-	if currentLayout == layout then
+	local currentMethod = hs.keycodes.currentMethod()
+	if currentLayout == layout and (currentMethod == method or currentMethod == nil) then
 		return
 	end
-	if method == nil then
-		hs.keycodes.setLayout(layout)
-	else
+	hs.keycodes.setLayout(layout)
+	if method ~= nil then
 		hs.keycodes.setMethod(method)
 	end
 end
