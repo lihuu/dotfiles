@@ -1,5 +1,8 @@
 #!/bin/sh
 brew install gh
+brew install bat
+brew install hugo
+brew install ranger
 brew install alacritty --cask
 brew install hammerspoon --cask
 brew install dbeaver-community --cask
@@ -25,3 +28,7 @@ brew install v2rayx --cask
 brew install warp --cask
 brew install wireshark --cask
 brew install zed --cask
+brew install github --cask
+brew install emacs --cask
+brew install logseq --cask
+brew install obsidian --cask
