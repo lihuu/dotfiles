@@ -103,6 +103,18 @@ hs.hotkey.bind(mods, "i", function()
 	hs.eventtap.keyStroke({ "cmd" }, "`")
 end)
 
+-- 显示当前窗口的bundleID并复制到剪贴板
+hs.hotkey.bind(mods, "B", function()
+	local win = hs.window.focusedWindow()
+	if win then
+		local bundleID = win:application():bundleID()
+		hs.pasteboard.setContents(bundleID)
+		hs.alert.show("BundleID: " .. bundleID .. "\nCopied to clipboard!")
+	else
+		hs.alert.show("No active window")
+	end
+end)
+
 local initConfig = hs.json.read("./config.json")
 
 local inputMethodConfig = {}
@@ -129,6 +141,7 @@ local changeInputMethod = function(config)
 	local method = config.method
 	local currentLayout = hs.keycodes.currentLayout()
 	local currentMethod = hs.keycodes.currentMethod()
+	print("currentLayout: ", currentLayout, "currentMethod: ", currentMethod)
 	if currentLayout == layout and (currentMethod == method) then
 		return
 	end
@@ -167,3 +180,30 @@ hs.window.filter.default:subscribe(hs.window.filter.windowUnfocused, function(wi
 		changeInputMethod(oldInputMethod)
 	end
 end)
+
+-- 加载键盘重映射模块
+local keyboardRemap = require("keyboard_remap")
+
+-- 设置目标键盘信息 (需要修改为你的蓝牙键盘信息)
+keyboardRemap.targetKeyboard = {
+	name = "YOUR_BLUETOOTH_KEYBOARD_NAME", -- 替换为你的蓝牙键盘名称
+	productID = 5678, -- 替换为你的蓝牙键盘productID
+	transport = "Bluetooth", -- 指定仅匹配蓝牙键盘
+}
+
+-- 使用下面的函数来查找并打印你的蓝牙键盘信息
+-- keyboardRemap.findKeyboards()
+
+-- 添加快捷键来启用/禁用重映射
+hs.hotkey.bind(mods, "R", function()
+	if keyboardRemap.eventTap and keyboardRemap.eventTap:isEnabled() then
+		keyboardRemap.stop()
+		hs.alert.show("键盘重映射已禁用")
+	else
+		keyboardRemap.start()
+		hs.alert.show("键盘重映射已启用")
+	end
+end)
+
+-- 自动启动键盘重映射 (取消下面的注释来自动启动)
+-- keyboardRemap.start()

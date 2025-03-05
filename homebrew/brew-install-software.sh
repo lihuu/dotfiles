@@ -32,3 +32,7 @@ brew install github --cask
 brew install emacs --cask
 brew install logseq --cask
 brew install obsidian --cask
+brew install karabiner-elements --cask
+
+brew tap daipeihust/tap
+brew install im-select

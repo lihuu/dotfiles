@@ -20,14 +20,15 @@
       "shouldSwitchBack": true
     },
     {
-      "apps": [
-        "com.bot.pc.doubao",
-        "com.tencent.xinWeChat",
-        "com.openai.chat",
-        "ai.elementlabs.lmstudio"
-      ],
+      "apps": ["com.openai.chat", "ai.elementlabs.lmstudio"],
       "layout": "Pinyin - Simplified",
       "method": "Pinyin - Simplified",
+      "shouldSwitchBack": true
+    },
+    {
+      "apps": ["com.bot.pc.doubao", "com.tencent.xinWeChat"],
+      "layout": "U.S.",
+      "method": "搜狗拼音",
       "shouldSwitchBack": true
     }
   ]
