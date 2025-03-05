@@ -141,7 +141,7 @@ local changeInputMethod = function(config)
 	local method = config.method
 	local currentLayout = hs.keycodes.currentLayout()
 	local currentMethod = hs.keycodes.currentMethod()
-	print("currentLayout: ", currentLayout, "currentMethod: ", currentMethod)
+	--print("currentLayout: ", currentLayout, "currentMethod: ", currentMethod)
 	if currentLayout == layout and (currentMethod == method) then
 		return
 	end
@@ -181,10 +181,30 @@ hs.window.filter.default:subscribe(hs.window.filter.windowUnfocused, function(wi
 	end
 end)
 
+local lastVimInputMethod = nil
+hs.hotkey.bind(mods, "A", function()
+	-- change to abc layout
+	local currentLayout = hs.keycodes.currentLayout()
+	local currentMethod = hs.keycodes.currentMethod()
+	if currentLayout == "Pinyin - Simplified" then
+		lastVimInputMethod = { layout = currentLayout, method = currentMethod }
+	else
+		lastVimInputMethod = nil
+	end
+	changeInputMethod({ layout = "ABC", method = nil })
+end)
+
+hs.hotkey.bind(mods, "S", function()
+	if lastVimInputMethod ~= nil then
+		changeInputMethod({ layout = "Pinyin - Simplified", method = "Pinyin - Simplified" })
+	end
+end)
+
 -- 加载键盘重映射模块
 local keyboardRemap = require("keyboard_remap")
 
 -- 设置目标键盘信息 (需要修改为你的蓝牙键盘信息)
+-- TODO 需要重新实现
 keyboardRemap.targetKeyboard = {
 	name = "YOUR_BLUETOOTH_KEYBOARD_NAME", -- 替换为你的蓝牙键盘名称
 	productID = 5678, -- 替换为你的蓝牙键盘productID

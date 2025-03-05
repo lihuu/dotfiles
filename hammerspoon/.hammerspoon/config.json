@@ -6,7 +6,6 @@
         "net.kovidgoyal.kitty",
         "dev.zed.Zed",
         "com.microsoft.VSCode",
-        "org.vim.MacVim",
         "com.jetbrains.intellij"
       ],
       "layout": "ABC",
