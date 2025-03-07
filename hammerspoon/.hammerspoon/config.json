@@ -18,19 +18,21 @@
       "shouldSwitchBack": true
     },
     {
-      "apps": ["com.openai.chat", "ai.elementlabs.lmstudio"],
-      "layout": "Pinyin - Simplified",
-      "method": "Pinyin - Simplified",
-      "shouldSwitchBack": true
-    },
-    {
       "apps": [
+        "com.openai.chat",
+        "ai.elementlabs.lmstudio",
         "com.bot.pc.doubao",
         "com.tencent.xinWeChat",
         "md.obsidian",
         "abnerworks.Typora",
         "com.yinxiang.Mac"
       ],
+      "layout": "Pinyin - Simplified",
+      "method": "Pinyin - Simplified",
+      "shouldSwitchBack": true
+    },
+    {
+      "apps": [],
       "layout": "U.S.",
       "method": "搜狗拼音",
       "shouldSwitchBack": true
