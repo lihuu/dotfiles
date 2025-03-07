@@ -1,6 +1,16 @@
-hs.loadSpoon("ModalMgr")
-hs.loadSpoon("AClock")
-hs.loadSpoon("CountDown")
+local mods = { "cmd", "alt", "ctrl" }
+local spoonInstall = hs.loadSpoon("SpoonInstall", true)
+if spoonInstall ~= nil then
+	spoonInstall:andUse("ModalMgr")
+	spoonInstall:andUse("AClock")
+	spoonInstall:andUse("CountDown")
+	spoonInstall:andUse("BingDaily")
+
+	-- 在屏幕上显示时间
+	hs.hotkey.bind(mods, "T", function()
+		spoon.AClock:toggleShow()
+	end)
+end
 --hs.hotkey.bind(mods, key, [message,] pressedfn, releasedfn, repeatfn) -> hs.hotkey object
 -- 向左移动窗口位置
 local function left_move_window()
@@ -9,8 +19,6 @@ local function left_move_window()
 	f.x = f.x - 40
 	win:setFrame(f)
 end
-
-local mods = { "cmd", "alt", "ctrl" }
 
 hs.hotkey.bind(mods, "H", left_move_window, nil, left_move_window)
 
@@ -62,11 +70,6 @@ hs.hotkey.bind(mods, "U", function()
 			win:unminimize()
 		end
 	end
-end)
-
--- 在屏幕上显示时间
-hs.hotkey.bind(mods, "T", function()
-	spoon.AClock:toggleShow()
 end)
 
 -- 窗口移动到下一个显示器
@@ -141,7 +144,6 @@ local changeInputMethod = function(config)
 	local method = config.method
 	local currentLayout = hs.keycodes.currentLayout()
 	local currentMethod = hs.keycodes.currentMethod()
-	--print("currentLayout: ", currentLayout, "currentMethod: ", currentMethod)
 	if currentLayout == layout and (currentMethod == method) then
 		return
 	end
@@ -162,6 +164,14 @@ hs.window.filter.default:subscribe(hs.window.filter.windowFocused, function(win)
 		inputMethodBeforeSwitch[appName] =
 			{ layout = hs.keycodes.currentLayout(), method = hs.keycodes.currentMethod() }
 	end
+	print(
+		"AppName: ",
+		appName,
+		"currentLayout: ",
+		hs.keycodes.currentLayout(),
+		"currentMethod: ",
+		hs.keycodes.currentMethod()
+        )
 	changeInputMethod(config.inputMethod)
 end)
 
@@ -199,31 +209,3 @@ hs.hotkey.bind(mods, "S", function()
 		changeInputMethod({ layout = "Pinyin - Simplified", method = "Pinyin - Simplified" })
 	end
 end)
-
--- 加载键盘重映射模块
-local keyboardRemap = require("keyboard_remap")
-
--- 设置目标键盘信息 (需要修改为你的蓝牙键盘信息)
--- TODO 需要重新实现
-keyboardRemap.targetKeyboard = {
-	name = "YOUR_BLUETOOTH_KEYBOARD_NAME", -- 替换为你的蓝牙键盘名称
-	productID = 5678, -- 替换为你的蓝牙键盘productID
-	transport = "Bluetooth", -- 指定仅匹配蓝牙键盘
-}
-
--- 使用下面的函数来查找并打印你的蓝牙键盘信息
--- keyboardRemap.findKeyboards()
-
--- 添加快捷键来启用/禁用重映射
-hs.hotkey.bind(mods, "R", function()
-	if keyboardRemap.eventTap and keyboardRemap.eventTap:isEnabled() then
-		keyboardRemap.stop()
-		hs.alert.show("键盘重映射已禁用")
-	else
-		keyboardRemap.start()
-		hs.alert.show("键盘重映射已启用")
-	end
-end)
-
--- 自动启动键盘重映射 (取消下面的注释来自动启动)
--- keyboardRemap.start()
