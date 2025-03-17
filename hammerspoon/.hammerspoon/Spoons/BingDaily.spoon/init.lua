@@ -23,10 +23,15 @@ local function curl_callback(exitCode, stdOut, stdErr)
 	if exitCode == 0 then
 		obj.task = nil
 		obj.last_pic = obj.file_name
-		local localpath = os.getenv("HOME") .. "/.Trash/" .. obj.file_name
+
+		--local localpath = os.getenv("HOME") .. "/.Trash/" .. obj.file_name
+		-- check folder exist
+		--
+		-- change to my custom path instend of trash folder
+		local localpath = os.getenv("HOME") .. "/OneDrive/Pictures/BingDaily" .. obj.file_name
 
 		-- set wallpaper for all screens
-		allScreen = hs.screen.allScreens()
+		local allScreen = hs.screen.allScreens()
 		for _, screen in ipairs(allScreen) do
 			screen:desktopImageURL("file://" .. localpath)
 		end

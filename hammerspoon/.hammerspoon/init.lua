@@ -171,7 +171,7 @@ hs.window.filter.default:subscribe(hs.window.filter.windowFocused, function(win)
 		hs.keycodes.currentLayout(),
 		"currentMethod: ",
 		hs.keycodes.currentMethod()
-        )
+	)
 	changeInputMethod(config.inputMethod)
 end)
 
