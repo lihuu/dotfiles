@@ -19,21 +19,28 @@ obj.license = "MIT - https://opensource.org/licenses/MIT"
 --- If `true`, download image in UHD resolution instead of HD. Defaults to `false`.
 obj.uhd_resolution = true
 
+local function getLocalPictureDirectory()
+	-- set my local picture storage path
+	local localPath = os.getenv("HOME") .. "/OneDrive/Pictures/BingDaily/"
+	if hs.fs.attributes(localPath) == nil then
+		localPath = os.getenv("HOME") .. "/.Trash/"
+	end
+	return localPath
+end
+
 local function curl_callback(exitCode, stdOut, stdErr)
 	if exitCode == 0 then
 		obj.task = nil
 		obj.last_pic = obj.file_name
 
-		--local localpath = os.getenv("HOME") .. "/.Trash/" .. obj.file_name
 		-- check folder exist
 		--
 		-- change to my custom path instend of trash folder
-		local localpath = os.getenv("HOME") .. "/OneDrive/Pictures/BingDaily" .. obj.file_name
-
+		local localPath = getLocalPictureDirectory()
 		-- set wallpaper for all screens
 		local allScreen = hs.screen.allScreens()
 		for _, screen in ipairs(allScreen) do
-			screen:desktopImageURL("file://" .. localpath)
+			screen:desktopImageURL("file://" .. localPath)
 		end
 	else
 		print(stdOut, stdErr)
@@ -68,7 +75,7 @@ local function bingRequest()
 						obj.task:terminate()
 						obj.task = nil
 					end
-					local localpath = os.getenv("HOME") .. "/.Trash/" .. obj.file_name
+					local localpath = getLocalPictureDirectory() .. obj.file_name
 					obj.task = hs.task.new(
 						"/usr/bin/curl",
 						curl_callback,
