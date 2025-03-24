@@ -18,15 +18,7 @@
       "shouldSwitchBack": true
     },
     {
-      "apps": [
-        "com.openai.chat",
-        "ai.elementlabs.lmstudio",
-        "com.bot.pc.doubao",
-        "com.tencent.xinWeChat",
-        "md.obsidian",
-        "abnerworks.Typora",
-        "com.yinxiang.Mac"
-      ],
+      "apps": ["com.openai.chat", "ai.elementlabs.lmstudio", "md.obsidian"],
       "layout": "Pinyin - Simplified",
       "method": "Pinyin - Simplified",
       "shouldSwitchBack": true
@@ -35,6 +27,17 @@
       "apps": [],
       "layout": "U.S.",
       "method": "搜狗拼音",
+      "shouldSwitchBack": true
+    },
+    {
+      "apps": [
+        "abnerworks.Typora",
+        "com.bot.pc.doubao",
+        "com.tencent.xinWeChat",
+        "com.yinxiang.Mac"
+      ],
+      "layout": "U.S.",
+      "method": "微信输入法",
       "shouldSwitchBack": true
     }
   ]
