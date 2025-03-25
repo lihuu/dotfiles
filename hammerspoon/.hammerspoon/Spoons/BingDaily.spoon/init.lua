@@ -21,7 +21,7 @@ obj.uhd_resolution = true
 
 local function getLocalPictureDirectory()
 	-- set my local picture storage path
-	local localPath = os.getenv("HOME") .. "/OneDrive/Pictures/BingDaily/"
+	local localPath = os.getenv("HOME") .. "/.bingdaily"
 	if hs.fs.attributes(localPath) == nil then
 		localPath = os.getenv("HOME") .. "/.Trash/"
 	end
