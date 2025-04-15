@@ -1,0 +1,92 @@
+# docker-compose.yml
+
+version: "3.8" # 使用较新的 compose 文件版本
+
+networks:
+  kafka-net: # 定义一个网络，让容器可以互相通信
+    driver: bridge
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0 # 使用 Confluent 提供的 ZooKeeper 镜像 (选择一个具体版本以保证稳定性)
+    container_name: zookeeper
+    hostname: zookeeper
+    networks:
+      - kafka-net
+    ports:
+      - "2181:2181" # 映射 ZooKeeper 端口到宿主机
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181 # ZooKeeper 客户端端口
+      ZOOKEEPER_TICK_TIME: 2000 # ZooKeeper 基本时间单元
+
+  kafka1:
+    image: confluentinc/cp-kafka:7.5.0 # 使用 Confluent 提供的 Kafka 镜像 (版本与 ZK 保持一致或兼容)
+    container_name: kafka1
+    hostname: kafka1
+    networks:
+      - kafka-net
+    ports:
+      - "9092:9092" # 映射 Kafka Broker 1 的外部端口到宿主机
+    depends_on:
+      - zookeeper # 依赖 Zookeeper 先启动
+    environment:
+      KAFKA_BROKER_ID: 1 # Broker 的唯一 ID
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181" # 连接 ZooKeeper 的地址 (使用服务名)
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT # 定义监听器使用的协议
+      KAFKA_LISTENERS: INTERNAL://:29092,EXTERNAL://:9092 # Broker 内部监听地址和外部监听地址
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka1:29092,EXTERNAL://localhost:9092 # Broker 通告给客户端和其他 Broker 的地址
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL # Broker 之间通信使用的监听器名称
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3 # 内部 offsets topic 的副本因子 (等于节点数)
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3 # 事务状态日志的副本因子
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2 # 事务状态日志的最小同步副本数 (建议 N/2 + 1 或 N-1)
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 100 # 减少 Consumer Group 初始 rebalance 延迟 (方便测试)
+      # KAFKA_JMX_PORT: 9991 # (可选) 开启 JMX 监控端口
+      # KAFKA_JMX_HOSTNAME: kafka1 # (可选) JMX 主机名
+
+  kafka2:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka2
+    hostname: kafka2
+    networks:
+      - kafka-net
+    ports:
+      - "9093:9093" # 映射 Kafka Broker 2 的外部端口到宿主机 (注意端口不同)
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_LISTENERS: INTERNAL://:29093,EXTERNAL://:9093
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka2:29093,EXTERNAL://localhost:9093 # 注意这里的外部端口
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 100
+      # KAFKA_JMX_PORT: 9992
+      # KAFKA_JMX_HOSTNAME: kafka2
+
+  kafka3:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka3
+    hostname: kafka3
+    networks:
+      - kafka-net
+    ports:
+      - "9094:9094" # 映射 Kafka Broker 3 的外部端口到宿主机 (注意端口不同)
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_LISTENERS: INTERNAL://:29094,EXTERNAL://:9094
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka3:29094,EXTERNAL://localhost:9094 # 注意这里的外部端口
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 100
+      # KAFKA_JMX_PORT: 9993
+      # KAFKA_JMX_HOSTNAME: kafka3
