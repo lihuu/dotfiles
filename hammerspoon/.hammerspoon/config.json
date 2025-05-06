@@ -18,7 +18,12 @@
       "shouldSwitchBack": true
     },
     {
-      "apps": ["com.openai.chat", "ai.elementlabs.lmstudio", "md.obsidian"],
+      "apps": [
+        "com.openai.chat",
+        "ai.elementlabs.lmstudio",
+        "md.obsidian",
+        "abnerworks.Typora"
+      ],
       "layout": "Pinyin - Simplified",
       "method": "Pinyin - Simplified",
       "shouldSwitchBack": true
@@ -31,7 +36,6 @@
     },
     {
       "apps": [
-        "abnerworks.Typora",
         "com.bot.pc.doubao",
         "com.tencent.xinWeChat",
         "com.yinxiang.Mac"
