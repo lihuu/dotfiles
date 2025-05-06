@@ -1,4 +1,7 @@
+hs.logger.setGlobalLogLevel(5)
 local mods = { "cmd", "alt", "ctrl" }
+-- hhkb的键位比较特殊，使用上面的那个mods按起来不爽
+local hhkbMods = { "cmd", "alt", "shift" }
 local spoonInstall = hs.loadSpoon("SpoonInstall", true)
 if spoonInstall ~= nil then
 	spoonInstall:andUse("ModalMgr")
@@ -21,6 +24,7 @@ local function left_move_window()
 end
 
 hs.hotkey.bind(mods, "H", left_move_window, nil, left_move_window)
+hs.hotkey.bind(hhkbMods, "H", left_move_window, nil, left_move_window)
 
 local function right_move_window()
 	local win = hs.window.focusedWindow()
@@ -31,6 +35,7 @@ end
 
 -- 向右移动窗口位置
 hs.hotkey.bind(mods, "L", right_move_window, nil, right_move_window)
+hs.hotkey.bind(hhkbMods, "L", right_move_window, nil, right_move_window)
 
 local function down_move_window()
 	local win = hs.window.focusedWindow()
@@ -41,6 +46,7 @@ end
 
 -- 向下移动窗口位置
 hs.hotkey.bind(mods, "J", down_move_window, nil, down_move_window)
+hs.hotkey.bind(hhkbMods, "J", down_move_window, nil, down_move_window)
 
 local function up_move_window()
 	local win = hs.window.focusedWindow()
@@ -51,6 +57,7 @@ end
 
 -- 向上移动窗口位置
 hs.hotkey.bind(mods, "K", up_move_window, nil, up_move_window)
+hs.hotkey.bind(hhkbMods, "K", up_move_window, nil, up_move_window)
 
 -- 最小化所有的窗口
 hs.hotkey.bind(mods, "M", function()
@@ -83,14 +90,16 @@ hs.hotkey.bind(mods, "n", function()
 end)
 
 -- 屏幕全屏
-hs.hotkey.bind(mods, "O", function()
+local fullScreen = function()
 	local win = hs.window.focusedWindow()
 	if win:isFullScreen() then
 		win:setFullScreen(false)
 	else
 		win:setFullScreen(true)
 	end
-end)
+end
+hs.hotkey.bind(mods, "O", fullScreen)
+hs.hotkey.bind(hhkbMods, "O", fullScreen)
 
 -- 鼠标移动到上一个显示器
 hs.hotkey.bind(mods, "p", function()
@@ -106,8 +115,12 @@ hs.hotkey.bind(mods, "i", function()
 	hs.eventtap.keyStroke({ "cmd" }, "`")
 end)
 
+hs.hotkey.bind(hhkbMods, "i", function()
+	hs.eventtap.keyStroke({ "cmd" }, "`")
+end)
+
 -- 显示当前窗口的bundleID并复制到剪贴板
-hs.hotkey.bind(mods, "B", function()
+local showCurrentBundleId = function()
 	local win = hs.window.focusedWindow()
 	if win then
 		local bundleID = win:application():bundleID()
@@ -116,21 +129,66 @@ hs.hotkey.bind(mods, "B", function()
 	else
 		hs.alert.show("No active window")
 	end
-end)
+end
+hs.hotkey.bind(mods, "B", showCurrentBundleId)
+hs.hotkey.bind(hhkbMods, "B", showCurrentBundleId)
+
+-- 自动切换输入法
 
 local initConfig = hs.json.read("./config.json")
 
 local inputMethodConfig = {}
 
+local windowFilter = hs.window.filter.new(false)
+--- 将 bundleId 转为 appName（使用 Spotlight）
+--- 如果找不到则返回 nil
+local function appNameFromBundleId(bundleId)
+	if not bundleId or bundleId == "" then
+		return nil
+	end
+
+	-- 使用 mdfind 查找应用路径
+	local findCmd = string.format("mdfind \"kMDItemCFBundleIdentifier == '%s'\"", bundleId)
+	local result = hs.execute(findCmd)
+	local appPath = result and result:match("([^\n]+)")
+
+	if not appPath then
+		hs.printf("⚠️ 未找到安装路径（bundleId=%s）", bundleId)
+		return nil
+	end
+
+	-- 使用 mdls 获取显示名称
+	local nameCmd = string.format("mdls -name kMDItemDisplayName -raw '%s'", appPath)
+	local appName = hs.execute(nameCmd)
+	if appName then
+		return appName:gsub("\n", ""):gsub("^%s+", ""):gsub("%s+$", "")
+	else
+		hs.printf("⚠️ 无法读取 App Name（路径=%s）", appPath)
+		return nil
+	end
+end
+
+-- convert bundleId to appName and ignore unknown app
+--
+local function bundleIdToAppName(bundleId)
+	local appName = appNameFromBundleId(bundleId)
+	print("Find valid AppName: ", appName)
+	return appName
+end
+
+-- process config and custom filter
+print("Start to process config")
 for _, value in ipairs(initConfig.inputMethod) do
 	local inputMethod =
 		{ shouldSwitchBack = value.shouldSwitchBack, inputMethod = { layout = value.layout, method = value.method } }
 	for _, app in ipairs(value.apps) do
 		inputMethodConfig[app] = inputMethod
+		local appName = bundleIdToAppName(app)
+		if appName then
+			windowFilter:setAppFilter(appName, true) -- 允许所有标题
+		end
 	end
 end
-
--- 自动切换输入法
 
 local inputMethodBeforeSwitch = {}
 
@@ -153,8 +211,12 @@ local changeInputMethod = function(config)
 	end
 end
 
+print("Finish processing config")
 -- 根据窗口自动切换输入法
-hs.window.filter.default:subscribe(hs.window.filter.windowFocused, function(win)
+
+print("Start to add subscribe")
+
+windowFilter:subscribe(hs.window.filter.windowFocused, function(win)
 	local appName = getAppBundleId(win)
 	local config = inputMethodConfig[appName]
 	if config == nil then
@@ -175,8 +237,10 @@ hs.window.filter.default:subscribe(hs.window.filter.windowFocused, function(win)
 	changeInputMethod(config.inputMethod)
 end)
 
+print("Finish adding subscribe")
+
 -- 开启自动切换输入法之后，要不要切换回去
-hs.window.filter.default:subscribe(hs.window.filter.windowUnfocused, function(win)
+windowFilter:subscribe(hs.window.filter.windowUnfocused, function(win)
 	local bundleId = getAppBundleId(win)
 	local config = inputMethodConfig[bundleId]
 	if config == nil then
