@@ -112,6 +112,7 @@ alias gplr="git pull --rebase"
 alias gbr="git branch"
 alias clear_docker_image="docker image prune -a"
 alias apt=brew
+alias mcp-get="npx @michaellatman/mcp-get"
 #alias python=/opt/homebrew/bin/python3
 #alias pip=/opt/homebrew/bin/pip3
 #alias code="/Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code"
