@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tomcat-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tomcat
+      tier: frontend
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+          - tomcat
+  template:
+    metadata:
+      labels:
+        app: tomcat
+        tier: frontend
+    spec:
+      containers:
+        - name: tomcat
+          image: tomcat:latest
+          ports:
+            - containerPort: 8080
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: tomcat-volume
+              mountPath: /usr/local/tomcat/webapps
+      volumes:
+        - name: tomcat-volume
+          hostPath:

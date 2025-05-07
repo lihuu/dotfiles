@@ -2,7 +2,7 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH=/Users/lihu/.oh-my-zsh
+export ZSH=$HOME/.oh-my-zsh
 
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
@@ -64,9 +64,13 @@ ZSH_THEME="ys"
 plugins=(
   git
 )
-# zsh-vi-mode
 
 source $ZSH/oh-my-zsh.sh
+
+if [ -f ~/.zshrc.private ]; then
+  source ~/.zshrc.private
+fi
+
 
 # User configuration
 
@@ -78,7 +82,8 @@ source $ZSH/oh-my-zsh.sh
 # Preferred editor for local and remote sessions
 # if [[ -n $SSH_CONNECTION ]]; then
 #   export EDITOR='vim'
-# else export EDITOR='mvim'
+# else
+#   export EDITOR='mvim'
 # fi
 
 # Compilation flags
@@ -98,44 +103,50 @@ source $ZSH/oh-my-zsh.sh
 #alias gvim='/Applications/MacVim.app/Contents/MacOS/Vim -g'
 alias chrome="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
 alias gnvim='nvim-qt'
-alias python=/opt/homebrew/bin/python3
-alias pip=/opt/homebrew/bin/pip3
+alias cl=clear
+alias gst="git status"
+alias gcm="git commit"
+alias gpl="git pull"
+alias gplr="git pull --rebase"
+alias gbr="git branch"
+alias clear_docker_image="docker image prune -a"
+alias apt=brew
+#alias python=/opt/homebrew/bin/python3
+#alias pip=/opt/homebrew/bin/pip3
 #alias code="/Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code"
 
 code () { VSCODE_CWD="$PWD" open -n -b "com.microsoft.VSCode" --args $* ;}
-export DOOM_EMACS_HOME=/Users/lihu/.emacs.d
+export DOOM_EMACS_HOME=$HOME/.config/emacs
 export EMACS_HOME=/Applications/Emacs.app/Contents/MacOS
-
 
 #export MYSQL_HOME=/usr/local/mysql-8.0.18-macos10.14-x86_64
 
-export JAVA_HOME=/opt/homebrew/opt/openjdk@21
+#export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-17.0.3.1.jdk/Contents/Home
+
+#export JAVA_HOME=/Library/Java/JavaVirtualMachines/graalvm-17.jdk/Contents/Home
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/graalvm-21.jdk/Contents/Home
 
 #export http_proxy="127.0.0.1:7890"
 #export https_proxy="127.0.0.1:7890"
 export no_proxy="127.0.0.1,localhost,*.marketup.local"
 #export http_proxy="http://127.0.0.1:7890"
 #export https_proxy="http://127.0.0.1:7890"
-#export https_proxy="http://127.0.0.1:8001"
-#export https_proxy="http://127.0.0.1:8001"
-#export http_proxy=socks5://127.0.0.1:1080
-#export https_proxy=socks5://127.0.0.1:1080
+#export http_proxy=socks5://127.0.0.1:8001
+#export https_proxy=socks5://127.0.0.1:8001
 #export GOROOT=/usr/local/go
-export GOPATH=/Users/lihu/go
+export GOPATH=$HOME/go
 export GOBIN=$GOPATH/bin
 export IDEA_HOME="/Applications/IntelliJ IDEA.app/Contents/MacOS"
-export PATH=$PATH:$MYSQL_HOME/bin:$GOBIN:$DOOM_EMACS_HOME/bin:$EMACS_HOME:$IDEA_HOME
 export HOMEBREW_NO_AUTO_UPDATE=true
 export LDFLAGS="-L/usr/local/opt/openssl/lib"
 export CPPFLAGS="-I/usr/local/opt/openssl/include"
-export PATH="/usr/local/opt/openssl/bin:/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+export PATH=$PATH:$MYSQL_HOME/bin:$GOBIN:$GOROOT/bin:$DOOM_EMACS_HOME/bin:$EMACS_HOME:$IDEA_HOME:$HOME/.m2:/opt/homebrew/anaconda3/bin:/usr/local/opt/openssl/bin:/opt/homebrew/bin:/opt/homebrew/sbin
 export LANG=zh_CN.UTF-8
 export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
 #export http_proxy=http://127.0.0.1:8001
 #export https_proxy=http://127.0.0.1:8001
 #export NPM_CONFIG_REGISTRY=https://registry.npm.taobao.org
 #source ~/.fzf/key-bindings.zsh
-#export DOCKER_HOST=tcp://localhost:2375
 
 gitlog() {
   git log --graph --color=always \
@@ -154,7 +165,22 @@ setopt nonomatch
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+#export PATH="/opt/homebrew/opt/node@20/bin:$PATH"
 
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/opt/homebrew/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/opt/homebrew/anaconda3/etc/profile.d/conda.sh" ]; then
+        . "/opt/homebrew/anaconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/opt/homebrew/anaconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
 
 listening() {
     if [ $# -eq 0 ]; then
@@ -166,30 +192,9 @@ listening() {
     fi
 }
 
-PATH="/Users/lihu/perl5/bin${PATH:+:${PATH}}"; 
-export PATH=$PATH:/Users/lihu/Library/Android/sdk/platform-tools:/Users/lihu/Library/Python/3.9/bin;
-PERL5LIB="/Users/lihu/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
-PERL_LOCAL_LIB_ROOT="/Users/lihu/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
-PERL_MB_OPT="--install_base \"/Users/lihu/perl5\""; export PERL_MB_OPT;
-PERL_MM_OPT="INSTALL_BASE=/Users/lihu/perl5"; export PERL_MM_OPT;
-#export SSLKEYLOGFILE=~/.ssl-key.log
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:$HOME/.lmstudio/bin"
 
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/Users/lihu/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/Users/lihu/anaconda3/etc/profile.d/conda.sh" ]; then
-        . "/Users/lihu/anaconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/Users/lihu/anaconda3/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
-#
-export GROOVY_HOME=/opt/homebrew/opt/groovy/libexec
-
+# Created by `pipx` on 2025-01-16 06:53:03
+export PATH="$PATH:$HOME/.local/bin:$HOME/.volta/bin"
 eval "$(fzf --zsh)"
-
