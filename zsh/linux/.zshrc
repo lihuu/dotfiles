@@ -9,7 +9,8 @@ export ZSH=/home/lihu/.oh-my-zsh
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
 #ZSH_THEME="robbyrussell"
 #ZSH_THEME="half-life"
-ZSH_THEME="ys"
+# ZSH_THEME="ys"
+ZSH_THEME="af-magic"
 
 
 # Set list of themes to load
