@@ -198,5 +198,7 @@ listening() {
 export PATH="$PATH:$HOME/.lmstudio/bin"
 
 # Created by `pipx` on 2025-01-16 06:53:03
-export PATH="$PATH:$HOME/.local/bin:$HOME/.volta/bin"
+export PATH="$HOME/.volta/bin:$PATH:$HOME/.local/bin"
 eval "$(fzf --zsh)"
+
+export VOLTA_FEATURE_PNPM=1
