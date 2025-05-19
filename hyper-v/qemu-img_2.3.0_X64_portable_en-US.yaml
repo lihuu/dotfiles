@@ -1,0 +1,43 @@
+PackageIdentifier: cloudbase.qemu-img
+PackageVersion: 2.3.0
+Tags:
+- qemu
+- vm
+PackageLocale: en-US
+Author: xVemu
+Description: It is used for converting, creating, and consistency checking of various
+  virtual disk formats. It is compatible with Hyper-V, KVM, VMware, VirtualBox, and
+  Xen virtualization solutions. This build has been optimized for Windows Server (x64).
+ShortDescription: QEMU disk image utility for Windows
+License: GPL-2.0
+LicenseUrl: https://github.com/cloudbase/qemu/blob/stable-2.2/LICENSE
+PackageName: qemu-img
+PackageUrl: https://github.com/cloudbase/qemu
+Publisher: cloudbase
+PublisherSupportUrl: https://github.com/cloudbase/qemu/issues
+PublisherUrl: https://cloudbase.it/
+Installers:
+- Architecture: x64
+  InstallerType: zip
+  NestedInstallerType: portable
+  InstallerSha256: 8dc1c69d9880919cdad8c09126a016262d4a9edf48b87a1ef587914fe4177909
+  InstallerUrl: https://cloudbase.it/downloads/qemu-img-win-x64-2_3_0.zip
+  ReleaseDate: 2015-10-21
+  InstallerAbortsTerminal: false
+  InstallLocationRequired: false
+  RequireExplicitUpgrade: false
+  DisplayInstallWarnings: false
+  DownloadCommandProhibited: false
+  ArchiveBinariesDependOnPath: true
+  UpgradeBehavior: install
+  Commands:
+  - qemu-img
+  Dependencies:
+    PackageDependencies:
+    - PackageIdentifier: Microsoft.VCRedist.2015+.x64
+  InstallModes:
+  - silent
+  NestedInstallerFiles:
+  - RelativeFilePath: qemu-img.exe
+ManifestVersion: 1.9.0
+ManifestType: merged

@@ -1,0 +1,118 @@
+PackageIdentifier: Microsoft.VCRedist.2015+.x64
+PackageVersion: 14.44.35112.1
+Moniker: vcredistx64
+Icons:
+- IconUrl: https://cdn.winget.microsoft.com/icons/91cf20db246b2cbadb4b628f0dde138c5670be68479987b84b86f2d2023d7fae.ico
+  IconFileType: ico
+  IconResolution: custom
+  IconTheme: default
+  IconSha256: 91cf20db246b2cbadb4b628f0dde138c5670be68479987b84b86f2d2023d7fae
+Tags:
+- msvc
+- vc
+- vc++
+- visual-c++
+PackageLocale: en-US
+Author: Microsoft Corporation
+Copyright: Copyright (c) Microsoft Corporation
+CopyrightUrl: https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks
+Description: The Microsoft Visual C++ 2015-2022 Redistributable Package (x64) installs
+  runtime components of Visual C++ Libraries required to run 64-bit applications developed
+  with Visual C++ 2015, 2017, 2019 and 2022 on a computer that does not have Visual
+  C++ 2015, 2017, 2019 and 2022 installed.
+ShortDescription: The Microsoft Visual C++ 2015-2022 Redistributable Package (x64)
+License: Proprietary
+LicenseUrl: https://www.microsoft.com/legal/terms-of-use
+PackageName: Microsoft Visual C++ 2015-2022 Redistributable (x64)
+PackageUrl: https://learn.microsoft.com/cpp/windows/latest-supported-vc-redist
+PrivacyUrl: https://privacy.microsoft.com/privacystatement
+Publisher: Microsoft Corporation
+PublisherSupportUrl: https://support.microsoft.com/
+PublisherUrl: https://www.microsoft.com/
+Localization:
+- Tags:
+  - msvc
+  - vc
+  - vc++
+  - visual-c++
+  PackageLocale: zh-CN
+  Author: Microsoft Corporation
+  Copyright: Copyright (c) Microsoft Corporation
+  CopyrightUrl: https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks
+  Description: "Microsoft Visual C++ 2015-2022 Redistributable Package (x64) \u5B89\u88C5
+    Visual C++ \u5E93\u6240\u9700\u7684\u8FD0\u884C\u65F6\u7EC4\u4EF6,\u4EE5\u4FBF\u5728\u672A\u5B89\u88C5
+    Visual C++ 2015\u30012017\u30012019 \u548C 2022 \u7684\u8BA1\u7B97\u673A\u4E0A\u8FD0\u884C\u4F7F\u7528
+    Visual C++ 2015\u30012017\u30012019 \u548C 2022 \u5F00\u53D1\u7684 64 \u4F4D\u5E94\u7528\u7A0B\u5E8F\u3002"
+  ShortDescription: The Microsoft Visual C++ 2015-2022 Redistributable Package (x64)
+  License: "\u4E13\u6709\u8F6F\u4EF6"
+  LicenseUrl: https://www.microsoft.com/zh-cn/legal/terms-of-use
+  PackageName: Microsoft Visual C++ 2015-2022 Redistributable (x64)
+  PackageUrl: https://learn.microsoft.com/zh-cn/cpp/windows/latest-supported-vc-redist
+  PrivacyUrl: https://privacy.microsoft.com/zh-CN/privacystatement
+  Publisher: Microsoft Corporation
+  PublisherSupportUrl: https://support.microsoft.com/zh-CN
+  PublisherUrl: https://www.microsoft.com/zh-cn/
+Installers:
+- Architecture: x64
+  InstallerType: burn
+  InstallerSha256: 463f736d5925566edc0e8f7d8e70c0a1fc95adf44afa5d5390b979f5a35934cc
+  InstallerUrl: https://download.visualstudio.microsoft.com/download/pr/2c6b06c4-dc6a-4496-b769-b0d311cf515d/463F736D5925566EDC0E8F7D8E70C0A1FC95ADF44AFA5D5390B979F5A35934CC/VC_redist.x64.exe
+  Scope: machine
+  ElevationRequirement: elevatesSelf
+  InstallerAbortsTerminal: false
+  InstallLocationRequired: false
+  RequireExplicitUpgrade: false
+  DisplayInstallWarnings: false
+  DownloadCommandProhibited: false
+  ArchiveBinariesDependOnPath: false
+  ProductCode: '{a8cc5541-021a-45c0-a308-ad0035979d45}'
+  UpgradeBehavior: install
+  AppsAndFeaturesEntries:
+  - ProductCode: '{a8cc5541-021a-45c0-a308-ad0035979d45}'
+    UpgradeCode: '{C146EF48-4D31-3C3D-A2C5-1E91AF8A0A9B}'
+  ExpectedReturnCodes:
+  - InstallerReturnCode: 87
+    ReturnResponse: invalidParameter
+  - InstallerReturnCode: 112
+    ReturnResponse: diskFull
+  - InstallerReturnCode: 1601
+    ReturnResponse: contactSupport
+  - InstallerReturnCode: 1602
+    ReturnResponse: cancelledByUser
+  - InstallerReturnCode: 1618
+    ReturnResponse: installInProgress
+  - InstallerReturnCode: 1623
+    ReturnResponse: systemNotSupported
+  - InstallerReturnCode: 1625
+    ReturnResponse: blockedByPolicy
+  - InstallerReturnCode: 1628
+    ReturnResponse: invalidParameter
+  - InstallerReturnCode: 1633
+    ReturnResponse: systemNotSupported
+  - InstallerReturnCode: 1638
+    ReturnResponse: alreadyInstalled
+  - InstallerReturnCode: 1639
+    ReturnResponse: invalidParameter
+  - InstallerReturnCode: 1640
+    ReturnResponse: blockedByPolicy
+  - InstallerReturnCode: 1641
+    ReturnResponse: rebootInitiated
+  - InstallerReturnCode: 1643
+    ReturnResponse: blockedByPolicy
+  - InstallerReturnCode: 1644
+    ReturnResponse: blockedByPolicy
+  - InstallerReturnCode: 1649
+    ReturnResponse: blockedByPolicy
+  - InstallerReturnCode: 1650
+    ReturnResponse: invalidParameter
+  - InstallerReturnCode: 1654
+    ReturnResponse: systemNotSupported
+  InstallerSwitches:
+    Silent: /quiet /norestart
+    SilentWithProgress: /passive /norestart
+    Log: /log "<LOGPATH>"
+    InstallLocation: TARGETDIR="<INSTALLPATH>"
+  InstallerSuccessCodes:
+  - 3010
+ManifestVersion: 1.10.0
+ManifestType: merged
