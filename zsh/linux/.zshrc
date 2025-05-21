@@ -219,6 +219,7 @@ vmrm() {
 
 
 vmscp() {
+
   if [[ $# -lt 2 ]]; then
     echo "用法: vmscp <源> <目标>（支持虚拟机名自动转 IP）"
     return 1
@@ -226,25 +227,28 @@ vmscp() {
 
   local args=("$@")
   local updated_args=()
+  local ip
 
   for arg in "${args[@]}"; do
     if [[ "$arg" =~ ^([^@]+@)?([^:]+):(.+)$ ]]; then
       local user_part="${match[1]}"
+      if [ -z "$user_part" ]; then
+        user_part="ubuntu"
+      fi
       local host="${match[2]}"
-      local path="${match[3]}"
+      local target_path="${match[3]}"
 
       # 如果 host 是 IP，直接使用
       if [[ "$host" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
         updated_args+=("$arg")
       else
         # 解析虚拟机名为 IP
-        local ip
         ip=$(sudo virsh domifaddr "$host" | awk '/ipv4/ {print $4}' | cut -d'/' -f1)
         if [[ -z "$ip" ]]; then
           echo "❌ 无法获取虚拟机 $host 的 IP 地址" >&2
           return 1
         fi
-        updated_args+=("${user_part}${ip}:$path")
+        updated_args+=("${user_part}@${ip}:$target_path")
       fi
     else
       updated_args+=("$arg")
