@@ -63,7 +63,7 @@ ZSH_THEME="af-magic"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-  git branch fzf gh kubectl spring
+  git branch fzf gh kubectl spring docker docker-compose brew
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -128,8 +128,8 @@ export EMACS_HOME=/Applications/Emacs.app/Contents/MacOS
 #export JAVA_HOME=/Library/Java/JavaVirtualMachines/graalvm-17.jdk/Contents/Home
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/graalvm-21.jdk/Contents/Home
 
-#export http_proxy="127.0.0.1:7890"
-#export https_proxy="127.0.0.1:7890"
+export http_proxy="127.0.0.1:1080"
+export https_proxy="127.0.0.1:1080"
 export no_proxy="127.0.0.1,localhost,*.marketup.local"
 #export http_proxy="http://127.0.0.1:7890"
 #export https_proxy="http://127.0.0.1:7890"
