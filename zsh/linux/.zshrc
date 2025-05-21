@@ -157,16 +157,64 @@ vmip() {
 }
 
 vmssh() {
-  local name="$1"
-  local user="${2:-ubuntu}"  # 默认用户名为 ubuntu，可手动指定
-  local ip
-  ip=$(vmip "$name")
-  if [[ -z "$ip" ]]; then
-    echo "❌ 无法获取虚拟机 $name 的 IP 地址" >&2
-    return 1
+  local input="$1"
+  local user host ip
+
+  if [[ "$input" == *"@"* ]]; then
+    user="${input%@*}"
+    host="${input#*@}"
+  else
+    user="ubuntu"
+    host="$input"
   fi
+
+  # 如果 host 是 IP 地址（纯数字加点）
+  if [[ "$host" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    ip="$host"
+  else
+    ip=$(sudo virsh domifaddr "$host" | awk '/ipv4/ {print $4}' | cut -d'/' -f1)
+    if [[ -z "$ip" ]]; then
+      echo "❌ 无法获取虚拟机 $host 的 IP 地址" >&2
+      return 1
+    fi
+  fi
+
   echo "🔗 正在连接 $user@$ip ..."
   ssh "$user@$ip"
+}
+
+# === 删除虚拟机及其磁盘的函数 ===
+vmrm() {
+  local name="$1"
+  if [[ -z "$name" ]]; then
+    echo "⚠️ 请输入要删除的虚拟机名称，例如：vmrm ubuntu-01"
+    return 1
+  fi
+
+  echo "⚠️ 即将删除虚拟机：$name"
+  read "confirm?确认删除该虚拟机及其磁盘？[y/N]: "
+  if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
+    echo "取消删除。"
+    return 0
+  fi
+
+  # 获取磁盘路径
+  local disk
+  disk=$(sudo virsh domblklist "$name" | awk '/^vda/ {print $2}')
+
+  echo "🔻 销毁虚拟机..."
+  sudo virsh destroy "$name" 2>/dev/null
+
+  echo "🧹 删除虚拟机定义..."
+  sudo virsh undefine "$name" --remove-all-storage 2>/dev/null
+
+  # 若磁盘未自动删除，尝试手动删除
+  if [[ -n "$disk" && -f "$disk" ]]; then
+    echo "🗑️ 删除磁盘文件 $disk"
+    sudo rm -f "$disk"
+  fi
+
+  echo "✅ 虚拟机 $name 删除完成。"
 }
 
 alias vmall="sudo virsh list --all"

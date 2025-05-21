@@ -1,5 +1,5 @@
 #!/bin/sh
-for i in 04 05 06; do
+for i in 01 02 03; do
   name="ubuntu-$i"
   disk="$name.img"
   seed="$name-seed.iso"
