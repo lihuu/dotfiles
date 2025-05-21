@@ -2,15 +2,14 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH=/home/lihu/.oh-my-zsh
+export ZSH=$HOME/.oh-my-zsh
 
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
 #ZSH_THEME="robbyrussell"
 #ZSH_THEME="half-life"
-# ZSH_THEME="ys"
-ZSH_THEME="af-magic"
+ZSH_THEME="ys"
 
 
 # Set list of themes to load
@@ -103,19 +102,21 @@ source $ZSH/oh-my-zsh.sh
 export http_proxy="http://localhost:1080"
 export https_proxy="http://localhost:1080"
 #export GOROOT=/usr/local/go
-export GOPATH=/home/lihu/go
+export GOPATH=$HOME/go
 export GOBIN=$GOPATH/bin
 export DOCKER_PLUGIN=$HOME/.docker/cli-plugins
-export PATH=$PATH:$DOCKER_PLUGIN:$MYSQL_HOME/bin:$GOBIN:$GOROOT/bin:/home/lihu/.config/yarn/global/node_modules/.bin
+export PATH=$PATH:$DOCKER_PLUGIN:$MYSQL_HOME/bin:$GOBIN:$GOROOT/bin:$HOME/.config/yarn/global/node_modules/.bin
+export PERL5LIB=/home/linuxbrew/.linuxbrew/opt/perl/lib/perl5
 export HOMEBREW_NO_AUTO_UPDATE=true
 export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles"
 export LDFLAGS="-L/usr/local/opt/openssl/lib"
 export CPPFLAGS="-I/usr/local/opt/openssl/include"
 export PATH="/usr/local/opt/openssl/bin:/usr/local/go/bin:$HOME/.deno/bin:$PATH":$HOME/.local/bin
-export ANDROID_NDK_HOME=/home/lihu/Android/Sdk/ndk/22.1.7171670
-export ANDROID_HOME=/home/lihu/Android/Sdk
+export ANDROID_NDK_HOME=$HOME/Android/Sdk/ndk/22.1.7171670
+export ANDROID_HOME=$HOME/Android/Sdk
 export LANG=zh_CN.UTF-8
 export LC_CTYPE=zh_CN.UTF-8
+export ROCKETMQ_HOME=$HOME/Applications/rocketmq-all-5.1.0-bin-release
 
 gitlog() {
   git log --graph --color=always \
@@ -129,7 +130,7 @@ FZF-EOF"
 }
 
 alias emacs='env LC_CTYPE=zh_CN.UTF-8 emacs'
-export NVM_DIR="/home/lihu/.nvm"
+export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 #export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
 #[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
@@ -139,9 +140,33 @@ export NVM_DIR="/home/lihu/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
-export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-export PATH=$JAVA_HOME/bin:$PATH
+export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+export PATH=$HOME/.volta/bin:$JAVA_HOME/bin:$PATH
+alias virsh="sudo virsh"
 
 #alias kubectl="minikube kubectl --"
-alias sel = "kubectl get pods"
+#alias sel = "kubectl get pods"
 [[ $commands[kubectl] ]] && source <(kubectl completion zsh)
+export XMODIFIERS=@im=fcitx
+export GTK_IM_MODULE=fcitx
+export QT_IM_MODULE=fcitx
+
+vmip() {
+  local name="$1"
+  sudo virsh domifaddr "$name" | awk '/ipv4/ {print $4}' | cut -d'/' -f1
+}
+
+vmssh() {
+  local name="$1"
+  local user="${2:-ubuntu}"  # 默认用户名为 ubuntu，可手动指定
+  local ip
+  ip=$(vmip "$name")
+  if [[ -z "$ip" ]]; then
+    echo "❌ 无法获取虚拟机 $name 的 IP 地址" >&2
+    return 1
+  fi
+  echo "🔗 正在连接 $user@$ip ..."
+  ssh "$user@$ip"
+}
+
+alias vmall="sudo virsh list --all"
