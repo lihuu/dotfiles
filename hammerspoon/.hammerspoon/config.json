@@ -4,6 +4,7 @@
       "apps": [
         "com.neovide.neovide",
         "net.kovidgoyal.kitty",
+        "dev.warp.Warp-Stable",
         "dev.zed.Zed",
         "com.microsoft.VSCode",
         "com.jetbrains.intellij"
