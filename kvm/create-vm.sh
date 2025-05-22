@@ -18,10 +18,9 @@ EOF
   # 创建虚拟机
   virt-install \
     --name $name \
-    --ram 2048 \
+    --ram 4096 \
     --vcpus 2 \
-    --os-type linux \
-    --os-variant ubuntu22.04 \
+    --os-variant ubuntu24.04 \
     --disk path=$disk,format=qcow2 \
     --disk path=$seed,device=cdrom \
     --network network=default,model=virtio \

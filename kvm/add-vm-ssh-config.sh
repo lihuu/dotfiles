@@ -7,13 +7,14 @@ port="${3:-22}"
 ip=$(sudo virsh domifaddr "$vmname" | awk '/ipv4/ {print $4}' | cut -d'/' -f1)
 [[ -z "$ip" ]] && echo "❌ 无法获取 $vmname 的 IP 地址" && exit 1
 
-config="$HOME/.ssh/config"
-temp="$(mktemp)"
+echo "Host $vmname"
+echo "HostName $ip"
+echo "User $user"
+echo "Port $port"
 
-user="${1:-ubuntu}"
-port="${2:-22}"
 config="$HOME/.ssh/config"
 temp="$(mktemp)"
+echo "Use tmp file: $temp"
 
 # 函数：更新已有的 Host 配置块（支持最后一项）
 update_host_block() {
@@ -41,11 +42,11 @@ update_host_block() {
         print "  Port " port
       }
     }
-  ' "$config" >"$temp.tmp" && mv "$temp.tmp" "$temp"
+  ' "$config" >"$temp.tmp" && mv "$temp.tmp" "$config"
 }
 
 if grep -q "^\s*Host\s\+$vmname\s*$" "$config" 2>/dev/null; then
-  update_host_block "$vmname" "$user" "$ip" "$port" "$temp" "$temp"
+  update_host_block "$vmname" "$user" "$ip" "$port" "$config" "$temp"
 else
   {
     cat "$config" 2>/dev/null
