@@ -9,5 +9,6 @@ sudo cp ./etcd_server.* /etc/etcd/pki
 sudo cp ./etcd_client.* /etc/etcd/pki
 sudo chown -R etcd /etc/etcd/data
 sudo chown -R etcd /etc/etcd/pki
+sudo chmod +r /etc/etcd/pki/*
 sudo mv /etc/default/etcd /etc/default/etcd.bak
 sudo ln -s /etc/etcd/etcd.conf /etc/default/etcd
