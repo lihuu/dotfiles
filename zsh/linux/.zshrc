@@ -316,3 +316,13 @@ vm_add_ssh_config(){
   echo "✅ SSH 配置已更新：$vmname -> $ip"
 
 }
+
+
+get_hostname_from_ssh_config() {
+  local host="$1"
+  awk -v host="$host" '
+    $1 == "Host" && $2 == host { in_block = 1; next }
+    in_block && $1 == "HostName" { print $2; exit }
+    in_block && $1 == "Host" { in_block = 0 }
+  ' ~/.ssh/config
+}

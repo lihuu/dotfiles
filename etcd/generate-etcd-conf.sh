@@ -1,8 +1,17 @@
 #!/bin/bash
 # 文件保存为generate-etcd-conf.sh
+#
+get_hostname_from_ssh_config() {
+  local host="$1"
+  awk -v host="$host" '
+    $1 == "Host" && $2 == host { in_block = 1; next }
+    in_block && $1 == "HostName" { print $2; exit }
+    in_block && $1 == "Host" { in_block = 0 }
+  ' ~/.ssh/config
+}
 generate() {
   local name="$1"
-  local ip=$(sudo virsh domifaddr "$name" | awk '/ipv4/ {print $4}' | cut -d'/' -f1)
+  local ip=$(get_hostname_from_ssh_config $name)
   cat >"$name/etcd.conf" <<EOF
 ETCD_NAME=$name
 ETCD_DATA_DIR=/etc/etcd/data
@@ -35,7 +44,7 @@ etcdEnddpoints=""
 for item in "${items[@]}"; do
   mkdir -p $item
   generate $item
-  ip=$(sudo virsh domifaddr "$item" | awk '/ipv4/ {print $4}' | cut -d'/' -f1)
+  ip=$(get_hostname_from_ssh_config $item)
   if [ -z "$etcdCluesters" ]; then
     etcdCluesters="$item=https://$ip:2380"
     etcdEnddpoints="https://$ip:2379"
