@@ -3,6 +3,7 @@
 # 示例用法: ./add-dhcp-reservation.sh my-vm
 
 VM_NAME="$1"
+STATIC_IP="$2"
 NETWORK_NAME="default"
 
 if [[ -z "$VM_NAME" ]]; then
@@ -12,7 +13,9 @@ fi
 
 # 获取虚拟机的 MAC 地址
 MAC=$(sudo virsh domiflist "$VM_NAME" | awk '/network/ {print $5}')
-STATIC_IP=$(sudo virsh domifaddr "$VM_NAME" | awk '/ipv4/ {print $4}' | cut -d'/' -f1)
+if [ -z "$STATIC_IP" ]; then
+  STATIC_IP=$(sudo virsh domifaddr "$VM_NAME" | awk '/ipv4/ {print $4}' | cut -d'/' -f1)
+fi
 
 if [[ -z "$MAC" ]]; then
   echo "未能获取虚拟机 $VM_NAME 的 MAC 地址"
