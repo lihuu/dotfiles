@@ -12,6 +12,7 @@ export ZSH=$HOME/.oh-my-zsh
 ZSH_THEME="ys"
 
 
+
 # Set list of themes to load
 # Setting this variable when ZSH_THEME=random
 # cause zsh load theme from this variable instead of
@@ -326,3 +327,9 @@ get_hostname_from_ssh_config() {
     in_block && $1 == "Host" { in_block = 0 }
   ' ~/.ssh/config
 }
+
+
+
+if [ -f "$HOME/.zshrc.private" ];then
+  source $HOME/.zshrc.private
+fi
