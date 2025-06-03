@@ -202,3 +202,8 @@ export PATH="$HOME/.volta/bin:$PATH:$HOME/.local/bin"
 eval "$(fzf --zsh)"
 
 export VOLTA_FEATURE_PNPM=1
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:$HOME/.lmstudio/bin"
+# End of LM Studio CLI section
+
