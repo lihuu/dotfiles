@@ -128,8 +128,8 @@ export EMACS_HOME=/Applications/Emacs.app/Contents/MacOS
 #export JAVA_HOME=/Library/Java/JavaVirtualMachines/graalvm-17.jdk/Contents/Home
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/graalvm-21.jdk/Contents/Home
 
-export http_proxy="127.0.0.1:1080"
-export https_proxy="127.0.0.1:1080"
+#export http_proxy="127.0.0.1:1080"
+#export https_proxy="127.0.0.1:1080"
 export no_proxy="127.0.0.1,localhost,*.marketup.local"
 #export http_proxy="http://127.0.0.1:7890"
 #export https_proxy="http://127.0.0.1:7890"
@@ -207,3 +207,4 @@ export VOLTA_FEATURE_PNPM=1
 export PATH="$PATH:$HOME/.lmstudio/bin"
 # End of LM Studio CLI section
 
+export GOROOT_BOOTSTRAP=/opt/homebrew/Cellar/go/1.24.4/libexec
