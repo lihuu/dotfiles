@@ -147,7 +147,6 @@ local function appNameFromBundleId(bundleId)
 	end
 
 	-- 使用 mdfind 查找应用路径
-	-- TODO 这里有问题，如果 Spotlight 索引还没有完成，会找不到，这个在系统重启的时候会发生，会导致无法实现自动切换输入法	，考虑直接在文件中缓存吧
 	local findCmd = string.format("mdfind \"kMDItemCFBundleIdentifier == '%s'\"", bundleId)
 	local result = hs.execute(findCmd)
 	local appPath = result and result:match("([^\n]+)")
