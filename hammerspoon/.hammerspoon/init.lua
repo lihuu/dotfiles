@@ -147,6 +147,7 @@ local function appNameFromBundleId(bundleId)
 	end
 
 	-- 使用 mdfind 查找应用路径
+	-- TODO 这里有问题，如果 Spotlight 索引还没有完成，会找不到，这个在系统重启的时候会发生，会导致无法实现自动切换输入法	，考虑直接在文件中缓存吧
 	local findCmd = string.format("mdfind \"kMDItemCFBundleIdentifier == '%s'\"", bundleId)
 	local result = hs.execute(findCmd)
 	local appPath = result and result:match("([^\n]+)")
@@ -175,17 +176,39 @@ local function bundleIdToAppName(bundleId)
 	return appName
 end
 
+local bundleIdToNameCache = initConfig.bundleIdToNameCache or {}
+
 -- process config and custom filter
 print("Start to process config")
+local configChanged = false
 for _, value in ipairs(initConfig.inputMethod) do
 	local inputMethod =
 		{ shouldSwitchBack = value.shouldSwitchBack, inputMethod = { layout = value.layout, method = value.method } }
 	for _, app in ipairs(value.apps) do
 		inputMethodConfig[app] = inputMethod
-		local appName = bundleIdToAppName(app)
+		local appName = bundleIdToNameCache[app]
+		if appName == nil then
+			appName = bundleIdToAppName(app)
+			bundleIdToNameCache[app] = appName
+			configChanged = true
+		end
 		if appName then
 			windowFilter:setAppFilter(appName, true) -- 允许所有标题
 		end
+	end
+end
+
+if configChanged then
+	-- 如果有修改，保存到文件中
+	local newConfig = { inputMethod = inputMethodConfig, bundleIdToNameCache = bundleIdToNameCache }
+	local filePath = hs.configdir .. "/config.json"
+	local file = io.open(filePath, "w")
+	if file then
+		file:write(hs.json.encode(newConfig))
+		file:close()
+		print("Config saved to " .. filePath)
+	else
+		print("Failed to save config to " .. filePath)
 	end
 end
 

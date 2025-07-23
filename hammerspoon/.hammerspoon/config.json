@@ -1,49 +1,83 @@
 {
-  "inputMethod": [
-    {
-      "apps": [
-        "com.neovide.neovide",
-        "net.kovidgoyal.kitty",
-        "dev.warp.Warp-Stable",
-        "dev.zed.Zed",
-        "com.microsoft.VSCode",
-        "com.jetbrains.intellij"
-      ],
-      "layout": "ABC",
-      "shouldSwitchBack": false
+  "bundleIdToNameCache": {
+    "md.obsidian": "Obsidian",
+    "com.neovide.neovide": "Neovide",
+    "dev.warp.Warp-Stable": "Warp",
+    "dev.zed.Zed": "Zed",
+    "com.jetbrains.intellij": "IntelliJ IDEA Ultimate",
+    "com.openai.chat": "ChatGPT",
+    "abnerworks.Typora": "Typora",
+    "com.yinxiang.Mac": "印象笔记",
+    "com.microsoft.VSCode": "Visual Studio Code",
+    "com.bot.pc.doubao": "Doubao",
+    "com.tencent.xinWeChat": "WeChat",
+    "ai.elementlabs.lmstudio": "LM Studio",
+    "net.kovidgoyal.kitty": "kitty"
+  },
+  "inputMethod": {
+    "md.obsidian": {
+      "shouldSwitchBack": true,
+      "inputMethod": {
+        "method": "Pinyin - Simplified",
+        "layout": "Pinyin - Simplified"
+      }
     },
-    {
-      "apps": [],
-      "layout": "ABC",
-      "method": "Squirrel - Simplified",
-      "shouldSwitchBack": true
+    "com.neovide.neovide": {
+      "shouldSwitchBack": false,
+      "inputMethod": { "layout": "ABC" }
     },
-    {
-      "apps": [
-        "com.openai.chat",
-        "ai.elementlabs.lmstudio",
-        "md.obsidian",
-        "abnerworks.Typora"
-      ],
-      "layout": "Pinyin - Simplified",
-      "method": "Pinyin - Simplified",
-      "shouldSwitchBack": true
+    "dev.warp.Warp-Stable": {
+      "shouldSwitchBack": false,
+      "inputMethod": { "layout": "ABC" }
     },
-    {
-      "apps": [],
-      "layout": "U.S.",
-      "method": "搜狗拼音",
-      "shouldSwitchBack": true
+    "dev.zed.Zed": {
+      "shouldSwitchBack": false,
+      "inputMethod": { "layout": "ABC" }
     },
-    {
-      "apps": [
-        "com.bot.pc.doubao",
-        "com.tencent.xinWeChat",
-        "com.yinxiang.Mac"
-      ],
-      "layout": "U.S.",
-      "method": "微信输入法",
-      "shouldSwitchBack": true
+    "com.jetbrains.intellij": {
+      "shouldSwitchBack": false,
+      "inputMethod": { "layout": "ABC" }
+    },
+    "com.openai.chat": {
+      "shouldSwitchBack": true,
+      "inputMethod": {
+        "method": "Pinyin - Simplified",
+        "layout": "Pinyin - Simplified"
+      }
+    },
+    "abnerworks.Typora": {
+      "shouldSwitchBack": true,
+      "inputMethod": {
+        "method": "Pinyin - Simplified",
+        "layout": "Pinyin - Simplified"
+      }
+    },
+    "com.yinxiang.Mac": {
+      "shouldSwitchBack": true,
+      "inputMethod": { "method": "微信输入法", "layout": "U.S." }
+    },
+    "com.microsoft.VSCode": {
+      "shouldSwitchBack": false,
+      "inputMethod": { "layout": "ABC" }
+    },
+    "com.bot.pc.doubao": {
+      "shouldSwitchBack": true,
+      "inputMethod": { "method": "微信输入法", "layout": "U.S." }
+    },
+    "com.tencent.xinWeChat": {
+      "shouldSwitchBack": true,
+      "inputMethod": { "method": "微信输入法", "layout": "U.S." }
+    },
+    "ai.elementlabs.lmstudio": {
+      "shouldSwitchBack": true,
+      "inputMethod": {
+        "method": "Pinyin - Simplified",
+        "layout": "Pinyin - Simplified"
+      }
+    },
+    "net.kovidgoyal.kitty": {
+      "shouldSwitchBack": false,
+      "inputMethod": { "layout": "ABC" }
     }
-  ]
+  }
 }
