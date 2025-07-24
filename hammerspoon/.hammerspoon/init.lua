@@ -205,7 +205,7 @@ if configChanged then
 	local filePath = hs.configdir .. "/config.json"
 	local file = io.open(filePath, "w")
 	if file then
-		file:write(hs.json.encode(newConfig))
+		file:write(hs.json.encode(newConfig, true))
 		file:close()
 		print("Config saved to " .. filePath)
 	else
