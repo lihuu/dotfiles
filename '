@@ -1,0 +1,41 @@
+local obj = {}
+
+--
+local function move_window_y(size)
+	local win = hs.window.focusedWindow()
+	local frame = win:frame()
+	frame.y = frame.y + size
+	win:setFrame(frame)
+end
+
+local function move_window_x(size)
+	local win = hs.window.focusedWindow()
+	local frame = win:frame()
+	frame.x = frame.x + size
+	win:setFrame(frame)
+end
+
+local function left_move_window()
+	move_window_x(-40)
+end
+
+local function right_move_window()
+	move_window_x(40)
+end
+
+local function up_move_window()
+	move_window_y(-40)
+end
+
+local function down_move_window()
+	move_window_y(40)
+end
+
+function obj:init(mods)
+	hs.hotkey.bind(mods, "H", left_move_window, nil, left_move_window)
+	hs.hotkey.bind(mods, "L", right_move_window, nil, right_move_window)
+	hs.hotkey.bind(mods, "K", up_move_window, nil, up_move_window)
+	hs.hotkey.bind(mods, "J", down_move_window, nil, down_move_window)
+end
+
+return obj
