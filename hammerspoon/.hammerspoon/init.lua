@@ -179,6 +179,7 @@ local bundleIdToNameCache = initConfig.bundleIdToNameCache or {}
 
 -- process config and custom filter
 print("Start to process config")
+print("InputMethod Config: ", hs.inspect(initConfig.inputMethod))
 local configChanged = false
 for _, value in ipairs(initConfig.inputMethod) do
 	local inputMethod =
@@ -186,6 +187,7 @@ for _, value in ipairs(initConfig.inputMethod) do
 	for _, app in ipairs(value.apps) do
 		inputMethodConfig[app] = inputMethod
 		local appName = bundleIdToNameCache[app]
+		print(appName)
 		if appName == nil then
 			appName = bundleIdToAppName(app)
 			bundleIdToNameCache[app] = appName
@@ -199,7 +201,7 @@ end
 
 if configChanged then
 	-- 如果有修改，保存到文件中
-	local newConfig = { inputMethod = inputMethodConfig, bundleIdToNameCache = bundleIdToNameCache }
+	local newConfig = { inputMethod = initConfig.inputMethod, bundleIdToNameCache = bundleIdToNameCache }
 	local filePath = hs.configdir .. "/config.json"
 	local file = io.open(filePath, "w")
 	if file then
