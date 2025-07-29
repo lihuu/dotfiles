@@ -57,7 +57,6 @@ end
 
 function obj:init()
 	-- Initialize the spoon
-	print("AutoIme Spoon initialized")
 
 	local configPath = hs.configdir .. "/config.json"
 
@@ -71,8 +70,6 @@ function obj:init()
 	local bundleIdToNameCache = initConfig.bundleIdToNameCache or {}
 
 	-- process config and custom filter
-	print("Start to process config")
-	print("InputMethod Config: ", hs.inspect(initConfig.inputMethod))
 	local configChanged = false
 	for _, value in ipairs(initConfig.inputMethod) do
 		local inputMethod = {
