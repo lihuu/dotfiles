@@ -1,3 +1,5 @@
+--- spoon ShortCuts
+--- Some shortcuts for window management and mouse control in Hammerspoon
 local obj = {}
 
 --
@@ -98,7 +100,9 @@ local function copy_bundle_id()
 	end
 end
 
--- init bind default hotkeys, using custom mods
+--- init bind default hotkeys, using custom mods
+--- Parameters:
+--- mods: table of modifier keys, default is { "ctrl", "alt", "cmd" }
 function obj:init(mods)
 	if mods == nil then
 		mods = { "ctrl", "alt", "cmd" } -- default modifier keys
@@ -116,7 +120,12 @@ function obj:init(mods)
 	hs.hotkey.bind(mods, "B", copy_bundle_id)
 end
 
--- bind custon hotkeys
+--- bind custon hotkeys
+------ Parameters:
+--- mods: table of modifier keys, e.g. { "ctrl", "alt" }
+--- key: string, the key to bind
+--- func: function, the function to call when the key is pressed
+--- repeatable: boolean, if true, the function will be called repeatedly while the key is held down
 function obj:bindHotKeys(mods, key, func, repeatable)
 	if repeatable then
 		hs.hotkey.bind(mods, key, func, nil, func)
