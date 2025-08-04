@@ -1,4 +1,12 @@
-local obj = {}
+local obj = {
+	debug = false,
+}
+
+local function print_log(message)
+	if obj.debug then
+		print(message)
+	end
+end
 
 --- 将 bundleId 转为 appName（使用 Spotlight）
 --- 如果找不到则返回 nil
@@ -46,17 +54,24 @@ local changeInputMethod = function(config)
 	local method = config.method
 	local currentLayout = hs.keycodes.currentLayout()
 	local currentMethod = hs.keycodes.currentMethod()
+	print_log("target input method: " .. layout .. ", " .. (method or "nil"))
+	print_log("Current layout: " .. currentLayout .. ", method: " .. (currentMethod or "nil"))
 	if currentLayout == layout and (currentMethod == method) then
+		print_log("Same input method, no need to change")
 		return
 	end
 	hs.keycodes.setLayout(layout)
 	if method ~= nil then
 		hs.keycodes.setMethod(method)
 	end
+	print_log(
+		"Input method changed to: " .. hs.keycodes.currentLayout() .. ", " .. (hs.keycodes.currentMethod() or "nil")
+	)
 end
 
-function obj:init()
+function obj:init(debug)
 	-- Initialize the spoon
+	obj.debug = debug or false
 
 	local configPath = hs.configdir .. "/config.json"
 
@@ -98,9 +113,9 @@ function obj:init()
 		if file then
 			file:write(hs.json.encode(newConfig, true))
 			file:close()
-			print("Config saved to " .. configPath)
+			print_log("Config saved to " .. configPath)
 		else
-			print("Failed to save config to " .. configPath)
+			print_log("Failed to save config to " .. configPath)
 		end
 	end
 

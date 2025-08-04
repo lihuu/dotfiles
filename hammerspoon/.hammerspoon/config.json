@@ -1,22 +1,22 @@
 {
-  "bundleIdToNameCache" : {
-    "md.obsidian" : "Obsidian",
-    "com.jetbrains.intellij" : "IntelliJ IDEA Ultimate",
-    "dev.warp.Warp-Stable" : "Warp",
-    "dev.zed.Zed" : "Zed",
-    "com.neovide.neovide" : "Neovide",
-    "com.openai.chat" : "ChatGPT",
-    "com.yinxiang.Mac" : "印象笔记",
-    "abnerworks.Typora" : "Typora",
-    "com.microsoft.VSCode" : "Visual Studio Code",
-    "com.bot.pc.doubao" : "Doubao",
-    "com.tencent.xinWeChat" : "WeChat",
-    "ai.elementlabs.lmstudio" : "LM Studio",
-    "net.kovidgoyal.kitty" : "kitty"
+  "bundleIdToNameCache": {
+    "md.obsidian": "Obsidian",
+    "com.jetbrains.intellij": "IntelliJ IDEA Ultimate",
+    "dev.warp.Warp-Stable": "Warp",
+    "dev.zed.Zed": "Zed",
+    "com.neovide.neovide": "Neovide",
+    "com.openai.chat": "ChatGPT",
+    "com.yinxiang.Mac": "印象笔记",
+    "abnerworks.Typora": "Typora",
+    "com.microsoft.VSCode": "Visual Studio Code",
+    "com.bot.pc.doubao": "Doubao",
+    "com.tencent.xinWeChat": "WeChat",
+    "ai.elementlabs.lmstudio": "LM Studio",
+    "net.kovidgoyal.kitty": "kitty"
   },
-  "inputMethod" : [
+  "inputMethod": [
     {
-      "apps" : [
+      "apps": [
         "com.neovide.neovide",
         "net.kovidgoyal.kitty",
         "dev.warp.Warp-Stable",
@@ -24,45 +24,40 @@
         "com.microsoft.VSCode",
         "com.jetbrains.intellij"
       ],
-      "layout" : "ABC",
-      "shouldSwitchBack" : false
+      "layout": "ABC",
+      "shouldSwitchBack": false
     },
     {
-      "apps" : [
-
-      ],
-      "shouldSwitchBack" : true,
-      "method" : "Squirrel - Simplified",
-      "layout" : "ABC"
+      "apps": [],
+      "shouldSwitchBack": true,
+      "method": "Squirrel - Simplified",
+      "layout": "ABC"
     },
     {
-      "apps" : [
+      "apps": [
+        "com.tencent.xinWeChat",
         "com.openai.chat",
         "ai.elementlabs.lmstudio",
         "md.obsidian",
-        "abnerworks.Typora"
-      ],
-      "shouldSwitchBack" : true,
-      "method" : "Pinyin - Simplified",
-      "layout" : "Pinyin - Simplified"
-    },
-    {
-      "apps" : [
-
-      ],
-      "shouldSwitchBack" : true,
-      "method" : "搜狗拼音",
-      "layout" : "U.S."
-    },
-    {
-      "apps" : [
+        "abnerworks.Typora",
         "com.bot.pc.doubao",
-        "com.tencent.xinWeChat",
         "com.yinxiang.Mac"
       ],
-      "shouldSwitchBack" : true,
-      "method" : "微信输入法",
-      "layout" : "U.S."
+      "shouldSwitchBack": true,
+      "method": "Pinyin – Simplified",
+      "layout": "Pinyin – Simplified"
+    },
+    {
+      "apps": [],
+      "shouldSwitchBack": true,
+      "method": "搜狗拼音",
+      "layout": "U.S."
+    },
+    {
+      "apps": [],
+      "shouldSwitchBack": true,
+      "method": "微信输入法",
+      "layout": "U.S."
     }
   ]
 }
