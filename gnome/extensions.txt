@@ -1,0 +1,10 @@
+ding@rastersoft.com
+tiling-assistant@ubuntu.com
+ubuntu-appindicators@ubuntu.com
+ubuntu-dock@ubuntu.com
+dash2dock-lite@icedman.github.com
+blur-my-shell@aunetx
+runcat@kolesnikov.se
+Vitals@CoreCoding.com
+Bluetooth-Battery-Meter@maniacx.github.com
+rclone-manager@germanztz.com
