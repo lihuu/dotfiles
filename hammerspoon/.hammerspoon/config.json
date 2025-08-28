@@ -36,12 +36,12 @@
     {
       "apps": [
         "com.tencent.xinWeChat",
-        "com.openai.chat",
         "ai.elementlabs.lmstudio",
         "md.obsidian",
-        "abnerworks.Typora",
         "com.bot.pc.doubao",
-        "com.yinxiang.Mac"
+        "com.yinxiang.Mac",
+        "com.openai.chat",
+        "abnerworks.Typora"
       ],
       "shouldSwitchBack": true,
       "method": "Pinyin – Simplified",

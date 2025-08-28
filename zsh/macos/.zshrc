@@ -208,3 +208,5 @@ export PATH="$PATH:$HOME/.lmstudio/bin"
 # End of LM Studio CLI section
 
 export GOROOT_BOOTSTRAP=/opt/homebrew/Cellar/go/1.24.4/libexec
+
+export PATH="$PATH:$HOME/Documents/scripts"
