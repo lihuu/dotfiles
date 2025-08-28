@@ -4,7 +4,6 @@ local mods = { "cmd", "alt", "ctrl" }
 -- hhkb的键位比较特殊，使用上面的那个mods按起来不爽
 local hhkbMods = { "cmd", "alt", "shift" }
 
-
 local spoonInstall = hs.loadSpoon("SpoonInstall", true)
 if spoonInstall ~= nil then
 	spoonInstall:andUse("ModalMgr")
