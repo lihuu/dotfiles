@@ -14,6 +14,11 @@ if spoonInstall ~= nil then
 	-- 在屏幕上显示时间
 	hs.hotkey.bind(mods, "T", function()
 		spoon.AClock:toggleShow()
+		-- get current time as 2025-08-29T20:54:52+08:00
+		local currentTime = os.date("%Y-%m-%d %H:%M:%S")
+		-- hs.alert.show("Current time: " .. currentTime)
+		-- add to clipboard
+		hs.pasteboard.setContents(currentTime)
 	end)
 end
 hs.loadSpoon("Shortcuts", true)
