@@ -9,7 +9,8 @@ if spoonInstall ~= nil then
 	spoonInstall:andUse("ModalMgr")
 	spoonInstall:andUse("AClock")
 	spoonInstall:andUse("CountDown")
-	spoonInstall:andUse("BingDaily")
+    -- Disable BingDaily for now, it seems does not work well.
+	--spoonInstall:andUse("BingDaily")
 
 	-- 在屏幕上显示时间
 	hs.hotkey.bind(mods, "T", function()
