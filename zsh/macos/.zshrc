@@ -126,7 +126,7 @@ export EMACS_HOME=/Applications/Emacs.app/Contents/MacOS
 #export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-17.0.3.1.jdk/Contents/Home
 
 #export JAVA_HOME=/Library/Java/JavaVirtualMachines/graalvm-17.jdk/Contents/Home
-export JAVA_HOME=/Users/lihu/Library/Java/JavaVirtualMachines/openjdk-25/Contents/Home
+export JAVA_HOME=$HOME/Library/Java/JavaVirtualMachines/openjdk-25/Contents/Home
 
 #export http_proxy="127.0.0.1:1080"
 #export https_proxy="127.0.0.1:1080"
@@ -212,6 +212,6 @@ export GOROOT_BOOTSTRAP=/opt/homebrew/Cellar/go/1.24.4/libexec
 export PATH="$PATH:$HOME/Documents/scripts"
 
 # Added by LM Studio CLI (lms)
-export PATH="$PATH:/Users/lihu/.lmstudio/bin"
+export PATH="$PATH:$HOME/.lmstudio/bin"
 # End of LM Studio CLI section
 
