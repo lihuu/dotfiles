@@ -63,7 +63,7 @@ ZSH_THEME="af-magic"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-  git branch fzf gh kubectl spring docker docker-compose brew
+  git branch fzf gh kubectl spring docker docker-compose brew zsh-github-copilot
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -213,5 +213,10 @@ export PATH="$PATH:$HOME/Documents/scripts"
 
 # Added by LM Studio CLI (lms)
 export PATH="$PATH:$HOME/.lmstudio/bin"
+# End of LM Studio CLI section
+
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/lihu/.lmstudio/bin"
 # End of LM Studio CLI section
 
