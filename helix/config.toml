@@ -1,0 +1,34 @@
+theme = "onedark"
+
+[editor]
+mouse =false
+line-number = "absolute"
+cursorline = true
+cursorcolumn = false
+bufferline="multiple"
+#bufferline="always"
+color-modes=true
+auto-completion = true
+path-completion = true
+auto-format = true
+
+[editor.cursor-shape]
+insert="bar"
+normal="block"
+select="underline"
+
+[editor.statusline]
+mode.normal="NORMAL"
+mode.insert="INSERT"
+mode.select="SELECT"
+
+[keys.insert]
+up = "no_op"
+down = "no_op"
+left = "no_op"
+right = "no_op"
+pageup = "no_op"
+pagedown = "no_op"
+home = "no_op"
+end = "no_op"
+
