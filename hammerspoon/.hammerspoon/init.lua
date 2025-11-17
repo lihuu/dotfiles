@@ -9,7 +9,7 @@ if spoonInstall ~= nil then
 	spoonInstall:andUse("ModalMgr")
 	spoonInstall:andUse("AClock")
 	spoonInstall:andUse("CountDown")
-    -- Disable BingDaily for now, it seems does not work well.
+	-- Disable BingDaily for now, it seems does not work well.
 	--spoonInstall:andUse("BingDaily")
 
 	-- 在屏幕上显示时间
@@ -26,4 +26,11 @@ hs.loadSpoon("Shortcuts", true)
 hs.loadSpoon("AutoIme", true)
 spoon.Shortcuts:init(mods)
 spoon.Shortcuts:init(hhkbMods)
-spoon.AutoIme:init()
+spoon.AutoIme:init(false)
+spoon.AutoIme:start()
+
+hs.shutdownCallback = function()
+	if spoon.AutoIme ~= nil then
+		spoon.AutoIme:stop()
+	end
+end

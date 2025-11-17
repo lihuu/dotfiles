@@ -2,9 +2,26 @@ local obj = {
 	debug = false,
 }
 
+obj.__index = obj
+
+obj.name = "AutoIme"
+obj.version = "1.0"
+
+local function now()
+	return hs.timer.secondsSinceEpoch()
+end
+
+local function startWith(str, prefix)
+	return str:sub(1, #prefix) == prefix
+end
+
 local function print_log(message)
 	if obj.debug then
-		print(message)
+		if startWith(message, "--") then
+			print(message)
+		else
+			print("   " .. message)
+		end
 	end
 end
 
@@ -69,23 +86,27 @@ local changeInputMethod = function(config)
 	)
 end
 
+local changeInputMethodDelayed = function(config, delay)
+	delay = delay or 0.05
+	hs.timer.doAfter(delay, function()
+		changeInputMethod(config)
+	end)
+end
+
 function obj:init(debug)
 	-- Initialize the spoon
-	obj.debug = debug or false
-
-	local configPath = hs.configdir .. "/config.json"
-
-	local initConfig = hs.json.read(configPath)
-
-	local inputMethodConfig = {}
+	self.debug = debug or false
 
 	local windowFilter = hs.window.filter.new(false)
+	local configPath = hs.configdir .. "/config.json"
+	local initConfig = hs.json.read(configPath)
 
 	-- 这相当于做了一个缓存，这样就不需要每次都去查找应用名称，并且查询应用的名称使用了，spotlight索引了，可能出现索引没有构建完成，而导致应用名称查找失败的问题
-	local bundleIdToNameCache = initConfig.bundleIdToNameCache or {}
 
 	-- process config and custom filter
 	local configChanged = false
+	local inputMethodConfig = {}
+	local bundleIdToNameCache = initConfig.bundleIdToNameCache or {}
 	for _, value in ipairs(initConfig.inputMethod) do
 		local inputMethod = {
 			shouldSwitchBack = value.shouldSwitchBack,
@@ -119,12 +140,21 @@ function obj:init(debug)
 		end
 	end
 
+	self.inputMethodConfig = inputMethodConfig
+	self._subscribed = false
+	self.wf = windowFilter
+	self.wf:setCurrentSpace(true)
+	print_log("AutoIme initialized")
+end
+
+function obj:start()
+	if self._subscribed then
+		return self
+	end
+	local windowFilter = self.wf
+	windowFilter:unsubscribeAll()
+	local inputMethodConfig = self.inputMethodConfig or {}
 	local inputMethodBeforeSwitch = {}
-
-	print("Finish processing config")
-	-- 根据窗口自动切换输入法
-
-	print("Start to add subscribe")
 
 	windowFilter:subscribe(hs.window.filter.windowFocused, function(win)
 		local appName = getAppBundleId(win)
@@ -132,16 +162,15 @@ function obj:init(debug)
 		if config == nil then
 			return
 		end
+		print_log("----Current App: " .. appName .. "message START----")
 		if config.shouldSwitchBack then
 			inputMethodBeforeSwitch[appName] =
 				{ layout = hs.keycodes.currentLayout(), method = hs.keycodes.currentMethod() }
 		end
-		changeInputMethod(config.inputMethod)
+		changeInputMethodDelayed(config.inputMethod)
+		print_log("----Current App: " .. appName .. "message END----")
 	end)
 
-	print("Finish adding subscribe")
-
-	-- 开启自动切换输入法之后，要不要切换回去
 	windowFilter:subscribe(hs.window.filter.windowUnfocused, function(win)
 		local bundleId = getAppBundleId(win)
 		local config = inputMethodConfig[bundleId]
@@ -153,29 +182,23 @@ function obj:init(debug)
 			if oldInputMethod == nil then
 				return
 			end
-			changeInputMethod(oldInputMethod)
+			print_log("----Switch Back App: " .. bundleId .. "message START----")
+			changeInputMethodDelayed(oldInputMethod)
+			print_log("----Switch Back App: " .. bundleId .. "message END----")
 		end
 	end)
 
-	local mods = { "cmd", "alt", "ctrl" }
-	local lastVimInputMethod = nil
-	hs.hotkey.bind(mods, "A", function()
-		-- change to abc layout
-		local currentLayout = hs.keycodes.currentLayout()
-		local currentMethod = hs.keycodes.currentMethod()
-		if currentLayout == "Pinyin - Simplified" then
-			lastVimInputMethod = { layout = currentLayout, method = currentMethod }
-		else
-			lastVimInputMethod = nil
-		end
-		changeInputMethod({ layout = "ABC", method = nil })
-	end)
+	self._subscribed = true
+end
 
-	hs.hotkey.bind(mods, "S", function()
-		if lastVimInputMethod ~= nil then
-			changeInputMethod({ layout = "Pinyin - Simplified", method = "Pinyin - Simplified" })
-		end
-	end)
+function obj:stop()
+	if not self._subscribed then
+		return self
+	end
+
+	self.wf:unsubscribeAll()
+	self._subscribed = false
+	return self
 end
 
 return obj
