@@ -222,3 +222,6 @@ export PATH="$PATH:$HOME/.lmstudio/bin"
 export PATH="$PATH:/Users/lihu/.lmstudio/bin"
 # End of LM Studio CLI section
 
+
+# Added by Antigravity
+export PATH="/Users/lihu/.antigravity/antigravity/bin:$PATH"
