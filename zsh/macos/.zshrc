@@ -113,8 +113,8 @@ alias gbr="git branch"
 alias clear_docker_image="docker image prune -a"
 alias apt=brew
 alias mcp-get="npx @michaellatman/mcp-get"
-alias grep=rg
-alias cat=bat
+#alias grep=rg
+#alias cat=bat
 #alias python=/opt/homebrew/bin/python3
 #alias pip=/opt/homebrew/bin/pip3
 #alias code="/Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code"
@@ -280,3 +280,11 @@ function mvm() {
     echo "正在移动 '$file' -> '$target_dir' ..."
     mv "$file" "$target_dir/" && echo "✅ 完成！"
 }
+
+export PATH="$PATH:$HOME/.lmstudio/bin:$HOME/Library/Android/sdk/platform-tools"
+
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:$HOME/.lmstudio/bin"
+# End of LM Studio CLI section
+
