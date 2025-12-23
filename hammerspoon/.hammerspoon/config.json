@@ -12,7 +12,8 @@
     "com.bot.pc.doubao": "Doubao",
     "com.tencent.xinWeChat": "WeChat",
     "ai.elementlabs.lmstudio": "LM Studio",
-    "net.kovidgoyal.kitty": "kitty"
+    "net.kovidgoyal.kitty": "kitty",
+    "com.tw93.MiaoYan": "MiaoYan"
   },
   "inputMethod": [
     {
@@ -35,7 +36,8 @@
         "com.yinxiang.Mac",
         "abnerworks.Typora",
         "com.openai.chat",
-        "ai.elementlabs.lmstudio"
+        "ai.elementlabs.lmstudio",
+        "com.tw93.MiaoYan"
       ],
       "shouldSwitchBack": true,
       "method": "Squirrel - Simplified",
@@ -51,12 +53,6 @@
       "apps": [],
       "shouldSwitchBack": true,
       "method": "搜狗拼音",
-      "layout": "U.S."
-    },
-    {
-      "apps": [],
-      "shouldSwitchBack": true,
-      "method": "微信输入法",
       "layout": "U.S."
     }
   ]
