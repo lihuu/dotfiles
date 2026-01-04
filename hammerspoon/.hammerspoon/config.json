@@ -29,22 +29,27 @@
       "shouldSwitchBack": false
     },
     {
-      "apps": [],
-      "shouldSwitchBack": true,
-      "method": "Squirrel - Simplified",
-      "layout": "ABC"
-    },
-    {
       "apps": [
         "com.tw93.MiaoYan",
         "com.tencent.xinWeChat",
         "md.obsidian",
         "com.bot.pc.doubao",
-        "com.yinxiang.Mac",
         "abnerworks.Typora",
         "com.openai.chat",
         "ai.elementlabs.lmstudio"
       ],
+      "shouldSwitchBack": true,
+      "method": "Squirrel - Simplified",
+      "layout": "ABC"
+    },
+    {
+      "apps": ["com.yinxiang.Mac"],
+      "shouldSwitchBack": true,
+      "method": "Shuangpin – Simplified",
+      "layout": "Shuangpin – Simplified"
+    },
+    {
+      "apps": [],
       "shouldSwitchBack": true,
       "method": "Pinyin – Simplified",
       "layout": "Pinyin – Simplified"
