@@ -14,6 +14,8 @@ docker volume create kafka3_data
 
 # 创建网络（保证容器间能通过名字通信）
 docker network create kafka-net || true
+# 通用镜像
+KAFKA_IMAGE="apache/kafka:3.7.0"
 
 # 启动 kafka-1
 docker run -d --name kafka-1 \
