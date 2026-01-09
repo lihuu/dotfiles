@@ -19,3 +19,9 @@ brew install font-jetbrains-mono-nerd-font --cask
 
 brew tap daipeihust/tap
 brew install im-select
+brew install rsync
+brew install rclone
+brew install markdown-toc
+brew install markdownlint-cli2
+brew install prettier
+brew install sqlfluff
