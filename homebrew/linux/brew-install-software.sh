@@ -25,3 +25,4 @@ brew install markdown-toc
 brew install markdownlint-cli2
 brew install prettier
 brew install sqlfluff
+brew install anomalyco/tap/opencode
