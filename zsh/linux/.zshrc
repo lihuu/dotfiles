@@ -100,8 +100,8 @@ source $ZSH/oh-my-zsh.sh
 
 
 #export http_proxy="http://192.168.2.33:7891"
-export http_proxy="http://localhost:10808"
-export https_proxy="http://localhost:10808"
+export http_proxy="http://127.0.0.1:10808"
+export https_proxy="http://127.0.0.1:10808"
 #export GOROOT=/usr/local/go
 export GOPATH=$HOME/go
 export GOBIN=$GOPATH/bin
