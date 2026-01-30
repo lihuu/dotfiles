@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/zsh
 
 # Check if Homebrew is installed
 if ! command -v brew &> /dev/null; then
@@ -63,7 +63,7 @@ install_packages() {
 }
 
 # Get the absolute path of the script directory
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 # Read package lists from files
 FORMULAE=()
