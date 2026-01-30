@@ -54,7 +54,7 @@ swiftlint
 texinfo
 thefuck
 thrift
-trojan-go
+#trojan-go
 tw93/tap/mole
 vapor
 volta
