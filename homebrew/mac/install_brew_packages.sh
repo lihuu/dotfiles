@@ -12,6 +12,21 @@ fi
 echo "Updating Homebrew..."
 brew update
 
+# Get all installed packages once at the beginning
+echo "Checking installed packages..."
+declare -A INSTALLED_FORMULAE
+declare -A INSTALLED_CASKS
+
+# Populate hash with installed formulae
+while IFS= read -r formula; do
+    INSTALLED_FORMULAE["$formula"]=1
+done < <(brew list --formula 2>/dev/null)
+
+# Populate hash with installed casks
+while IFS= read -r cask; do
+    INSTALLED_CASKS["$cask"]=1
+done < <(brew list --cask 2>/dev/null)
+
 # Define Lists
 # Leaves: Top-level command line tools (dependencies will be installed automatically)
 FORMULAE=(
@@ -164,7 +179,10 @@ CASKS=(
 
 echo "--- Installing Formulae (CLI Tools) ---"
 for formula in "${FORMULAE[@]}"; do
-    if brew list --formula | grep -q "^${formula%%/*}$"; then
+    # Extract the package name (handle tap prefixes)
+    package_name="${formula##*/}"
+    
+    if [[ -n "${INSTALLED_FORMULAE[$package_name]}" ]]; then
         echo "Formula '$formula' is already installed."
     else
         echo "Installing formula '$formula'..."
@@ -174,7 +192,7 @@ done
 
 echo "--- Installing Casks (GUI Apps) ---"
 for cask in "${CASKS[@]}"; do
-    if brew list --cask | grep -q "^${cask}$"; then
+    if [[ -n "${INSTALLED_CASKS[$cask]}" ]]; then
         echo "Cask '$cask' is already installed."
     else
         echo "Installing cask '$cask'..."
