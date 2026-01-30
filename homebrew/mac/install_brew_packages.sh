@@ -52,8 +52,11 @@ install_packages() {
         # Extract the package name (handle tap prefixes for formulae)
         local package_name="${package##*/}"
         
-        # Check if package is installed using parameter expansion
-        if [[ -n "${(P)${installed_hash_name}[$package_name]}" ]]; then
+        # Check if package is installed using eval for indirect reference
+        local is_installed=""
+        eval "is_installed=\${${installed_hash_name}[$package_name]}"
+        
+        if [[ -n "$is_installed" ]]; then
             echo "$type_label '$package' is already installed."
         else
             echo "Installing $type_label '$package'..."
