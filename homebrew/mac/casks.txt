@@ -14,7 +14,7 @@ drawio
 emacs
 emacs-app
 excalidrawz
-finalshell
+#finalshell
 firefox@developer-edition
 font-blex-mono-nerd-font
 font-fira-mono-nerd-font

@@ -14,17 +14,17 @@ brew update
 
 # Get all installed packages once at the beginning
 echo "Checking installed packages..."
-declare -A INSTALLED_FORMULAE
-declare -A INSTALLED_CASKS
+typeset -A INSTALLED_FORMULAE
+typeset -A INSTALLED_CASKS
 
 # Populate hash with installed formulae
 while IFS= read -r formula; do
-    INSTALLED_FORMULAE["$formula"]=1
+    INSTALLED_FORMULAE[$formula]=1
 done < <(brew list --formula 2>/dev/null)
 
 # Populate hash with installed casks
 while IFS= read -r cask; do
-    INSTALLED_CASKS["$cask"]=1
+    INSTALLED_CASKS[$cask]=1
 done < <(brew list --cask 2>/dev/null)
 
 # Function to install packages
