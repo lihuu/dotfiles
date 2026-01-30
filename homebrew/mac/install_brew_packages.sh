@@ -37,12 +37,10 @@ install_packages() {
     local installed_hash_name="$2"
     shift 2
     local packages=("$@")
-    local install_cmd="brew install"
     local type_label=""
     
-    # Set appropriate command and label based on package type
+    # Set appropriate label based on package type
     if [[ "$pkg_type" == "cask" ]]; then
-        install_cmd="brew install --cask"
         type_label="Cask"
     else
         type_label="Formula"
@@ -59,7 +57,11 @@ install_packages() {
             echo "$type_label '$package' is already installed."
         else
             echo "Installing $type_label '$package'..."
-            $install_cmd "$package"
+            if [[ "$pkg_type" == "cask" ]]; then
+                brew install --cask "$package"
+            else
+                brew install "$package"
+            fi
         fi
     done
 }
