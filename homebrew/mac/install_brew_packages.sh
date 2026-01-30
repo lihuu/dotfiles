@@ -27,6 +27,41 @@ while IFS= read -r cask; do
     INSTALLED_CASKS["$cask"]=1
 done < <(brew list --cask 2>/dev/null)
 
+# Function to install packages
+# Arguments:
+#   $1: package type ("formula" or "cask")
+#   $2: package list (array name, passed by reference)
+#   $3: installed packages hash (associative array name, passed by reference)
+install_packages() {
+    local pkg_type="$1"
+    local -n pkg_list="$2"
+    local -n installed_hash="$3"
+    local install_cmd="brew install"
+    local type_label=""
+    
+    # Set appropriate command and label based on package type
+    if [[ "$pkg_type" == "cask" ]]; then
+        install_cmd="brew install --cask"
+        type_label="Cask"
+    else
+        type_label="Formula"
+    fi
+    
+    echo "--- Installing ${type_label}s ---"
+    
+    for package in "${pkg_list[@]}"; do
+        # Extract the package name (handle tap prefixes for formulae)
+        local package_name="${package##*/}"
+        
+        if [[ -n "${installed_hash[$package_name]}" ]]; then
+            echo "$type_label '$package' is already installed."
+        else
+            echo "Installing $type_label '$package'..."
+            $install_cmd "$package"
+        fi
+    done
+}
+
 # Define Lists
 # Leaves: Top-level command line tools (dependencies will be installed automatically)
 FORMULAE=(
@@ -177,27 +212,8 @@ CASKS=(
     "zed"
 )
 
-echo "--- Installing Formulae (CLI Tools) ---"
-for formula in "${FORMULAE[@]}"; do
-    # Extract the package name (handle tap prefixes)
-    package_name="${formula##*/}"
-    
-    if [[ -n "${INSTALLED_FORMULAE[$package_name]}" ]]; then
-        echo "Formula '$formula' is already installed."
-    else
-        echo "Installing formula '$formula'..."
-        brew install "$formula"
-    fi
-done
-
-echo "--- Installing Casks (GUI Apps) ---"
-for cask in "${CASKS[@]}"; do
-    if [[ -n "${INSTALLED_CASKS[$cask]}" ]]; then
-        echo "Cask '$cask' is already installed."
-    else
-        echo "Installing cask '$cask'..."
-        brew install --cask "$cask"
-    fi
-done
+# Install formulae and casks
+install_packages "formula" FORMULAE INSTALLED_FORMULAE
+install_packages "cask" CASKS INSTALLED_CASKS
 
 echo "Done!"
