@@ -30,12 +30,13 @@ done < <(brew list --cask 2>/dev/null)
 # Function to install packages
 # Arguments:
 #   $1: package type ("formula" or "cask")
-#   $2: package list (array name, passed by reference)
-#   $3: installed packages hash (associative array name, passed by reference)
+#   $2: installed packages hash name (associative array name)
+#   Rest: package list
 install_packages() {
     local pkg_type="$1"
-    local -n pkg_list="$2"
-    local -n installed_hash="$3"
+    local installed_hash_name="$2"
+    shift 2
+    local packages=("$@")
     local install_cmd="brew install"
     local type_label=""
     
@@ -49,11 +50,12 @@ install_packages() {
     
     echo "--- Installing ${type_label}s ---"
     
-    for package in "${pkg_list[@]}"; do
+    for package in "${packages[@]}"; do
         # Extract the package name (handle tap prefixes for formulae)
         local package_name="${package##*/}"
         
-        if [[ -n "${installed_hash[$package_name]}" ]]; then
+        # Check if package is installed using parameter expansion
+        if [[ -n "${(P)${installed_hash_name}[$package_name]}" ]]; then
             echo "$type_label '$package' is already installed."
         else
             echo "Installing $type_label '$package'..."
@@ -81,7 +83,7 @@ while IFS= read -r line || [[ -n "$line" ]]; do
 done < "$SCRIPT_DIR/casks.txt"
 
 # Install formulae and casks
-install_packages "formula" FORMULAE INSTALLED_FORMULAE
-install_packages "cask" CASKS INSTALLED_CASKS
+install_packages "formula" INSTALLED_FORMULAE "${FORMULAE[@]}"
+install_packages "cask" INSTALLED_CASKS "${CASKS[@]}"
 
 echo "Done!"
