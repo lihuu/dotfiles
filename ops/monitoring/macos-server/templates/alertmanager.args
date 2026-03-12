@@ -1,0 +1,4 @@
+--config.file=${ALERTMANAGER_CONFIG_DEST}
+--storage.path=${ALERTMANAGER_STORAGE_PATH}
+--web.listen-address=${ALERTMANAGER_LISTEN_ADDRESS}:${ALERTMANAGER_PORT}
+--cluster.listen-address=

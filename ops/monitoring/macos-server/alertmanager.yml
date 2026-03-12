@@ -1,0 +1,36 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  receiver: ${ALERTMANAGER_DEFAULT_RECEIVER}
+  group_by: ["alertname", "instance", "severity"]
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+
+receivers:
+  # 默认空接收器：未配置 Telegram / webhook 时仍能让 Alertmanager 正常启动。
+  - name: default-null
+
+  # Telegram webhook bridge 模板。
+  # 这里期望的是一个“把 Alertmanager webhook JSON 转换成 Telegram 消息”的桥接服务 URL。
+  # 如果未配置 ALERT_WEBHOOK_URL，脚本会渲染为一个不会被路由命中的占位地址。
+  - name: telegram-webhook
+    webhook_configs:
+      - url: "${ALERT_WEBHOOK_URL_EFFECTIVE}"
+        send_resolved: true
+
+  # 备用模板：如果后续你想改成 Alertmanager 原生 Telegram 发送，
+  # 可以直接把 route.receiver 改成 telegram-direct，并填充 TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID。
+  - name: telegram-direct
+    telegram_configs:
+      - bot_token: "${TELEGRAM_BOT_TOKEN_EFFECTIVE}"
+        chat_id: ${TELEGRAM_CHAT_ID_EFFECTIVE}
+        send_resolved: true
+        message: |
+          [${MONITORED_HOSTNAME}] {{ .Status | toUpper }} - {{ .CommonLabels.alertname }}
+          {{ range .Alerts -}}
+          summary={{ .Annotations.summary }}
+          description={{ .Annotations.description }}
+          severity={{ .Labels.severity }}
+          {{ end }}

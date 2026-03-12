@@ -1,0 +1,92 @@
+groups:
+  - name: macos-self-monitoring
+    rules:
+      # CPU 使用率 = 100 - 最近 5 分钟 idle CPU 平均占比。
+      - alert: HighCPUUsage
+        expr: |
+          (
+            100 - (
+              avg by (instance) (
+                rate(node_cpu_seconds_total{job="node_exporter", mode="idle"}[5m])
+              ) * 100
+            )
+          ) > ${CPU_ALERT_THRESHOLD}
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU 使用率持续过高"
+          description: "实例 {{ $labels.instance }} 的 CPU 使用率在过去 5 分钟持续高于 ${CPU_ALERT_THRESHOLD}% 。"
+
+      # macOS 下没有 Linux 常见的 MemAvailable。
+      # 这里使用 reclaimable 近似：free + inactive + purgeable + speculative，
+      # 再用 1 - reclaimable / total 估算“不可轻易回收”的内存占比。
+      - alert: HighMemoryUsage
+        expr: |
+          (
+            100 * (
+              1 - (
+                (
+                  node_memory_free_bytes{job="node_exporter"} +
+                  node_memory_inactive_bytes{job="node_exporter"} +
+                  node_memory_purgeable_bytes{job="node_exporter"} +
+                  node_memory_speculative_bytes{job="node_exporter"}
+                ) / node_memory_total_bytes{job="node_exporter"}
+              )
+            )
+          ) > ${MEM_ALERT_THRESHOLD}
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "内存压力持续过高"
+          description: "实例 {{ $labels.instance }} 的近似内存使用率在过去 5 分钟持续高于 ${MEM_ALERT_THRESHOLD}% 。"
+
+      # macOS 新版 APFS 常见两种情况：
+      # 1. mountpoint="/" 是只读系统卷
+      # 2. 可写数据卷在 /System/Volumes/Data
+      # 因此这里同时匹配这两个挂载点，取最小剩余空间百分比。
+      - alert: DiskSpaceLow
+        expr: |
+          min by (instance) (
+            (
+              node_filesystem_avail_bytes{
+                job="node_exporter",
+                mountpoint=~"/|/System/Volumes/Data",
+                fstype!~"autofs|devfs"
+              }
+              /
+              node_filesystem_size_bytes{
+                job="node_exporter",
+                mountpoint=~"/|/System/Volumes/Data",
+                fstype!~"autofs|devfs"
+              }
+            ) * 100
+          ) < ${DISK_ALERT_THRESHOLD}
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "磁盘剩余空间不足"
+          description: "实例 {{ $labels.instance }} 的根卷/数据卷剩余空间低于 ${DISK_ALERT_THRESHOLD}% 并持续 5 分钟。"
+
+      # up == 0 表示 Prometheus 无法成功抓取 node_exporter。
+      - alert: HostExporterDown
+        expr: up{job="node_exporter"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "node_exporter 无法抓取"
+          description: "Prometheus 连续 2 分钟无法抓取 {{ $labels.instance }} 上的 node_exporter。"
+
+      # 该规则只能覆盖“Prometheus target scrape 异常但规则引擎仍在运行”的情况。
+      # 如果 Prometheus 进程彻底退出，本机自监控无法自行发出告警，这是单机自监控的固有限制。
+      - alert: PrometheusDown
+        expr: up{job="prometheus"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Prometheus 自身抓取失败"
+          description: "Prometheus 自身 target 连续 2 分钟不可用；若进程完全退出，需要外部监控补位。"

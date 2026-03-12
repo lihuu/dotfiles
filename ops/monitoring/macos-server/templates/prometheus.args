@@ -1,0 +1,5 @@
+--config.file=${PROMETHEUS_CONFIG_DEST}
+--storage.tsdb.path=${PROMETHEUS_STORAGE_PATH}
+--storage.tsdb.retention.time=${PROMETHEUS_RETENTION_TIME}
+--web.listen-address=${PROMETHEUS_LISTEN_ADDRESS}:${PROMETHEUS_PORT}
+--web.enable-lifecycle

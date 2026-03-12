@@ -1,0 +1,2 @@
+--web.listen-address=${NODE_EXPORTER_LISTEN_ADDRESS}:${NODE_EXPORTER_PORT}
+--collector.textfile.directory=${TEXTFILE_COLLECTOR_DIR}
