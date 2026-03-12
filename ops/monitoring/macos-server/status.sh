@@ -11,9 +11,13 @@ apply_defaults
 require_command brew
 require_command curl
 require_command lsof
+require_command docker
 
-printf "\n%s== brew services ==%s\n" "${COLOR_BLUE}" "${COLOR_RESET}"
-brew services list | awk 'NR == 1 || $1 ~ /^(prometheus|node_exporter|alertmanager|grafana)$/'
+printf "\n%s== brew services (host) ==%s\n" "${COLOR_BLUE}" "${COLOR_RESET}"
+brew services list | awk 'NR == 1 || $1 ~ /^(node_exporter)$/'
+
+printf "\n%s== docker compose ==%s\n" "${COLOR_BLUE}" "${COLOR_RESET}"
+docker_compose ps
 
 printf "\n%s== Port Status ==%s\n" "${COLOR_BLUE}" "${COLOR_RESET}"
 show_port_status "${PROMETHEUS_PORT}"
@@ -23,12 +27,12 @@ show_port_status "${GRAFANA_PORT}"
 
 printf "\n%s== Health Checks ==%s\n" "${COLOR_BLUE}" "${COLOR_RESET}"
 for url in \
-  "http://${PROMETHEUS_LISTEN_ADDRESS}:${PROMETHEUS_PORT}/-/healthy" \
-  "http://${PROMETHEUS_LISTEN_ADDRESS}:${PROMETHEUS_PORT}/api/v1/targets" \
-  "http://${NODE_EXPORTER_LISTEN_ADDRESS}:${NODE_EXPORTER_PORT}/metrics" \
-  "http://${ALERTMANAGER_LISTEN_ADDRESS}:${ALERTMANAGER_PORT}/-/healthy" \
-  "http://${ALERTMANAGER_LISTEN_ADDRESS}:${ALERTMANAGER_PORT}/api/v2/status" \
-  "http://${GRAFANA_LISTEN_ADDRESS}:${GRAFANA_PORT}/api/health"; do
+  "http://${LOCAL_STATUS_HOST}:${PROMETHEUS_PORT}/-/healthy" \
+  "http://${LOCAL_STATUS_HOST}:${PROMETHEUS_PORT}/api/v1/targets" \
+  "http://${LOCAL_STATUS_HOST}:${NODE_EXPORTER_PORT}/metrics" \
+  "http://${LOCAL_STATUS_HOST}:${ALERTMANAGER_PORT}/-/healthy" \
+  "http://${LOCAL_STATUS_HOST}:${ALERTMANAGER_PORT}/api/v2/status" \
+  "http://${LOCAL_STATUS_HOST}:${GRAFANA_PORT}/api/health"; do
   http_code="$(curl -sS -o /dev/null -w "%{http_code}" "${url}" || true)"
   printf "%-70s %s\n" "${url}" "${http_code}"
 done

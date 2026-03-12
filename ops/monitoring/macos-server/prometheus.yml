@@ -3,29 +3,29 @@ global:
   evaluation_interval: ${PROMETHEUS_EVALUATION_INTERVAL}
   external_labels:
     monitored_host: ${MONITORED_HOSTNAME}
-    monitored_role: macos-self
+    monitored_role: central-monitor
 
 alerting:
   alertmanagers:
     - static_configs:
         - targets:
-            - ${ALERTMANAGER_LISTEN_ADDRESS}:${ALERTMANAGER_PORT}
+            - alertmanager:9093
 
 rule_files:
-  - ${PROMETHEUS_RULES_DEST}
+  - /etc/prometheus/alert.rules.yml
 
 scrape_configs:
   - job_name: prometheus
     static_configs:
       - targets:
-          - ${PROMETHEUS_LISTEN_ADDRESS}:${PROMETHEUS_PORT}
-
-  - job_name: node_exporter
-    static_configs:
-      - targets:
-          - ${NODE_EXPORTER_LISTEN_ADDRESS}:${NODE_EXPORTER_PORT}
+          - prometheus:9090
 
   - job_name: alertmanager
     static_configs:
       - targets:
-          - ${ALERTMANAGER_LISTEN_ADDRESS}:${ALERTMANAGER_PORT}
+          - alertmanager:9093
+
+  - job_name: node_exporter
+    file_sd_configs:
+      - files:
+          - /etc/prometheus/file_sd/node_exporters.yml

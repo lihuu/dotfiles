@@ -1,6 +1,6 @@
 # QUICKSTART
 
-目标：5 分钟内把当前这台 Mac 的本机监控跑起来。
+目标：5 分钟内把当前这台 Mac 变成局域网中央监控节点。
 
 ## 最短路径
 
@@ -20,6 +20,7 @@ ALERT_WEBHOOK_URL=你的 Telegram webhook bridge；没有就先留空
 
 ```bash
 ./install.sh
+vi targets/node_exporters.yml
 ./start.sh
 ./status.sh
 ```
@@ -38,11 +39,11 @@ curl http://127.0.0.1:9090/api/v1/targets
 curl http://127.0.0.1:3000/api/health
 ```
 
-如果 `ALERT_WEBHOOK_URL` 没填：
+默认已经包含当前这台 Mac：
 
-- 监控和仪表盘仍然可用
-- 告警规则也会生效
-- 但 Alertmanager 不会真正发送通知
+- `host.docker.internal:9100`
+
+如果你要加其他局域网设备，只需要继续改 `targets/node_exporters.yml`。
 
 如果要停掉：
 

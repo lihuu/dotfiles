@@ -1,0 +1,19 @@
+# 当前这台 Mac 的 node_exporter。
+- targets:
+    - host.docker.internal:9100
+  labels:
+    role: central-monitor-host
+    site: lan
+
+# 下面是局域网其他设备的示例，按需取消注释并修改 IP。
+# - targets:
+#     - 192.168.1.10:9100
+#   labels:
+#     role: linux-server
+#     site: lan
+#
+# - targets:
+#     - 192.168.1.20:9100
+#   labels:
+#     role: nas
+#     site: lan

@@ -8,6 +8,7 @@ source "${SCRIPT_DIR}/lib/common.sh"
 load_env
 apply_defaults
 ensure_render_dir
+ensure_data_dirs
 
 if [[ -n "${ALERT_WEBHOOK_URL}" ]]; then
   export ALERTMANAGER_DEFAULT_RECEIVER="telegram-webhook"
@@ -17,16 +18,9 @@ else
   export ALERTMANAGER_DEFAULT_RECEIVER="default-null"
 fi
 
-export ALERT_WEBHOOK_URL_EFFECTIVE="${ALERT_WEBHOOK_URL:-http://127.0.0.1:65535/disabled}"
-
 render_template "${SCRIPT_DIR}/prometheus.yml" "${RENDER_DIR}/prometheus.yml"
 render_template "${SCRIPT_DIR}/alert.rules.yml" "${RENDER_DIR}/alert.rules.yml"
-render_template "${SCRIPT_DIR}/templates/prometheus.args" "${RENDER_DIR}/prometheus.args"
 render_template "${SCRIPT_DIR}/templates/node_exporter.args" "${RENDER_DIR}/node_exporter.args"
-render_template "${SCRIPT_DIR}/templates/alertmanager.args" "${RENDER_DIR}/alertmanager.args"
-render_template "${SCRIPT_DIR}/templates/grafana.ini" "${RENDER_DIR}/grafana.ini"
-render_template "${SCRIPT_DIR}/grafana-provisioning/datasources/prometheus.yml" "${RENDER_DIR}/grafana-provisioning/datasources/prometheus.yml"
-render_template "${SCRIPT_DIR}/grafana-provisioning/dashboards/dashboards.yml" "${RENDER_DIR}/grafana-provisioning/dashboards/dashboards.yml"
 
 ALERTMANAGER_RENDERED="${RENDER_DIR}/alertmanager.yml"
 cat > "${ALERTMANAGER_RENDERED}" <<EOF
