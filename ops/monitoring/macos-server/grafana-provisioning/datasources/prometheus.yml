@@ -5,8 +5,8 @@ datasources:
     uid: prometheus-macos-self
     type: prometheus
     access: proxy
-    url: http://prometheus:9090
+    url: ${PROMETHEUS_DATASOURCE_URL}
     isDefault: true
     editable: false
     jsonData:
-      timeInterval: 15s
+      timeInterval: ${PROMETHEUS_SCRAPE_INTERVAL}

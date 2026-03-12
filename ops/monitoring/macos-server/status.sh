@@ -11,13 +11,24 @@ apply_defaults
 require_command brew
 require_command curl
 require_command lsof
-require_command docker
 
-printf "\n%s== brew services (host) ==%s\n" "${COLOR_BLUE}" "${COLOR_RESET}"
-brew services list | awk 'NR == 1 || $1 ~ /^(node_exporter)$/'
+mode="$(current_install_mode)"
 
-printf "\n%s== docker compose ==%s\n" "${COLOR_BLUE}" "${COLOR_RESET}"
-docker_compose ps
+printf "\n%s== Install Mode ==%s\n" "${COLOR_BLUE}" "${COLOR_RESET}"
+printf "%s\n" "${mode}"
+
+printf "\n%s== brew services ==%s\n" "${COLOR_BLUE}" "${COLOR_RESET}"
+if [[ "${mode}" == "docker" ]]; then
+  brew services list | awk 'NR == 1 || $1 ~ /^(node_exporter)$/'
+else
+  brew services list | awk 'NR == 1 || $1 ~ /^(prometheus|node_exporter|alertmanager|grafana)$/'
+fi
+
+if [[ "${mode}" == "docker" ]]; then
+  require_command docker
+  printf "\n%s== docker compose ==%s\n" "${COLOR_BLUE}" "${COLOR_RESET}"
+  docker_compose ps
+fi
 
 printf "\n%s== Port Status ==%s\n" "${COLOR_BLUE}" "${COLOR_RESET}"
 show_port_status "${PROMETHEUS_PORT}"

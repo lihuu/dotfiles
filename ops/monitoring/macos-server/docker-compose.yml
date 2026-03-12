@@ -10,9 +10,9 @@ services:
       - --web.listen-address=0.0.0.0:9090
       - --web.enable-lifecycle
     volumes:
-      - ./.rendered/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - ./.rendered/alert.rules.yml:/etc/prometheus/alert.rules.yml:ro
-      - ./targets:/etc/prometheus/file_sd:ro
+      - ./.rendered/docker/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./.rendered/docker/alert.rules.yml:/etc/prometheus/alert.rules.yml:ro
+      - ./.rendered/docker/node_exporters.yml:/etc/prometheus/file_sd/node_exporters.yml:ro
       - ./data/prometheus:/prometheus
     ports:
       - ${STACK_BIND_ADDRESS}:${PROMETHEUS_PORT}:9090
@@ -33,7 +33,7 @@ services:
       - --web.listen-address=0.0.0.0:9093
       - --cluster.listen-address=
     volumes:
-      - ./.rendered/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - ./.rendered/docker/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
       - ./data/alertmanager:/alertmanager
     ports:
       - ${STACK_BIND_ADDRESS}:${ALERTMANAGER_PORT}:9093

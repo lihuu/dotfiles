@@ -1,12 +1,17 @@
 # macOS LAN Central Monitoring
 
-这套方案把当前这台 Mac 改造成局域网中的“中央监控节点”：
+这套方案把当前这台 Mac 改造成局域网中的“中央监控节点”，并同时保留两种部署方式：
 
 - 当前这台 Mac 继续通过 `node_exporter` 采集本机指标
 - 局域网其他设备也可以各自部署 `node_exporter`
 - 指标统一由这台 Mac 上的 `Prometheus` 汇总
-- `Prometheus`、`Alertmanager`、`Grafana` 改为 `docker compose` 部署
-- 宿主机上的旧 Homebrew 版 `Prometheus` / `Alertmanager` / `Grafana` 会被移除
+- `Prometheus`、`Alertmanager`、`Grafana` 支持两种部署模式：
+  - `docker`: 通过 `docker compose` 部署
+  - `native`: 通过 Homebrew + `brew services` 直接部署到本机
+- `install.sh` 会自动检测 Docker 环境：
+  - Docker 可用时优先走 `docker`
+  - Docker 不可用时自动 fallback 到 `native`
+- `migrate.sh` 用于把已经存在的 `native` 安装迁移到 `docker`
 - 通过 `retention time + retention size + docker log rotation` 控制磁盘增长
 
 ## 目录结构
@@ -40,11 +45,18 @@ ops/monitoring/macos-server/
 
 ## 架构说明
 
-- `node_exporter` 运行在宿主机，仍由 Homebrew + `brew services` 管理。
-- `Prometheus`、`Alertmanager`、`Grafana` 运行在 Docker 容器中，由 `docker compose` 管理。
-- 宿主机 `node_exporter` 默认监听 `0.0.0.0:9100`，让容器内 Prometheus 能通过 `host.docker.internal:9100` 抓到这台 Mac。
+- `node_exporter` 始终运行在宿主机，仍由 Homebrew + `brew services` 管理。
+- `Prometheus`、`Alertmanager`、`Grafana` 根据安装模式运行：
+  - `docker`: 运行在 Docker 容器中，由 `docker compose` 管理
+  - `native`: 直接运行在宿主机，由 Homebrew + `brew services` 管理
+- 宿主机 `node_exporter` 默认监听 `0.0.0.0:9100`，兼容两种模式。
+- 在 Docker 模式下，Prometheus 通过 `host.docker.internal:9100` 抓这台 Mac。
+- 在 native 模式下，Prometheus 直接抓 `127.0.0.1:9100`。
 - 局域网其他设备只要暴露自己的 `node_exporter:9100`，就能被中央 Prometheus 统一抓取。
-- 目标列表通过 `targets/node_exporters.yml` 管理，后续加机器只需要改这个文件并重启栈。
+- 目标列表源文件通过 `targets/node_exporters.yml` 管理，后续加机器只需要改这个文件并重启栈。
+- `targets/node_exporters.yml` 的第一条本机 target 是模板占位符，渲染时会自动替换成：
+  - Docker 模式: `host.docker.internal:9100`
+  - native 模式: `127.0.0.1:9100`
 - 实际运行配置由 `render-configs.sh` 渲染到 `.rendered/`；这些运行产物和数据目录都不会进入 git。
 
 ## 端口规划
@@ -76,10 +88,22 @@ cp env.example .env
 - 如果没有 Telegram 配置，先留空，Alertmanager 会使用空接收器模板启动，不会因为未配置告警通道而失败。
 - 强烈建议修改 `GRAFANA_ADMIN_PASSWORD`。
 
-4. 安装宿主机 node_exporter，并清理旧的 Homebrew 三件套：
+4. 安装：
 
 ```bash
 ./install.sh
+```
+
+安装逻辑：
+
+- 如果 Docker 可用，默认安装为 `docker` 模式
+- 如果 Docker 不可用，自动 fallback 到 `native` 模式
+- 如果要强制指定模式，可以在 `.env` 中设置：
+
+```bash
+INSTALL_MODE=docker
+# 或
+INSTALL_MODE=native
 ```
 
 5. 按需修改局域网目标文件：
@@ -88,7 +112,12 @@ cp env.example .env
 vi targets/node_exporters.yml
 ```
 
-6. 启动中央监控栈：
+说明：
+
+- 只需要继续追加你的局域网其他设备 `IP:9100`
+- 不要把第一条本机 target 手工改死，脚本会根据安装模式自动渲染
+
+6. 启动监控栈：
 
 ```bash
 ./start.sh
@@ -116,13 +145,16 @@ vi targets/node_exporters.yml
 
 脚本会做这些事：
 
-- 检查 Homebrew、Docker、Docker Compose
+- 检查 Homebrew
+- 自动判断安装模式
 - 安装或保留宿主机 `node_exporter`
-- 停止并卸载旧的 Homebrew 版 `prometheus`、`alertmanager`、`grafana`
-- 删除上一步落地的旧配置文件和历史数据目录
-- 渲染新的中央监控配置
-- 同步宿主机 `node_exporter.args`
-- 预拉取 Docker 镜像
+- `docker` 模式下：
+  - 渲染 Docker 运行配置
+  - 预拉取镜像
+- `native` 模式下：
+  - 安装 `prometheus`、`alertmanager`、`grafana`
+  - 渲染并同步本机配置
+- 写入当前安装模式标记，供 `start.sh` / `stop.sh` / `status.sh` 使用
 
 ### 启动
 
@@ -133,8 +165,15 @@ vi targets/node_exporters.yml
 脚本会重新渲染配置，然后执行：
 
 ```bash
-brew services restart node_exporter
-docker compose up -d
+docker 模式:
+  brew services restart node_exporter
+  docker compose up -d
+
+native 模式:
+  brew services restart prometheus
+  brew services restart node_exporter
+  brew services restart alertmanager
+  brew services restart grafana
 ```
 
 ### 停止
@@ -151,10 +190,26 @@ docker compose up -d
 
 会输出：
 
-- 宿主机 `node_exporter` 的 `brew services` 状态
-- `docker compose ps`
+- 当前安装模式
+- 对应模式下的服务状态
 - 关键端口监听情况
 - 关键健康检查 URL 的 HTTP 状态码
+
+### 从 native 迁移到 docker
+
+如果你最开始是本机直接安装，后面机器上又具备了 Docker 环境，可以执行：
+
+```bash
+./migrate.sh
+```
+
+这个脚本会：
+
+- 先准备 Docker 模式的配置与镜像
+- 保留宿主机 `node_exporter`
+- 停止并卸载 native 模式下的 `prometheus` / `alertmanager` / `grafana`
+- 启动 Docker 模式栈
+- 把当前模式切换为 `docker`
 
 ## 关键配置说明
 
@@ -170,6 +225,8 @@ docker compose up -d
 - Alertmanager 容器自身
 - 当前这台 Mac 的 `host.docker.internal:9100`
 - `targets/node_exporters.yml` 中定义的其他局域网设备
+
+在 native 模式下，当前这台 Mac 的本机抓取目标会自动切换成 `127.0.0.1:9100`。
 
 ### Alert Rules
 
@@ -251,6 +308,8 @@ curl http://127.0.0.1:9090/api/v1/targets
 docker compose ps
 ```
 
+只有在 `docker` 模式下这一项才适用。
+
 ### 验证 Prometheus 健康状态
 
 ```bash
@@ -285,12 +344,24 @@ open http://127.0.0.1:3000
 ./stop.sh
 ```
 
-2. 更新宿主机 node_exporter 与镜像：
+2. 更新组件：
 
 ```bash
 brew update
 brew upgrade node_exporter
+```
+
+如果当前是 `docker` 模式，再执行：
+
+```bash
 docker compose pull
+```
+
+如果当前是 `native` 模式，再执行：
+
+```bash
+brew upgrade prometheus grafana
+brew upgrade alertmanager || brew upgrade local/monitoring/alertmanager
 ```
 
 3. 重新同步配置：
@@ -334,6 +405,13 @@ ops/monitoring/macos-server/backups/<timestamp>/
 brew uninstall node_exporter
 ```
 
+如果当前是 `native` 模式，还可以继续执行：
+
+```bash
+brew uninstall prometheus grafana
+brew uninstall alertmanager || brew uninstall local/monitoring/alertmanager
+```
+
 如需彻底清理数据目录，再手动删除：
 
 - `ops/monitoring/macos-server/data/`
@@ -343,7 +421,7 @@ brew uninstall node_exporter
 
 ## 常见问题排查
 
-### 1. `docker compose` 容器没起来
+### 1. `docker` 模式下容器没起来
 
 先查 compose：
 
@@ -356,13 +434,15 @@ docker compose logs --tail=100 prometheus alertmanager grafana
 
 - 确认宿主机 `node_exporter` 是否监听在 `0.0.0.0:9100`
 - 确认 `curl http://127.0.0.1:9100/metrics` 可用
-- 确认容器内目标文件包含 `host.docker.internal:9100`
+- `docker` 模式下，确认目标文件包含 `host.docker.internal:9100`
+- `native` 模式下，确认 Prometheus target 是 `127.0.0.1:9100`
 - 确认 `curl http://127.0.0.1:9090/api/v1/targets` 中该目标是 `up`
 
 ### 3. Grafana 页面打开了但没有数据
 
 - 确认 `Prometheus` datasource 已被 provisioning
-- 确认 `docker compose ps` 中 `prometheus` 正常运行
+- `docker` 模式下，确认 `docker compose ps` 中 `prometheus` 正常运行
+- `native` 模式下，确认 `brew services list` 中 `prometheus` 正常运行
 - 确认 `curl http://127.0.0.1:9090/api/v1/query?query=up` 能返回数据
 
 ### 4. 添加了局域网目标但始终是 down
@@ -434,6 +514,11 @@ curl http://192.168.1.10:9100/metrics
 
 3. Docker 容器日志轮转
    每个容器 `max-size=10m`，`max-file=3`
+
+在 native 模式下：
+
+- Prometheus 同样受 `retention time` 和 `retention size` 限制
+- 但没有 Docker 日志轮转这一层
 
 如果你的局域网节点很多，再继续加机器前，建议先评估：
 

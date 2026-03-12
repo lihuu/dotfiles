@@ -1,6 +1,6 @@
 # 当前这台 Mac 的 node_exporter。
 - targets:
-    - host.docker.internal:9100
+    - ${LOCAL_NODE_EXPORTER_TARGET}
   labels:
     role: central-monitor-host
     site: lan

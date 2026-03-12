@@ -8,13 +8,19 @@ source "${SCRIPT_DIR}/lib/common.sh"
 load_env
 apply_defaults
 
-require_command brew
-require_command docker
+mode="$(current_install_mode)"
+log_info "当前安装模式: ${mode}"
 
-log_info "停止 docker compose 中的 Prometheus / Alertmanager / Grafana"
-docker_compose down || true
-
-log_info "停止宿主机 node_exporter"
-brew services stop node_exporter || true
+case "${mode}" in
+  docker)
+    stop_docker_stack
+    ;;
+  native)
+    stop_native_stack
+    ;;
+  *)
+    die "未知安装模式: ${mode}"
+    ;;
+esac
 
 log_success "停止命令已执行"

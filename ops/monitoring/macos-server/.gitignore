@@ -1,4 +1,5 @@
 .env
+.install-mode
 .rendered/
 backups/
 data/

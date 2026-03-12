@@ -16,6 +16,19 @@ GRAFANA_ADMIN_PASSWORD=改成你自己的密码
 ALERT_WEBHOOK_URL=你的 Telegram webhook bridge；没有就先留空
 ```
 
+安装模式默认是：
+
+- Docker 可用时走 `docker`
+- Docker 不可用时 fallback 到 `native`
+
+如果你要强制指定，可以在 `.env` 里加：
+
+```bash
+INSTALL_MODE=docker
+# 或
+INSTALL_MODE=native
+```
+
 执行：
 
 ```bash
@@ -41,9 +54,16 @@ curl http://127.0.0.1:3000/api/health
 
 默认已经包含当前这台 Mac：
 
-- `host.docker.internal:9100`
+- Docker 模式下会自动变成 `host.docker.internal:9100`
+- native 模式下会自动变成 `127.0.0.1:9100`
 
 如果你要加其他局域网设备，只需要继续改 `targets/node_exporters.yml`。
+
+如果你之前已经是 native 安装，后面想迁移到 Docker：
+
+```bash
+./migrate.sh
+```
 
 如果要停掉：
 
