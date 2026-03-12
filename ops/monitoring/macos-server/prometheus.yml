@@ -29,3 +29,7 @@ scrape_configs:
     file_sd_configs:
       - files:
           - ${NODE_EXPORTERS_FILE_PATH}
+    relabel_configs:
+      - source_labels: [host_alias]
+        regex: (.+)
+        target_label: instance

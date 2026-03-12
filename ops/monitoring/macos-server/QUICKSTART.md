@@ -13,7 +13,7 @@ cp env.example .env
 
 ```bash
 GRAFANA_ADMIN_PASSWORD=改成你自己的密码
-ALERT_WEBHOOK_URL=你的 Telegram webhook bridge；没有就先留空
+BARK_DEVICE_KEY=你的 Bark key；没有就先留空
 ```
 
 默认绑定策略是：

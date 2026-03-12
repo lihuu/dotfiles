@@ -1,4 +1,30 @@
 services:
+  bark-bridge:
+    image: python:3.12-alpine
+    restart: unless-stopped
+    command:
+      - python
+      - /app/bridges/bark_webhook_bridge.py
+    environment:
+      BARK_SERVER_URL: ${BARK_SERVER_URL:-https://api.day.app}
+      BARK_DEVICE_KEY: ${BARK_DEVICE_KEY:-}
+      BARK_GROUP: ${BARK_GROUP:-Prometheus Alerts}
+      BARK_SOUND: ${BARK_SOUND:-}
+      BARK_ICON: ${BARK_ICON:-}
+      BARK_URL: ${BARK_URL:-}
+      BARK_LEVEL: ${BARK_LEVEL:-active}
+      BARK_AUTOMATIC_COPY: ${BARK_AUTOMATIC_COPY:-0}
+      BARK_IS_ARCHIVE: ${BARK_IS_ARCHIVE:-1}
+      BARK_BRIDGE_PORT: ${BARK_BRIDGE_PORT:-18080}
+      BARK_BRIDGE_BIND_ADDRESS: 0.0.0.0
+    volumes:
+      - ./:/app:ro
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
   prometheus:
     image: ${PROMETHEUS_IMAGE}
     restart: unless-stopped
@@ -17,6 +43,7 @@ services:
     ports:
       - ${PROMETHEUS_BIND_ADDRESS}:${PROMETHEUS_PORT}:9090
     depends_on:
+      - bark-bridge
       - alertmanager
     logging:
       driver: json-file

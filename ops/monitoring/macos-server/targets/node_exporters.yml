@@ -2,6 +2,7 @@
 - targets:
     - ${LOCAL_NODE_EXPORTER_TARGET}
   labels:
+    host_alias: ${MONITORED_HOSTNAME}
     role: central-monitor-host
     site: lan
 
@@ -9,11 +10,13 @@
 # - targets:
 #     - 192.168.1.10:9100
 #   labels:
+#     host_alias: my-linux-server
 #     role: linux-server
 #     site: lan
 #
 # - targets:
 #     - 192.168.1.20:9100
 #   labels:
+#     host_alias: my-nas
 #     role: nas
 #     site: lan

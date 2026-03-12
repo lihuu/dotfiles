@@ -100,9 +100,21 @@ apply_defaults() {
   export GRAFANA_ADMIN_USER="${GRAFANA_ADMIN_USER:-admin}"
   export GRAFANA_ADMIN_PASSWORD="${GRAFANA_ADMIN_PASSWORD:-admin}"
 
-  export ALERT_WEBHOOK_URL="${ALERT_WEBHOOK_URL:-}"
   export TELEGRAM_BOT_TOKEN="${TELEGRAM_BOT_TOKEN:-}"
   export TELEGRAM_CHAT_ID="${TELEGRAM_CHAT_ID:-}"
+  export BARK_SERVER_URL="${BARK_SERVER_URL:-https://api.day.app}"
+  export BARK_DEVICE_KEY="${BARK_DEVICE_KEY:-}"
+  export BARK_GROUP="${BARK_GROUP:-Prometheus Alerts}"
+  export BARK_SOUND="${BARK_SOUND:-}"
+  export BARK_ICON="${BARK_ICON:-}"
+  export BARK_URL="${BARK_URL:-}"
+  export BARK_LEVEL="${BARK_LEVEL:-active}"
+  export BARK_AUTOMATIC_COPY="${BARK_AUTOMATIC_COPY:-0}"
+  export BARK_IS_ARCHIVE="${BARK_IS_ARCHIVE:-1}"
+  export BARK_BRIDGE_PORT="${BARK_BRIDGE_PORT:-18080}"
+  export BARK_BRIDGE_BIND_ADDRESS="${BARK_BRIDGE_BIND_ADDRESS:-127.0.0.1}"
+  export BARK_BRIDGE_PID_FILE="${BARK_BRIDGE_PID_FILE:-${DATA_DIR}/bark-bridge.pid}"
+  export BARK_BRIDGE_LOG_FILE="${BARK_BRIDGE_LOG_FILE:-${DATA_DIR}/bark-bridge.log}"
 
   export TEXTFILE_COLLECTOR_DIR="${TEXTFILE_COLLECTOR_DIR:-${HOMEBREW_PREFIX}/var/lib/node_exporter/textfile_collector}"
 
@@ -262,6 +274,7 @@ render_mode_configs() {
       export ALERTMANAGER_CONFIG_FILE_PATH="/etc/alertmanager/alertmanager.yml"
       export PROMETHEUS_DATASOURCE_URL="http://prometheus:9090"
       export GRAFANA_DASHBOARDS_PATH="/var/lib/grafana/dashboards"
+      export BARK_WEBHOOK_URL_EFFECTIVE="http://bark-bridge:${BARK_BRIDGE_PORT}/alertmanager"
       ;;
     native)
       export LOCAL_NODE_EXPORTER_TARGET="${LOCAL_STATUS_HOST}:${NODE_EXPORTER_PORT}"
@@ -273,6 +286,7 @@ render_mode_configs() {
       export ALERTMANAGER_CONFIG_FILE_PATH="${ALERTMANAGER_CONFIG_DEST}"
       export PROMETHEUS_DATASOURCE_URL="http://${LOCAL_STATUS_HOST}:${PROMETHEUS_PORT}"
       export GRAFANA_DASHBOARDS_PATH="${GRAFANA_DASHBOARDS_DEST}"
+      export BARK_WEBHOOK_URL_EFFECTIVE="http://${BARK_BRIDGE_BIND_ADDRESS}:${BARK_BRIDGE_PORT}/alertmanager"
       ;;
     *)
       die "不支持的 render 模式: ${mode}"
@@ -289,10 +303,19 @@ render_mode_configs() {
   render_template "${SCRIPT_DIR}/grafana-provisioning/datasources/prometheus.yml" "${mode_dir}/grafana-provisioning/datasources/prometheus.yml"
   render_template "${SCRIPT_DIR}/grafana-provisioning/dashboards/dashboards.yml" "${mode_dir}/grafana-provisioning/dashboards/dashboards.yml"
 
-  if [[ -n "${ALERT_WEBHOOK_URL}" ]]; then
-    export ALERTMANAGER_DEFAULT_RECEIVER="telegram-webhook"
-  elif [[ -n "${TELEGRAM_BOT_TOKEN}" && -n "${TELEGRAM_CHAT_ID}" ]]; then
-    export ALERTMANAGER_DEFAULT_RECEIVER="telegram-direct"
+  local bark_enabled="false"
+  local telegram_enabled="false"
+
+  if [[ -n "${BARK_DEVICE_KEY}" ]]; then
+    bark_enabled="true"
+  fi
+
+  if [[ -n "${TELEGRAM_BOT_TOKEN}" && -n "${TELEGRAM_CHAT_ID}" ]]; then
+    telegram_enabled="true"
+  fi
+
+  if [[ "${bark_enabled}" == "true" || "${telegram_enabled}" == "true" ]]; then
+    export ALERTMANAGER_DEFAULT_RECEIVER="ops-default"
   else
     export ALERTMANAGER_DEFAULT_RECEIVER="default-null"
   fi
@@ -313,18 +336,22 @@ receivers:
   - name: default-null
 EOF
 
-  if [[ -n "${ALERT_WEBHOOK_URL}" ]]; then
+  if [[ "${bark_enabled}" == "true" || "${telegram_enabled}" == "true" ]]; then
     cat >> "${alertmanager_rendered}" <<EOF
-  - name: telegram-webhook
+  - name: ops-default
+EOF
+  fi
+
+  if [[ "${bark_enabled}" == "true" ]]; then
+    cat >> "${alertmanager_rendered}" <<EOF
     webhook_configs:
-      - url: "${ALERT_WEBHOOK_URL}"
+      - url: "${BARK_WEBHOOK_URL_EFFECTIVE}"
         send_resolved: true
 EOF
   fi
 
-  if [[ -n "${TELEGRAM_BOT_TOKEN}" && -n "${TELEGRAM_CHAT_ID}" ]]; then
+  if [[ "${telegram_enabled}" == "true" ]]; then
     cat >> "${alertmanager_rendered}" <<EOF
-  - name: telegram-direct
     telegram_configs:
       - bot_token: "${TELEGRAM_BOT_TOKEN}"
         chat_id: ${TELEGRAM_CHAT_ID}
@@ -337,6 +364,49 @@ EOF
           severity={{ .Labels.severity }}
           {{ end }}
 EOF
+  fi
+}
+
+bark_bridge_enabled() {
+  [[ -n "${BARK_DEVICE_KEY}" ]]
+}
+
+start_native_bark_bridge() {
+  if ! bark_bridge_enabled; then
+    return
+  fi
+
+  require_command python3
+  mkdir -p "${DATA_DIR}"
+
+  stop_native_bark_bridge
+
+  (
+    cd "${SCRIPT_DIR}"
+    nohup python3 "${SCRIPT_DIR}/bridges/bark_webhook_bridge.py" \
+      >> "${BARK_BRIDGE_LOG_FILE}" 2>&1 &
+    echo $! > "${BARK_BRIDGE_PID_FILE}"
+  )
+
+  for _ in 1 2 3 4 5; do
+    if curl -fsS "http://${BARK_BRIDGE_BIND_ADDRESS}:${BARK_BRIDGE_PORT}/healthz" >/dev/null 2>&1; then
+      log_success "Bark bridge 已启动"
+      return
+    fi
+    sleep 1
+  done
+
+  log_warn "Bark bridge 健康检查未通过，请检查 ${BARK_BRIDGE_LOG_FILE}"
+}
+
+stop_native_bark_bridge() {
+  if [[ -f "${BARK_BRIDGE_PID_FILE}" ]]; then
+    local bark_pid
+    bark_pid="$(cat "${BARK_BRIDGE_PID_FILE}")"
+    if [[ -n "${bark_pid}" ]] && kill -0 "${bark_pid}" >/dev/null 2>&1; then
+      kill "${bark_pid}" >/dev/null 2>&1 || true
+    fi
+    rm -f "${BARK_BRIDGE_PID_FILE}"
   fi
 }
 
@@ -433,6 +503,7 @@ start_native_stack() {
   sync_node_exporter_config
   sync_native_configs
 
+  start_native_bark_bridge
   brew services restart prometheus
   brew services restart node_exporter
   brew services restart alertmanager
@@ -449,6 +520,7 @@ start_docker_stack() {
   sync_node_exporter_config
   sync_docker_configs
 
+  stop_native_bark_bridge
   brew services restart node_exporter
   docker_compose up -d
 
@@ -457,6 +529,7 @@ start_docker_stack() {
 
 stop_native_stack() {
   require_command brew
+  stop_native_bark_bridge
   brew services stop grafana || true
   brew services stop alertmanager || true
   brew services stop prometheus || true
@@ -467,6 +540,7 @@ stop_docker_stack() {
   require_command brew
   require_command docker
   docker_compose down || true
+  stop_native_bark_bridge
   brew services stop node_exporter || true
 }
 

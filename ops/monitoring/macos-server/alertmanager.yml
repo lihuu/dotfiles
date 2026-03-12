@@ -9,19 +9,17 @@ route:
   repeat_interval: 4h
 
 receivers:
-  # 默认空接收器：未配置 Telegram / webhook 时仍能让 Alertmanager 正常启动。
+  # 默认空接收器：未配置 Bark / Telegram 时仍能让 Alertmanager 正常启动。
   - name: default-null
 
-  # Telegram webhook bridge 模板。
-  # 这里期望的是一个“把 Alertmanager webhook JSON 转换成 Telegram 消息”的桥接服务 URL。
-  - name: telegram-webhook
+  # 组合接收器模板。
+  # Bark 通过本地 bridge 接收 Alertmanager webhook，然后转成 Bark API 请求。
+  - name: ops-default
     webhook_configs:
-      - url: "${ALERT_WEBHOOK_URL_EFFECTIVE}"
+      - url: "${BARK_WEBHOOK_URL_EFFECTIVE}"
         send_resolved: true
 
-  # 备用模板：如果后续你想改成 Alertmanager 原生 Telegram 发送，
-  # 可以直接把 route.receiver 改成 telegram-direct，并填充 TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID。
-  - name: telegram-direct
+    # Telegram 走 Alertmanager 原生 telegram_configs。
     telegram_configs:
       - bot_token: "${TELEGRAM_BOT_TOKEN_EFFECTIVE}"
         chat_id: ${TELEGRAM_CHAT_ID_EFFECTIVE}

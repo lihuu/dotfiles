@@ -96,7 +96,8 @@ cp env.example .env
 
 - 如果你只想本机验证，保留默认端口即可。
 - 如果你不需要从局域网其他设备打开 Grafana，可以把 `GRAFANA_BIND_ADDRESS` 改成 `127.0.0.1`。
-- 如果你已经有 Telegram webhook bridge，填 `ALERT_WEBHOOK_URL`。
+- 如果你想启用 Bark，填 `BARK_DEVICE_KEY`。
+- 如果你想启用 Telegram，填 `TELEGRAM_BOT_TOKEN` 和 `TELEGRAM_CHAT_ID`。
 - 如果没有 Telegram 配置，先留空，Alertmanager 会使用空接收器模板启动，不会因为未配置告警通道而失败。
 - 强烈建议修改 `GRAFANA_ADMIN_PASSWORD`。
 
@@ -250,7 +251,7 @@ native 模式:
    `expr` 含义：最近 5 分钟 CPU idle 比例的平均值，用 `100 - idle%` 算总使用率，持续超过阈值触发。
 
 2. `HighMemoryUsage`
-   `expr` 含义：Linux 优先走 `MemAvailable / MemTotal`；macOS 走 `free + inactive + purgeable + speculative` 的 reclaimable 近似计算。
+   `expr` 含义：Linux 优先走 `MemAvailable / MemTotal`；macOS 走 `(active + wired + compressed) / total` 的近似占用计算。
 
 3. `DiskSpaceLow`
    `expr` 含义：同时检查 `/` 和 `/System/Volumes/Data`，取最小剩余空间百分比。这样兼容新版本 macOS 的 APFS 系统卷 / 数据卷拆分。
@@ -266,22 +267,36 @@ native 模式:
 
 - 配置模板：`alertmanager.yml`
 - 实际运行配置：`.rendered/alertmanager.yml`
+- Bark bridge 脚本：`bridges/bark_webhook_bridge.py`
 
-支持两种思路：
+支持同时发送到两条通知链路：
 
-- 优先：`ALERT_WEBHOOK_URL`
-  这要求你已经有一个把 Alertmanager webhook 转成 Telegram 消息的桥接服务。
+- Bark webhook
+  Alertmanager 先把告警 webhook 发给本地 Bark bridge，再由 bridge 调用 Bark API。
 
-- 备用：原生 `telegram_configs`
-  方案目录里已经保留了 `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` 模板变量；如果 webhook 未配置，但这两个变量已填，脚本会自动切到原生 Telegram 发送。
+- Telegram 原生 `telegram_configs`
+  目录里保留了 `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` 变量；填完后 Alertmanager 会直接发 Telegram。
 
 默认行为：
 
-- 如果配置了 `ALERT_WEBHOOK_URL`，`route.receiver` 会指向 `telegram-webhook`
-- 如果 webhook 为空，但 `TELEGRAM_BOT_TOKEN` 和 `TELEGRAM_CHAT_ID` 都已配置，`route.receiver` 会指向 `telegram-direct`
+- 如果配置了 `BARK_DEVICE_KEY`，会启用 Bark bridge webhook
+- 如果配置了 `TELEGRAM_BOT_TOKEN` 和 `TELEGRAM_CHAT_ID`，会启用 Telegram 原生通知
+- 如果两者都配置，Alertmanager 会同时发送 Bark 和 Telegram
 - 如果以上都没配，`route.receiver` 会指向空接收器 `default-null`
 - 这样能保证 Alertmanager 正常启动
 - 但不会实际发出通知，直到你补上接收器配置
+
+推荐配置：
+
+```bash
+BARK_DEVICE_KEY=你的_bark_key
+TELEGRAM_BOT_TOKEN=123456:ABCDEF
+TELEGRAM_CHAT_ID=123456789
+```
+
+Telegram 详细配置步骤见：
+
+- [docs/telegram.md](/Users/lihu/git/dotfiles/ops/monitoring/macos-server/docs/telegram.md)
 
 ### Grafana
 
@@ -470,7 +485,7 @@ curl http://192.168.1.10:9100/metrics
 
 ### 5. Alertmanager 没有发 Telegram 告警
 
-- 如果 `ALERT_WEBHOOK_URL` 为空，默认就是空接收器，不会出通知
+- 如果 `BARK_DEVICE_KEY`、`TELEGRAM_BOT_TOKEN`、`TELEGRAM_CHAT_ID` 都没填，默认就是空接收器，不会出通知
 - 如果你使用 webhook bridge，确认 bridge 本身能接收 Alertmanager 的 JSON
 - 进入 Alertmanager UI 看 `Status`、`Receivers`、`Alerts`
 
@@ -566,6 +581,7 @@ curl http://192.168.1.10:9100/metrics
 
 1. 把 `env.example` 复制成 `.env`
 2. 修改 `GRAFANA_ADMIN_PASSWORD`
-3. 如果你已有 Telegram bridge，填 `ALERT_WEBHOOK_URL`
+3. 如果你要 Bark 通知，填 `BARK_DEVICE_KEY`
+4. 如果你要 Telegram 通知，填 `TELEGRAM_BOT_TOKEN` 和 `TELEGRAM_CHAT_ID`
 4. 运行 `./install.sh && ./start.sh`
 5. 运行 `./status.sh`
