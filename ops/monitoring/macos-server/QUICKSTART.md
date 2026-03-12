@@ -16,6 +16,12 @@ GRAFANA_ADMIN_PASSWORD=改成你自己的密码
 ALERT_WEBHOOK_URL=你的 Telegram webhook bridge；没有就先留空
 ```
 
+默认绑定策略是：
+
+- `Grafana` 对局域网开放
+- `Prometheus` 和 `Alertmanager` 只绑定本机
+- 如果你只想本机访问 Grafana，把 `GRAFANA_BIND_ADDRESS=127.0.0.1`
+
 安装模式默认是：
 
 - Docker 可用时走 `docker`

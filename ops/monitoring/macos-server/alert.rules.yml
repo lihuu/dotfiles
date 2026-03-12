@@ -21,7 +21,7 @@ groups:
       # macOS 下没有 Linux 常见的 MemAvailable。
       # 这里兼容两类主机：
       # 1. Linux: 优先使用 MemAvailable / MemTotal
-      # 2. macOS: 使用 free + inactive + purgeable + speculative 近似 reclaimable
+      # 2. macOS: 使用 (active + wired + compressed) / total 近似已占用内存
       - alert: HighMemoryUsage
         expr: |
           (
@@ -37,14 +37,11 @@ groups:
             or
             (
               100 * (
-                1 - (
-                  (
-                    node_memory_free_bytes{job="node_exporter"} +
-                    node_memory_inactive_bytes{job="node_exporter"} +
-                    node_memory_purgeable_bytes{job="node_exporter"} +
-                    node_memory_speculative_bytes{job="node_exporter"}
-                  ) / node_memory_total_bytes{job="node_exporter"}
-                )
+                (
+                  node_memory_active_bytes{job="node_exporter"} +
+                  node_memory_wired_bytes{job="node_exporter"} +
+                  node_memory_compressed_bytes{job="node_exporter"}
+                ) / node_memory_total_bytes{job="node_exporter"}
               )
             )
           ) > ${MEM_ALERT_THRESHOLD}
@@ -53,7 +50,7 @@ groups:
           severity: warning
         annotations:
           summary: "内存压力持续过高"
-          description: "实例 {{ $labels.instance }} 的近似内存使用率在过去 5 分钟持续高于 ${MEM_ALERT_THRESHOLD}% 。"
+          description: "实例 {{ $labels.instance }} 的近似内存使用率在过去 5 分钟持续高于 ${MEM_ALERT_THRESHOLD}% 。macOS 分支使用 (active + wired + compressed) / total 估算。"
 
       # macOS 新版 APFS 常见两种情况：
       # 1. mountpoint="/" 是只读系统卷

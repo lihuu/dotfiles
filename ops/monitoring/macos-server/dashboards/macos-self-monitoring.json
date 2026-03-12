@@ -152,7 +152,7 @@
             "type": "prometheus",
             "uid": "prometheus-macos-self"
           },
-          "expr": "100 * (1 - ((node_memory_free_bytes{job=\"node_exporter\"} + node_memory_inactive_bytes{job=\"node_exporter\"} + node_memory_purgeable_bytes{job=\"node_exporter\"} + node_memory_speculative_bytes{job=\"node_exporter\"}) / node_memory_total_bytes{job=\"node_exporter\"}))",
+          "expr": "(100 * (1 - (node_memory_MemAvailable_bytes{job=\"node_exporter\"} / node_memory_MemTotal_bytes{job=\"node_exporter\"}))) or (100 * ((node_memory_active_bytes{job=\"node_exporter\"} + node_memory_wired_bytes{job=\"node_exporter\"} + node_memory_compressed_bytes{job=\"node_exporter\"}) / node_memory_total_bytes{job=\"node_exporter\"}))",
           "legendFormat": "{{ instance }}",
           "refId": "A"
         }
@@ -394,7 +394,7 @@
             "type": "prometheus",
             "uid": "prometheus-macos-self"
           },
-          "expr": "100 * (1 - ((node_memory_free_bytes{job=\"node_exporter\"} + node_memory_inactive_bytes{job=\"node_exporter\"} + node_memory_purgeable_bytes{job=\"node_exporter\"} + node_memory_speculative_bytes{job=\"node_exporter\"}) / node_memory_total_bytes{job=\"node_exporter\"}))",
+          "expr": "(100 * (1 - (node_memory_MemAvailable_bytes{job=\"node_exporter\"} / node_memory_MemTotal_bytes{job=\"node_exporter\"}))) or (100 * ((node_memory_active_bytes{job=\"node_exporter\"} + node_memory_wired_bytes{job=\"node_exporter\"} + node_memory_compressed_bytes{job=\"node_exporter\"}) / node_memory_total_bytes{job=\"node_exporter\"}))",
           "legendFormat": "{{ instance }}",
           "refId": "A"
         }

@@ -53,6 +53,10 @@ ops/monitoring/macos-server/
 - 在 Docker 模式下，Prometheus 通过 `host.docker.internal:9100` 抓这台 Mac。
 - 在 native 模式下，Prometheus 直接抓 `127.0.0.1:9100`。
 - 局域网其他设备只要暴露自己的 `node_exporter:9100`，就能被中央 Prometheus 统一抓取。
+- 默认最小暴露面策略是：
+  - `Grafana` 对局域网开放，方便从其他设备查看仪表盘
+  - `Prometheus` 和 `Alertmanager` 仅绑定 `127.0.0.1`
+  - 如需调整，可以在 `.env` 里分别修改 `GRAFANA_BIND_ADDRESS`、`PROMETHEUS_BIND_ADDRESS`、`ALERTMANAGER_BIND_ADDRESS`
 - 目标列表源文件通过 `targets/node_exporters.yml` 管理，后续加机器只需要改这个文件并重启栈。
 - `targets/node_exporters.yml` 的第一条本机 target 是模板占位符，渲染时会自动替换成：
   - Docker 模式: `host.docker.internal:9100`
@@ -61,11 +65,18 @@ ops/monitoring/macos-server/
 
 ## 端口规划
 
-- `9090`: Prometheus Web UI、Targets、Rules、API
-- `9100`: 宿主机 node_exporter 指标暴露端口
-- `9093`: Alertmanager Web UI、Silences、Receivers、API
-- `3000`: Grafana Web UI 与 API
+- `9090`: Prometheus Web UI、Targets、Rules、API，默认仅本机可访问
+- `9100`: 宿主机 node_exporter 指标暴露端口，默认对局域网开放以兼容 Docker 抓取宿主机
+- `9093`: Alertmanager Web UI、Silences、Receivers、API，默认仅本机可访问
+- `3000`: Grafana Web UI 与 API，默认对局域网开放
 - `9094`: Alertmanager cluster 端口，本方案显式关闭
+
+默认绑定地址：
+
+- `PROMETHEUS_BIND_ADDRESS=127.0.0.1`
+- `ALERTMANAGER_BIND_ADDRESS=127.0.0.1`
+- `GRAFANA_BIND_ADDRESS=0.0.0.0`
+- `NODE_EXPORTER_LISTEN_ADDRESS=0.0.0.0`
 
 ## 首次部署步骤
 
@@ -84,6 +95,7 @@ cp env.example .env
 3. 编辑 `.env`：
 
 - 如果你只想本机验证，保留默认端口即可。
+- 如果你不需要从局域网其他设备打开 Grafana，可以把 `GRAFANA_BIND_ADDRESS` 改成 `127.0.0.1`。
 - 如果你已经有 Telegram webhook bridge，填 `ALERT_WEBHOOK_URL`。
 - 如果没有 Telegram 配置，先留空，Alertmanager 会使用空接收器模板启动，不会因为未配置告警通道而失败。
 - 强烈建议修改 `GRAFANA_ADMIN_PASSWORD`。

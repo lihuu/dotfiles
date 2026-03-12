@@ -15,7 +15,7 @@ services:
       - ./.rendered/docker/node_exporters.yml:/etc/prometheus/file_sd/node_exporters.yml:ro
       - ./data/prometheus:/prometheus
     ports:
-      - ${STACK_BIND_ADDRESS}:${PROMETHEUS_PORT}:9090
+      - ${PROMETHEUS_BIND_ADDRESS}:${PROMETHEUS_PORT}:9090
     depends_on:
       - alertmanager
     logging:
@@ -36,7 +36,7 @@ services:
       - ./.rendered/docker/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
       - ./data/alertmanager:/alertmanager
     ports:
-      - ${STACK_BIND_ADDRESS}:${ALERTMANAGER_PORT}:9093
+      - ${ALERTMANAGER_BIND_ADDRESS}:${ALERTMANAGER_PORT}:9093
     logging:
       driver: json-file
       options:
@@ -59,7 +59,7 @@ services:
       - ./grafana-provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
       - ./dashboards:/var/lib/grafana/dashboards:ro
     ports:
-      - ${STACK_BIND_ADDRESS}:${GRAFANA_PORT}:3000
+      - ${GRAFANA_BIND_ADDRESS}:${GRAFANA_PORT}:3000
     depends_on:
       - prometheus
     logging:

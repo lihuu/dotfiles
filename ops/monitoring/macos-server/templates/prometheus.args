@@ -2,5 +2,5 @@
 --storage.tsdb.path=${PROMETHEUS_STORAGE_PATH}
 --storage.tsdb.retention.time=${PROMETHEUS_RETENTION_TIME}
 --storage.tsdb.retention.size=${PROMETHEUS_RETENTION_SIZE}
---web.listen-address=${STACK_BIND_ADDRESS}:${PROMETHEUS_PORT}
+--web.listen-address=${PROMETHEUS_BIND_ADDRESS}:${PROMETHEUS_PORT}
 --web.enable-lifecycle
