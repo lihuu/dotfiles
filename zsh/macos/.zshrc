@@ -144,9 +144,9 @@ export IDEA_HOME="/Applications/IntelliJ IDEA.app/Contents/MacOS"
 export HOMEBREW_NO_AUTO_UPDATE=true
 export LDFLAGS="-L/usr/local/opt/openssl/lib"
 export CPPFLAGS="-I/usr/local/opt/openssl/include"
-export PATH=$PATH:$MYSQL_HOME/bin:$GOBIN:$GOROOT/bin:$DOOM_EMACS_HOME/bin:$EMACS_HOME:$IDEA_HOME:$HOME/.m2:/opt/homebrew/anaconda3/bin:/usr/local/opt/openssl/bin:/opt/homebrew/bin:/opt/homebrew/sbin
+export PATH=$MYSQL_HOME/bin:$GOBIN:$GOROOT/bin:$DOOM_EMACS_HOME/bin:$EMACS_HOME:$IDEA_HOME:$HOME/.m2:/opt/homebrew/anaconda3/bin:/usr/local/opt/openssl/bin:/opt/homebrew/bin:/opt/homebrew/sbin:$PATH
 export LANG=zh_CN.UTF-8
-export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
+#export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
 #export http_proxy=http://127.0.0.1:8001
 #export https_proxy=http://127.0.0.1:8001
 #export NPM_CONFIG_REGISTRY=https://registry.npm.taobao.org
@@ -286,5 +286,12 @@ export PATH="$PATH:$HOME/.lmstudio/bin:$HOME/Library/Android/sdk/platform-tools"
 
 # Added by LM Studio CLI (lms)
 export PATH="$PATH:$HOME/.lmstudio/bin"
+# End of LM Studio CLI section
+
+export NODE_OPTIONS='--no-deprecation'
+
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/lihu/.lmstudio/bin"
 # End of LM Studio CLI section
 
