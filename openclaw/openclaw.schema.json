@@ -2,9 +2,6 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
-    "$schema": {
-      "type": "string"
-    },
     "meta": {
       "type": "object",
       "properties": {
@@ -468,6 +465,10 @@
                 "anyOf": [
                   {
                     "type": "string",
+                    "const": "openclaw"
+                  },
+                  {
+                    "type": "string",
                     "const": "clawd"
                   },
                   {
@@ -495,6 +496,20 @@
           "items": {
             "type": "string"
           }
+        },
+        "relayBindHost": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "ipv4",
+              "pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$"
+            },
+            {
+              "type": "string",
+              "format": "ipv6",
+              "pattern": "^(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))$"
+            }
+          ]
         }
       },
       "additionalProperties": false
@@ -1006,8 +1021,7 @@
                             "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                           },
                           "id": {
-                            "type": "string",
-                            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                            "type": "string"
                           }
                         },
                         "required": [
@@ -1126,8 +1140,7 @@
                               "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                             },
                             "id": {
-                              "type": "string",
-                              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                              "type": "string"
                             }
                           },
                           "required": [
@@ -1283,6 +1296,9 @@
                           "type": "boolean"
                         },
                         "requiresMistralToolIds": {
+                          "type": "boolean"
+                        },
+                        "requiresOpenAiAnthropicToolPayload": {
                           "type": "boolean"
                         }
                       },
@@ -1830,6 +1846,39 @@
                     "type": "string"
                   }
                 },
+                "multimodal": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean"
+                    },
+                    "modalities": {
+                      "type": "array",
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "const": "image"
+                          },
+                          {
+                            "type": "string",
+                            "const": "audio"
+                          },
+                          {
+                            "type": "string",
+                            "const": "all"
+                          }
+                        ]
+                      }
+                    },
+                    "maxFileBytes": {
+                      "type": "integer",
+                      "exclusiveMinimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "additionalProperties": false
+                },
                 "experimental": {
                   "type": "object",
                   "properties": {
@@ -1937,8 +1986,7 @@
                                   "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                                 },
                                 "id": {
-                                  "type": "string",
-                                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                                  "type": "string"
                                 }
                               },
                               "required": [
@@ -2025,6 +2073,11 @@
                 },
                 "model": {
                   "type": "string"
+                },
+                "outputDimensionality": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
                 },
                 "local": {
                   "type": "object",
@@ -2375,6 +2428,9 @@
                   "items": {
                     "type": "string"
                   }
+                },
+                "model": {
+                  "type": "string"
                 },
                 "memoryFlush": {
                   "type": "object",
@@ -3150,6 +3206,39 @@
                       "type": "string"
                     }
                   },
+                  "multimodal": {
+                    "type": "object",
+                    "properties": {
+                      "enabled": {
+                        "type": "boolean"
+                      },
+                      "modalities": {
+                        "type": "array",
+                        "items": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "const": "image"
+                            },
+                            {
+                              "type": "string",
+                              "const": "audio"
+                            },
+                            {
+                              "type": "string",
+                              "const": "all"
+                            }
+                          ]
+                        }
+                      },
+                      "maxFileBytes": {
+                        "type": "integer",
+                        "exclusiveMinimum": 0,
+                        "maximum": 9007199254740991
+                      }
+                    },
+                    "additionalProperties": false
+                  },
                   "experimental": {
                     "type": "object",
                     "properties": {
@@ -3257,8 +3346,7 @@
                                     "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                                   },
                                   "id": {
-                                    "type": "string",
-                                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                                    "type": "string"
                                   }
                                 },
                                 "required": [
@@ -3345,6 +3433,11 @@
                   },
                   "model": {
                     "type": "string"
+                  },
+                  "outputDimensionality": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
                   },
                   "local": {
                     "type": "object",
@@ -4568,8 +4661,7 @@
                               "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                             },
                             "id": {
-                              "type": "string",
-                              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                              "type": "string"
                             }
                           },
                           "required": [
@@ -4664,8 +4756,7 @@
                                   "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                                 },
                                 "id": {
-                                  "type": "string",
-                                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                                  "type": "string"
                                 }
                               },
                               "required": [
@@ -4755,8 +4846,7 @@
                                   "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                                 },
                                 "id": {
-                                  "type": "string",
-                                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                                  "type": "string"
                                 }
                               },
                               "required": [
@@ -4846,8 +4936,7 @@
                                   "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                                 },
                                 "id": {
-                                  "type": "string",
-                                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                                  "type": "string"
                                 }
                               },
                               "required": [
@@ -4934,8 +5023,7 @@
                                   "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                                 },
                                 "id": {
-                                  "type": "string",
-                                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                                  "type": "string"
                                 }
                               },
                               "required": [
@@ -4954,6 +5042,24 @@
                     },
                     "model": {
                       "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "brave": {
+                  "type": "object",
+                  "properties": {
+                    "mode": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "const": "web"
+                        },
+                        {
+                          "type": "string",
+                          "const": "llm-context"
+                        }
+                      ]
                     }
                   },
                   "additionalProperties": false
@@ -7585,8 +7691,7 @@
                               "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                             },
                             "id": {
-                              "type": "string",
-                              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                              "type": "string"
                             }
                           },
                           "required": [
@@ -7724,8 +7829,7 @@
                               "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                             },
                             "id": {
-                              "type": "string",
-                              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                              "type": "string"
                             }
                           },
                           "required": [
@@ -7746,6 +7850,14 @@
                   "type": "string"
                 },
                 "voice": {
+                  "type": "string"
+                },
+                "speed": {
+                  "type": "number",
+                  "minimum": 0.25,
+                  "maximum": 4
+                },
+                "instructions": {
                   "type": "string"
                 }
               },
@@ -8570,8 +8682,7 @@
                       "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                     },
                     "id": {
-                      "type": "string",
-                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                      "type": "string"
                     }
                   },
                   "required": [
@@ -9183,6 +9294,48 @@
                 }
               ]
             },
+            "execApprovals": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "approvers": {
+                  "type": "array",
+                  "items": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      }
+                    ]
+                  }
+                },
+                "agentFilter": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "sessionFilter": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "target": {
+                  "type": "string",
+                  "enum": [
+                    "dm",
+                    "channel",
+                    "both"
+                  ]
+                }
+              },
+              "additionalProperties": false
+            },
             "markdown": {
               "type": "object",
               "properties": {
@@ -9320,8 +9473,7 @@
                           "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                         },
                         "id": {
-                          "type": "string",
-                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                          "type": "string"
                         }
                       },
                       "required": [
@@ -9957,8 +10109,7 @@
                           "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                         },
                         "id": {
-                          "type": "string",
-                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                          "type": "string"
                         }
                       },
                       "required": [
@@ -10005,7 +10156,13 @@
                 "deleteMessage": {
                   "type": "boolean"
                 },
+                "editMessage": {
+                  "type": "boolean"
+                },
                 "sticker": {
+                  "type": "boolean"
+                },
+                "createForumTopic": {
                   "type": "boolean"
                 }
               },
@@ -10111,6 +10268,48 @@
                         "additionalProperties": false
                       }
                     ]
+                  },
+                  "execApprovals": {
+                    "type": "object",
+                    "properties": {
+                      "enabled": {
+                        "type": "boolean"
+                      },
+                      "approvers": {
+                        "type": "array",
+                        "items": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "number"
+                            }
+                          ]
+                        }
+                      },
+                      "agentFilter": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "sessionFilter": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "target": {
+                        "type": "string",
+                        "enum": [
+                          "dm",
+                          "channel",
+                          "both"
+                        ]
+                      }
+                    },
+                    "additionalProperties": false
                   },
                   "markdown": {
                     "type": "object",
@@ -10249,8 +10448,7 @@
                                 "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                               },
                               "id": {
-                                "type": "string",
-                                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                                "type": "string"
                               }
                             },
                             "required": [
@@ -10886,8 +11084,7 @@
                                 "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                               },
                               "id": {
-                                "type": "string",
-                                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                                "type": "string"
                               }
                             },
                             "required": [
@@ -10934,7 +11131,13 @@
                       "deleteMessage": {
                         "type": "boolean"
                       },
+                      "editMessage": {
+                        "type": "boolean"
+                      },
                       "sticker": {
+                        "type": "boolean"
+                      },
+                      "createForumTopic": {
                         "type": "boolean"
                       }
                     },
@@ -11147,8 +11350,7 @@
                           "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                         },
                         "id": {
-                          "type": "string",
-                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                          "type": "string"
                         }
                       },
                       "required": [
@@ -11713,6 +11915,35 @@
                         },
                         "autoThread": {
                           "type": "boolean"
+                        },
+                        "autoArchiveDuration": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "60",
+                                "1440",
+                                "4320",
+                                "10080"
+                              ]
+                            },
+                            {
+                              "type": "number",
+                              "const": 60
+                            },
+                            {
+                              "type": "number",
+                              "const": 1440
+                            },
+                            {
+                              "type": "number",
+                              "const": 4320
+                            },
+                            {
+                              "type": "number",
+                              "const": 10080
+                            }
+                          ]
                         }
                       },
                       "additionalProperties": false
@@ -12016,8 +12247,7 @@
                                       "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                                     },
                                     "id": {
-                                      "type": "string",
-                                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                                      "type": "string"
                                     }
                                   },
                                   "required": [
@@ -12155,8 +12385,7 @@
                                       "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                                     },
                                     "id": {
-                                      "type": "string",
-                                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                                      "type": "string"
                                     }
                                   },
                                   "required": [
@@ -12177,6 +12406,14 @@
                           "type": "string"
                         },
                         "voice": {
+                          "type": "string"
+                        },
+                        "speed": {
+                          "type": "number",
+                          "minimum": 0.25,
+                          "maximum": 4
+                        },
+                        "instructions": {
                           "type": "string"
                         }
                       },
@@ -12309,8 +12546,7 @@
                               "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                             },
                             "id": {
-                              "type": "string",
-                              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                              "type": "string"
                             }
                           },
                           "required": [
@@ -12577,8 +12813,7 @@
                                 "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                               },
                               "id": {
-                                "type": "string",
-                                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                                "type": "string"
                               }
                             },
                             "required": [
@@ -13143,6 +13378,35 @@
                               },
                               "autoThread": {
                                 "type": "boolean"
+                              },
+                              "autoArchiveDuration": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "enum": [
+                                      "60",
+                                      "1440",
+                                      "4320",
+                                      "10080"
+                                    ]
+                                  },
+                                  {
+                                    "type": "number",
+                                    "const": 60
+                                  },
+                                  {
+                                    "type": "number",
+                                    "const": 1440
+                                  },
+                                  {
+                                    "type": "number",
+                                    "const": 4320
+                                  },
+                                  {
+                                    "type": "number",
+                                    "const": 10080
+                                  }
+                                ]
                               }
                             },
                             "additionalProperties": false
@@ -13446,8 +13710,7 @@
                                             "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                                           },
                                           "id": {
-                                            "type": "string",
-                                            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                                            "type": "string"
                                           }
                                         },
                                         "required": [
@@ -13585,8 +13848,7 @@
                                             "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                                           },
                                           "id": {
-                                            "type": "string",
-                                            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                                            "type": "string"
                                           }
                                         },
                                         "required": [
@@ -13607,6 +13869,14 @@
                                 "type": "string"
                               },
                               "voice": {
+                                "type": "string"
+                              },
+                              "speed": {
+                                "type": "number",
+                                "minimum": 0.25,
+                                "maximum": 4
+                              },
+                              "instructions": {
                                 "type": "string"
                               }
                             },
@@ -13739,8 +14009,7 @@
                                     "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                                   },
                                   "id": {
-                                    "type": "string",
-                                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                                    "type": "string"
                                   }
                                 },
                                 "required": [
@@ -13893,6 +14162,336 @@
             "groupPolicy"
           ],
           "additionalProperties": false
+        },
+        "feishu": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "defaultAccount": {
+              "type": "string"
+            },
+            "appId": {
+              "type": "string"
+            },
+            "appSecret": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "source",
+                    "provider",
+                    "id"
+                  ],
+                  "properties": {
+                    "source": {
+                      "type": "string",
+                      "enum": [
+                        "env",
+                        "file",
+                        "exec"
+                      ]
+                    },
+                    "provider": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "id": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              ]
+            },
+            "encryptKey": {
+              "type": "string"
+            },
+            "verificationToken": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "source",
+                    "provider",
+                    "id"
+                  ],
+                  "properties": {
+                    "source": {
+                      "type": "string",
+                      "enum": [
+                        "env",
+                        "file",
+                        "exec"
+                      ]
+                    },
+                    "provider": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "id": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              ]
+            },
+            "domain": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "feishu",
+                    "lark"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "format": "uri",
+                  "pattern": "^https://"
+                }
+              ]
+            },
+            "connectionMode": {
+              "type": "string",
+              "enum": [
+                "websocket",
+                "webhook"
+              ]
+            },
+            "webhookPath": {
+              "type": "string"
+            },
+            "webhookHost": {
+              "type": "string"
+            },
+            "webhookPort": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "dmPolicy": {
+              "type": "string",
+              "enum": [
+                "open",
+                "pairing",
+                "allowlist"
+              ]
+            },
+            "allowFrom": {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              }
+            },
+            "groupPolicy": {
+              "type": "string",
+              "enum": [
+                "open",
+                "allowlist",
+                "disabled"
+              ]
+            },
+            "groupAllowFrom": {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              }
+            },
+            "requireMention": {
+              "type": "boolean"
+            },
+            "groupSessionScope": {
+              "type": "string",
+              "enum": [
+                "group",
+                "group_sender",
+                "group_topic",
+                "group_topic_sender"
+              ]
+            },
+            "topicSessionMode": {
+              "type": "string",
+              "enum": [
+                "disabled",
+                "enabled"
+              ]
+            },
+            "replyInThread": {
+              "type": "string",
+              "enum": [
+                "disabled",
+                "enabled"
+              ]
+            },
+            "historyLimit": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "dmHistoryLimit": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "textChunkLimit": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "chunkMode": {
+              "type": "string",
+              "enum": [
+                "length",
+                "newline"
+              ]
+            },
+            "mediaMaxMb": {
+              "type": "number",
+              "minimum": 0
+            },
+            "renderMode": {
+              "type": "string",
+              "enum": [
+                "auto",
+                "raw",
+                "card"
+              ]
+            },
+            "accounts": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "enabled": {
+                    "type": "boolean"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "appId": {
+                    "type": "string"
+                  },
+                  "appSecret": {
+                    "oneOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "source",
+                          "provider",
+                          "id"
+                        ],
+                        "properties": {
+                          "source": {
+                            "type": "string",
+                            "enum": [
+                              "env",
+                              "file",
+                              "exec"
+                            ]
+                          },
+                          "provider": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "id": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "encryptKey": {
+                    "type": "string"
+                  },
+                  "verificationToken": {
+                    "oneOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "source",
+                          "provider",
+                          "id"
+                        ],
+                        "properties": {
+                          "source": {
+                            "type": "string",
+                            "enum": [
+                              "env",
+                              "file",
+                              "exec"
+                            ]
+                          },
+                          "provider": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "id": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "domain": {
+                    "type": "string",
+                    "enum": [
+                      "feishu",
+                      "lark"
+                    ]
+                  },
+                  "connectionMode": {
+                    "type": "string",
+                    "enum": [
+                      "websocket",
+                      "webhook"
+                    ]
+                  },
+                  "webhookHost": {
+                    "type": "string"
+                  },
+                  "webhookPath": {
+                    "type": "string"
+                  },
+                  "webhookPort": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              }
+            }
+          }
         }
       },
       "additionalProperties": true,
@@ -14043,8 +14642,7 @@
                             "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                           },
                           "id": {
-                            "type": "string",
-                            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                            "type": "string"
                           }
                         },
                         "required": [
@@ -14144,8 +14742,7 @@
                       "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                     },
                     "id": {
-                      "type": "string",
-                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                      "type": "string"
                     }
                   },
                   "required": [
@@ -14161,6 +14758,11 @@
         },
         "interruptOnSpeech": {
           "type": "boolean"
+        },
+        "silenceTimeoutMs": {
+          "type": "integer",
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991
         }
       },
       "additionalProperties": false
@@ -14329,8 +14931,7 @@
                           "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                         },
                         "id": {
-                          "type": "string",
-                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                          "type": "string"
                         }
                       },
                       "required": [
@@ -14408,8 +15009,7 @@
                           "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                         },
                         "id": {
-                          "type": "string",
-                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                          "type": "string"
                         }
                       },
                       "required": [
@@ -14611,8 +15211,7 @@
                           "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                         },
                         "id": {
-                          "type": "string",
-                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                          "type": "string"
                         }
                       },
                       "required": [
@@ -14690,8 +15289,7 @@
                           "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                         },
                         "id": {
-                          "type": "string",
-                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                          "type": "string"
                         }
                       },
                       "required": [
@@ -15441,8 +16039,7 @@
                             "pattern": "^[a-z][a-z0-9_-]{0,63}$"
                           },
                           "id": {
-                            "type": "string",
-                            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                            "type": "string"
                           }
                         },
                         "required": [
@@ -15552,6 +16149,32 @@
             "additionalProperties": false
           },
           "properties": {
+            "feishu": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "hooks": {
+                  "type": "object",
+                  "properties": {
+                    "allowPromptInjection": {
+                      "type": "boolean"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "config": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "additionalProperties": false,
+                  "properties": {}
+                }
+              },
+              "additionalProperties": false
+            },
             "acpx": {
               "type": "object",
               "properties": {
@@ -15919,32 +16542,6 @@
               "additionalProperties": false
             },
             "discord": {
-              "type": "object",
-              "properties": {
-                "enabled": {
-                  "type": "boolean"
-                },
-                "hooks": {
-                  "type": "object",
-                  "properties": {
-                    "allowPromptInjection": {
-                      "type": "boolean"
-                    }
-                  },
-                  "additionalProperties": false
-                },
-                "config": {
-                  "type": "object",
-                  "propertyNames": {
-                    "type": "string"
-                  },
-                  "additionalProperties": false,
-                  "properties": {}
-                }
-              },
-              "additionalProperties": false
-            },
-            "feishu": {
               "type": "object",
               "properties": {
                 "enabled": {
@@ -17141,10 +17738,21 @@
                             "apiKey": {
                               "type": "string"
                             },
+                            "baseUrl": {
+                              "type": "string"
+                            },
                             "model": {
                               "type": "string"
                             },
                             "voice": {
+                              "type": "string"
+                            },
+                            "speed": {
+                              "type": "number",
+                              "minimum": 0.25,
+                              "maximum": 4
+                            },
+                            "instructions": {
                               "type": "string"
                             }
                           }
@@ -17272,6 +17880,32 @@
               "additionalProperties": false
             },
             "zalouser": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "hooks": {
+                  "type": "object",
+                  "properties": {
+                    "allowPromptInjection": {
+                      "type": "boolean"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "config": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "additionalProperties": false,
+                  "properties": {}
+                }
+              },
+              "additionalProperties": false
+            },
+            "qqbot": {
               "type": "object",
               "properties": {
                 "enabled": {
