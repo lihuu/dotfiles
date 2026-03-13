@@ -20,3 +20,11 @@
 #     host_alias: my-nas
 #     role: nas
 #     site: lan
+
+# vm-ubuntu:
+- targets:
+    - 192.168.2.21:9100
+  labels:
+    host_alias: li-ubuntu-vm-server
+    role: linux-server
+    site: lan
