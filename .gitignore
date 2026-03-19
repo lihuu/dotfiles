@@ -32,6 +32,9 @@ src/main/resources/static/node_modules/
 ### Visual Studio Code ###
 .vscode/
 
+### AI Agents ###
+.claude/
+
 ### Frontend files
 **/node_modules/
 
