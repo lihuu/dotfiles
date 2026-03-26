@@ -46,3 +46,5 @@ src/main/resources/static/node_modules/
 ### ingore submodules
 power-shell-config/
 power-shell-config
+nodejs/html2pptx/
+CLAUDE.md

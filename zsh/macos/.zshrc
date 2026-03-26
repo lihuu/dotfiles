@@ -144,7 +144,7 @@ export IDEA_HOME="/Applications/IntelliJ IDEA.app/Contents/MacOS"
 export HOMEBREW_NO_AUTO_UPDATE=true
 export LDFLAGS="-L/usr/local/opt/openssl/lib"
 export CPPFLAGS="-I/usr/local/opt/openssl/include"
-export PATH=$MYSQL_HOME/bin:$GOBIN:$GOROOT/bin:$DOOM_EMACS_HOME/bin:$EMACS_HOME:$IDEA_HOME:$HOME/.m2:/opt/homebrew/anaconda3/bin:/usr/local/opt/openssl/bin:/opt/homebrew/bin:/opt/homebrew/sbin:$PATH
+export PATH=$MYSQL_HOME/bin:$GOBIN:$GOROOT/bin:$DOOM_EMACS_HOME/bin:$EMACS_HOME:$IDEA_HOME:$HOME/.m2:/usr/local/opt/openssl/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/opt/homebrew/anaconda3/bin:$PATH
 export LANG=zh_CN.UTF-8
 #export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
 #export http_proxy=http://127.0.0.1:8001
@@ -196,11 +196,9 @@ listening() {
     fi
 }
 
-# Added by LM Studio CLI (lms)
-export PATH="$PATH:$HOME/.lmstudio/bin"
 
 # Created by `pipx` on 2025-01-16 06:53:03
-export PATH="$HOME/.volta/bin:$PATH:$HOME/.local/bin"
+export PATH="$HOME/.volta/bin:$PATH"
 eval "$(fzf --zsh)"
 
 export VOLTA_FEATURE_PNPM=1
@@ -213,16 +211,6 @@ export GOROOT_BOOTSTRAP=/opt/homebrew/Cellar/go/1.24.4/libexec
 
 export PATH="$PATH:$HOME/Documents/scripts"
 
-# Added by LM Studio CLI (lms)
-export PATH="$PATH:$HOME/.lmstudio/bin"
-# End of LM Studio CLI section
-
-
-# Added by LM Studio CLI (lms)
-export PATH="$PATH:$HOME/.lmstudio/bin"
-# End of LM Studio CLI section
-
-
 # Added by Antigravity
 export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
 
@@ -231,7 +219,7 @@ export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
+export PATH="$HOME/.local/bin:$BUN_INSTALL/bin:$PATH"
 
 
 # === Move to MyFiles (mvm) ===
@@ -281,7 +269,7 @@ function mvm() {
     mv "$file" "$target_dir/" && echo "✅ 完成！"
 }
 
-export PATH="$PATH:$HOME/.lmstudio/bin:$HOME/Library/Android/sdk/platform-tools"
+export PATH="$PATH:$HOME/Library/Android/sdk/platform-tools"
 
 
 # Added by LM Studio CLI (lms)
@@ -291,7 +279,8 @@ export PATH="$PATH:$HOME/.lmstudio/bin"
 export NODE_OPTIONS='--no-deprecation'
 
 
-# Added by LM Studio CLI (lms)
-export PATH="$PATH:/Users/lihu/.lmstudio/bin"
-# End of LM Studio CLI section
+typeset -U path PATH
+path=($path)
 
+# opencode
+export PATH=/Users/lihu/.opencode/bin:$PATH
