@@ -29,15 +29,7 @@
       "shouldSwitchBack": false
     },
     {
-      "apps": [
-        "com.tw93.MiaoYan",
-        "com.tencent.xinWeChat",
-        "md.obsidian",
-        "com.bot.pc.doubao",
-        "abnerworks.Typora",
-        "com.openai.chat",
-        "ai.elementlabs.lmstudio"
-      ],
+      "apps": [],
       "shouldSwitchBack": true,
       "method": "Squirrel - Simplified",
       "layout": "ABC"
@@ -49,7 +41,15 @@
       "layout": "Shuangpin – Simplified"
     },
     {
-      "apps": [],
+      "apps": [
+        "com.tw93.MiaoYan",
+        "com.tencent.xinWeChat",
+        "md.obsidian",
+        "com.bot.pc.doubao",
+        "abnerworks.Typora",
+        "com.openai.chat",
+        "ai.elementlabs.lmstudio"
+      ],
       "shouldSwitchBack": true,
       "method": "Pinyin – Simplified",
       "layout": "Pinyin – Simplified"

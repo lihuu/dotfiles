@@ -1,6 +1,22 @@
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
+# --- PATH 变量管理系统 ---
+# 定义一个具备唯一性的数组用于存放路径项
+typeset -gU _path_items
+_path_items=()
+
+# 路径添加函数：支持多个参数，会自动检查目录是否存在并扩展 ~
+function add_to_path() {
+    for p in "$@"; do
+        # 扩展 ~ 路径
+        p="${p/#\~/$HOME}"
+        if [[ -d "$p" ]]; then
+            _path_items+=("$p")
+        fi
+    done
+}
+
 # Path to your oh-my-zsh installation.
 export ZSH=$HOME/.oh-my-zsh
 
@@ -66,6 +82,8 @@ plugins=(
   git branch fzf gh kubectl spring docker docker-compose brew zsh-github-copilot
 )
 
+# opencli completion
+fpath=(/Users/lihu/.zsh/completions $fpath)
 source $ZSH/oh-my-zsh.sh
 
 if [ -f ~/.zshrc.private ]; then
@@ -120,8 +138,16 @@ alias mcp-get="npx @michaellatman/mcp-get"
 #alias code="/Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code"
 
 code () { VSCODE_CWD="$PWD" open -n -b "com.microsoft.VSCode" --args $* ;}
+export VOLTA_FEATURE_PNPM=1
+export GOROOT_BOOTSTRAP=/opt/homebrew/Cellar/go/1.24.4/libexec
 export DOOM_EMACS_HOME=$HOME/.config/emacs
 export EMACS_HOME=/Applications/Emacs.app/Contents/MacOS
+
+
+#sccache 配置
+export RUSTC_WRAPPER=sccache
+# 可选：限制缓存大小为 20GB（默认 10GB）
+export SCCACHE_CACHE_SIZE="20G"
 
 #export MYSQL_HOME=/usr/local/mysql-8.0.18-macos10.14-x86_64
 
@@ -144,12 +170,34 @@ export IDEA_HOME="/Applications/IntelliJ IDEA.app/Contents/MacOS"
 export HOMEBREW_NO_AUTO_UPDATE=true
 export LDFLAGS="-L/usr/local/opt/openssl/lib"
 export CPPFLAGS="-I/usr/local/opt/openssl/include"
-export PATH=$MYSQL_HOME/bin:$GOBIN:$GOROOT/bin:$DOOM_EMACS_HOME/bin:$EMACS_HOME:$IDEA_HOME:$HOME/.m2:/usr/local/opt/openssl/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/opt/homebrew/anaconda3/bin:$PATH
+export BUN_INSTALL="$HOME/.bun"
 export LANG=zh_CN.UTF-8
+export NODE_OPTIONS='--no-deprecation'
 #export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
 #export http_proxy=http://127.0.0.1:8001
 #export https_proxy=http://127.0.0.1:8001
 #export NPM_CONFIG_REGISTRY=https://registry.npm.taobao.org
+
+add_to_path "$HOME/.local/bin"
+add_to_path "$BUN_INSTALL/bin"
+add_to_path "$MYSQL_HOME/bin"
+add_to_path "$GOBIN"
+add_to_path "$GOROOT/bin"
+add_to_path "$DOOM_EMACS_HOME/bin"
+add_to_path "$EMACS_HOME"
+add_to_path "$IDEA_HOME"
+add_to_path "$HOME/.m2"
+add_to_path "/usr/local/opt/openssl/bin"
+add_to_path "$HOME/.volta/bin"
+add_to_path "/opt/homebrew/bin"
+add_to_path "/opt/homebrew/sbin"
+add_to_path "/opt/homebrew/anaconda3/bin"
+add_to_path "$HOME/.lmstudio/bin"
+add_to_path "$HOME/Documents/scripts"
+add_to_path "$HOME/.antigravity/antigravity/bin"
+add_to_path "$HOME/Library/Android/sdk/platform-tools"
+add_to_path "$HOME/.opencode/bin"
+add_to_path "/opt/homebrew/Cellar/node/25.8.2/bin"
 #source ~/.fzf/key-bindings.zsh
 
 gitlog() {
@@ -166,12 +214,6 @@ FZF-EOF"
 eval $(thefuck --alias)
 setopt nonomatch
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-#export PATH="/opt/homebrew/opt/node@20/bin:$PATH"
-
-# >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
 __conda_setup="$('/opt/homebrew/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
@@ -180,7 +222,7 @@ else
     if [ -f "/opt/homebrew/anaconda3/etc/profile.d/conda.sh" ]; then
         . "/opt/homebrew/anaconda3/etc/profile.d/conda.sh"
     else
-        export PATH="/opt/homebrew/anaconda3/bin:$PATH"
+        add_to_path "/opt/homebrew/anaconda3/bin"
     fi
 fi
 unset __conda_setup
@@ -198,28 +240,13 @@ listening() {
 
 
 # Created by `pipx` on 2025-01-16 06:53:03
-export PATH="$HOME/.volta/bin:$PATH"
 eval "$(fzf --zsh)"
 
-export VOLTA_FEATURE_PNPM=1
-
-# Added by LM Studio CLI (lms)
-export PATH="$PATH:$HOME/.lmstudio/bin"
-# End of LM Studio CLI section
-
-export GOROOT_BOOTSTRAP=/opt/homebrew/Cellar/go/1.24.4/libexec
-
-export PATH="$PATH:$HOME/Documents/scripts"
-
-# Added by Antigravity
-export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
 
 # bun completions
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 # bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$HOME/.local/bin:$BUN_INSTALL/bin:$PATH"
 
 
 # === Move to MyFiles (mvm) ===
@@ -269,18 +296,21 @@ function mvm() {
     mv "$file" "$target_dir/" && echo "✅ 完成！"
 }
 
-export PATH="$PATH:$HOME/Library/Android/sdk/platform-tools"
 
+export ZSH_AI_PROVIDER="ollama"
+export ZSH_AI_OLLAMA_MODEL="qwen3:1.7b"
+source $(brew --prefix)/share/zsh-ai/zsh-ai.plugin.zsh
 
-# Added by LM Studio CLI (lms)
-export PATH="$PATH:$HOME/.lmstudio/bin"
-# End of LM Studio CLI section
-
-export NODE_OPTIONS='--no-deprecation'
-
-
+# === PATH 变量统一组装 ===
+# 启用唯一性约束，确保没有重复项
 typeset -U path PATH
-path=($path)
 
-# opencode
-export PATH=/Users/lihu/.opencode/bin:$PATH
+# 将我们收集的路径项添加到现有 path 数组的最前面
+# zsh 会自动处理 path 数组与 PATH 字符串之间的同步
+path=(${_path_items[@]} $path)
+
+# 打印结果（可选，用于验证，正式版可注释掉）
+# echo "PATH 组装完成"
+
+# 直接退出配置脚本，确保后续没有程序能再次混乱地修改 PATH
+return
