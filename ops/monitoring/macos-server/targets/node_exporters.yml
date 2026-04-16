@@ -28,3 +28,11 @@
     host_alias: li-ubuntu-vm-server
     role: linux-server
     site: lan
+
+# macbook-pro:
+- targets:
+    - 192.168.2.7:9100
+  labels:
+    host_alias: macbook-pro
+    role: macbook-pro
+    site: lan

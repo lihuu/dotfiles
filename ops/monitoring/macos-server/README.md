@@ -224,6 +224,54 @@ native 模式:
 - 启动 Docker 模式栈
 - 把当前模式切换为 `docker`
 
+### 另一台 Mac 接入
+
+如果你要把另一台 macOS 设备也接入同一套中央监控，按这个顺序做：
+
+1. 在那台 Mac 上安装并启动 `node_exporter`，版本尽量和这台 Mac 保持一致。
+
+```bash
+brew install node_exporter
+brew services start node_exporter
+```
+
+2. 在那台 Mac 上确认 `9100` 可监听。
+
+```bash
+curl http://127.0.0.1:9100/metrics
+```
+
+3. 在中央这台 Mac 上，把对方的 `IP:9100` 加到 [targets/node_exporters.yml](/Users/lihu/git/dotfiles/ops/monitoring/macos-server/targets/node_exporters.yml)。
+4. 如果你希望 `instance` 显示成主机名，给那条 target 加上 `host_alias`，例如：
+
+```yaml
+- targets:
+    - 192.168.2.50:9100
+  labels:
+    host_alias: other-mac-mini
+    role: central-monitor-host
+    site: lan
+```
+
+5. 在中央这台 Mac 上重载 Prometheus。
+
+```bash
+cd /Users/lihu/git/dotfiles/ops/monitoring/macos-server
+./start.sh
+```
+
+6. 在 Prometheus 的 targets 页面确认新机器是 `up`。
+
+```bash
+curl http://127.0.0.1:9090/api/v1/targets
+```
+
+说明：
+
+- macOS 和 Linux 暴露的 `node_exporter` 指标集合不会完全一样，但这套 dashboard 和告警已经对 macOS 做了兼容。
+- 如果你想让两台 Mac 的展示风格更一致，建议两边都使用同一版 `node_exporter`，并保持相同的 `role` / `site` 标签命名。
+- `node_disk_written_bytes_total`、CPU、内存和磁盘剩余空间这几类核心指标都可以直接复用。
+
 ## 关键配置说明
 
 ### Prometheus
@@ -308,6 +356,11 @@ Grafana 会自动：
 
 - 添加 Prometheus 数据源
 - 自动加载本目录提供的默认 dashboard
+- 默认 dashboard 里已经包含 `node_disk_written_bytes_total` 的两个面板：
+  - `Disk Write Throughput`: 展示 `rate(...[5m])` 的 `B/s`
+  - `Disk Written 1h`: 展示 `increase(...[1h])` 的累计写入字节数
+  - `Disk Written Total`: 展示从开机以来的累计写入字节数，直接汇总 `node_disk_written_bytes_total`
+  - `Disk Written Trend`: 展示从开机以来的累计写入折线图，直接把 `node_disk_written_bytes_total` 画成时间序列
 
 ## 验证方式
 
