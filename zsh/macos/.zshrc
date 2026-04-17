@@ -17,6 +17,10 @@ function add_to_path() {
     done
 }
 
+function random_secret(){
+  openssl rand -hex 32
+}
+
 # Path to your oh-my-zsh installation.
 export ZSH=$HOME/.oh-my-zsh
 
@@ -314,3 +318,6 @@ path=(${_path_items[@]} $path)
 
 # 直接退出配置脚本，确保后续没有程序能再次混乱地修改 PATH
 return
+
+# opencode
+export PATH=/Users/lihu/.opencode/bin:$PATH
