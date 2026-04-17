@@ -332,9 +332,14 @@ route:
   group_wait: 30s
   group_interval: 5m
   repeat_interval: 4h
+  routes:
+    - match:
+        host_alias: macbook-pro
+      receiver: silent-null
 
 receivers:
   - name: default-null
+  - name: silent-null
 EOF
 
   if [[ "${bark_enabled}" == "true" || "${telegram_enabled}" == "true" ]]; then
