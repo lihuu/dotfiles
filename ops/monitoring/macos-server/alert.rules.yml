@@ -56,7 +56,7 @@ groups:
       # 1. mountpoint="/" 是只读系统卷
       # 2. 可写数据卷在 /System/Volumes/Data
       # Linux 通常直接使用 "/"。因此这里统一同时匹配三类挂载点。
-      - alert: DiskSpaceLow
+      - alert: DiskSpaceWarning
         expr: |
           min by (instance) (
             (
@@ -72,15 +72,38 @@ groups:
                 fstype!~"autofs|devfs|proc|tmpfs|overlay"
               }
             ) * 100
-          ) < ${DISK_ALERT_THRESHOLD}
+          ) < ${DISK_WARNING_THRESHOLD}
         for: 5m
         labels:
           severity: warning
         annotations:
-          summary: "磁盘剩余空间不足"
-          description: "实例 {{ $labels.instance }} 的根卷/数据卷剩余空间低于 ${DISK_ALERT_THRESHOLD}% 并持续 5 分钟。"
+          summary: "磁盘剩余空间偏低"
+          description: "实例 {{ $labels.instance }} 的根卷/数据卷剩余空间低于 ${DISK_WARNING_THRESHOLD}% 并持续 5 分钟，请及时清理。"
 
-      # up == 0 表示 Prometheus 无法成功抓取 node_exporter。
+      - alert: DiskSpaceCritical
+        expr: |
+          min by (instance) (
+            (
+              node_filesystem_avail_bytes{
+                job="node_exporter",
+                mountpoint=~"/|/System/Volumes/Data|/System/Volumes/Data/",
+                fstype!~"autofs|devfs|proc|tmpfs|overlay"
+              }
+              /
+              node_filesystem_size_bytes{
+                job="node_exporter",
+                mountpoint=~"/|/System/Volumes/Data|/System/Volumes/Data/",
+                fstype!~"autofs|devfs|proc|tmpfs|overlay"
+              }
+            ) * 100
+          ) < ${DISK_CRITICAL_THRESHOLD}
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "磁盘剩余空间严重不足"
+          description: "实例 {{ $labels.instance }} 的根卷/数据卷剩余空间低于 ${DISK_CRITICAL_THRESHOLD}% 并持续 2 分钟，必须立即处理！"
+
       - alert: HostExporterDown
         expr: up{job="node_exporter"} == 0
         for: 2m
