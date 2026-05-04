@@ -24,6 +24,40 @@ function random_secret(){
 # Path to your oh-my-zsh installation.
 export ZSH=$HOME/.oh-my-zsh
 
+CUSTOM_PLUGIN_DIR="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins"
+
+# 仅需列出 GitHub 仓库路径
+external_plugins=(
+    "lihuu/vibe-git"
+)
+
+for repo in "${external_plugins[@]}"; do
+    # 自动提取 / 后的部分作为文件夹名（例如 zsh-autosuggestions）
+    name="${repo#*/}"
+    if [ ! -d "$CUSTOM_PLUGIN_DIR/$name" ]; then
+        echo "🚀 正在安装插件: $name..."
+        git clone --depth 1 "https://github.com/${repo}.git" "$CUSTOM_PLUGIN_DIR/$name"
+    fi
+done
+
+
+vibe-update() {
+    local custom_dir="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins"
+    
+    echo "🔄 正在检查第三方插件更新..."
+    
+    # 找到 custom/plugins 目录下所有的 git 仓库并拉取更新
+    for plugin in "$custom_dir"/*; do
+        if [ -d "$plugin/.git" ]; then
+            echo "--- 更新 $(basename "$plugin") ---"
+            # 使用 (cd ...) 在子 shell 中执行，避免改变当前工作目录
+            (cd "$plugin" && git pull)
+        fi
+    done
+    
+    echo "✨ 更新完成！请运行 'source ~/.zshrc' 使改动生效。"
+}
+
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
@@ -83,7 +117,7 @@ ZSH_THEME="af-magic"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-  git branch fzf gh kubectl spring docker docker-compose brew zsh-github-copilot
+  git branch fzf gh kubectl spring docker docker-compose brew zsh-github-copilot vibe-git
 )
 
 # opencli completion
@@ -141,7 +175,7 @@ alias mcp-get="npx @michaellatman/mcp-get"
 #alias pip=/opt/homebrew/bin/pip3
 #alias code="/Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code"
 
-code () { VSCODE_CWD="$PWD" open -n -b "com.microsoft.VSCode" --args $* ;}
+#code () { VSCODE_CWD="$PWD" open -n -b "com.microsoft.VSCode" --args $* ;}
 export VOLTA_FEATURE_PNPM=1
 export GOROOT_BOOTSTRAP=/opt/homebrew/Cellar/go/1.24.4/libexec
 export DOOM_EMACS_HOME=$HOME/.config/emacs
@@ -321,3 +355,6 @@ return
 
 # opencode
 export PATH=/Users/lihu/.opencode/bin:$PATH
+
+[[ ":$PATH:" != *":$HOME/.config/kaku/zsh/bin:"* ]] && export PATH="$HOME/.config/kaku/zsh/bin:$PATH" # Kaku PATH Integration
+[[ -f "$HOME/.config/kaku/zsh/kaku.zsh" ]] && source "$HOME/.config/kaku/zsh/kaku.zsh" # Kaku Shell Integration
