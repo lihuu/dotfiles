@@ -123,3 +123,12 @@ groups:
         annotations:
           summary: "Prometheus 自身抓取失败"
           description: "Prometheus 自身 target 连续 2 分钟不可用；若进程完全退出，需要外部监控补位。"
+
+      - alert: OpenClawGatewayDown
+        expr: openclaw_gateway_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "OpenClaw Gateway 已挂掉"
+          description: "OpenClaw Gateway 连续 1 分钟不可访问，已触发自动重启。"

@@ -8,9 +8,32 @@ route:
   group_interval: 5m
   repeat_interval: 4h
 
+  # OpenClaw Gateway 告警走 webhook 自动重启
+  - match:
+      alertname: OpenClawGatewayDown
+    receiver: openclaw-webhook
+    continue: false
+
+  # 静默 macbook-pro 的所有告警
+  - match:
+      host_alias: macbook-pro
+    receiver: silent-null
+    continue: false
+
 receivers:
   # 默认空接收器：未配置 Bark / Telegram 时仍能让 Alertmanager 正常启动。
   - name: default-null
+
+# 按主机别名静默 macbook-pro 的告警。
+# host_alias 标签由 targets/node_exporters.yml 的 relabel_configs 设置。
+# 通过将匹配到的告警路由到 null，Alertmanager 不发送任何通知。
+  - name: silent-null
+
+  # OpenClaw Gateway 自动重启 webhook
+  - name: openclaw-webhook
+    webhook_configs:
+      - url: http://host.docker.internal:9101
+        send_resolved: false
 
   # 组合接收器模板。
   # Bark 通过本地 bridge 接收 Alertmanager webhook，然后转成 Bark API 请求。

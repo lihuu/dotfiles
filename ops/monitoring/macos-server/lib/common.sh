@@ -334,12 +334,19 @@ route:
   repeat_interval: 4h
   routes:
     - match:
+        alertname: OpenClawGatewayDown
+      receiver: openclaw-webhook
+    - match:
         host_alias: macbook-pro
       receiver: silent-null
 
 receivers:
   - name: default-null
   - name: silent-null
+  - name: openclaw-webhook
+    webhook_configs:
+      - url: http://host.docker.internal:9101
+        send_resolved: false
 EOF
 
   if [[ "${bark_enabled}" == "true" || "${telegram_enabled}" == "true" ]]; then
