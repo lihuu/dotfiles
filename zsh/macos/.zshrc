@@ -117,7 +117,7 @@ ZSH_THEME="af-magic"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-  git branch fzf gh kubectl spring docker docker-compose brew zsh-github-copilot vibe-git
+  git branch fzf gh kubectl spring docker docker-compose brew vibe-git
 )
 
 # opencli completion
@@ -126,6 +126,10 @@ source $ZSH/oh-my-zsh.sh
 
 if [ -f ~/.zshrc.private ]; then
   source ~/.zshrc.private
+fi
+
+if [ -f "$HOME/.zprofile.d/python-trust.zsh" ]; then
+  source "$HOME/.zprofile.d/python-trust.zsh"
 fi
 
 
@@ -350,11 +354,16 @@ path=(${_path_items[@]} $path)
 # 打印结果（可选，用于验证，正式版可注释掉）
 # echo "PATH 组装完成"
 
+export NODE_OPTIONS="--use-system-ca"
+
 # 直接退出配置脚本，确保后续没有程序能再次混乱地修改 PATH
-return
 
 # opencode
 export PATH=/Users/lihu/.opencode/bin:$PATH
 
 [[ ":$PATH:" != *":$HOME/.config/kaku/zsh/bin:"* ]] && export PATH="$HOME/.config/kaku/zsh/bin:$PATH" # Kaku PATH Integration
 [[ -f "$HOME/.config/kaku/zsh/kaku.zsh" ]] && source "$HOME/.config/kaku/zsh/kaku.zsh" # Kaku Shell Integration
+
+. "$HOME/.local/bin/env"
+
+return

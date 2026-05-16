@@ -13,7 +13,8 @@
     "com.tencent.xinWeChat": "WeChat",
     "ai.elementlabs.lmstudio": "LM Studio",
     "net.kovidgoyal.kitty": "kitty",
-    "com.tw93.MiaoYan": "MiaoYan"
+    "com.tw93.MiaoYan": "MiaoYan",
+    "fun.tw93.kaku": "Kaku"
   },
   "inputMethod": [
     {
@@ -23,7 +24,8 @@
         "dev.warp.Warp-Stable",
         "dev.zed.Zed",
         "com.microsoft.VSCode",
-        "com.jetbrains.intellij"
+        "com.jetbrains.intellij",
+        "fun.tw93.kaku"
       ],
       "layout": "ABC",
       "shouldSwitchBack": false
@@ -41,15 +43,7 @@
       "layout": "Shuangpin – Simplified"
     },
     {
-      "apps": [
-        "com.tw93.MiaoYan",
-        "com.tencent.xinWeChat",
-        "md.obsidian",
-        "com.bot.pc.doubao",
-        "abnerworks.Typora",
-        "com.openai.chat",
-        "ai.elementlabs.lmstudio"
-      ],
+      "apps": [],
       "shouldSwitchBack": true,
       "method": "Pinyin – Simplified",
       "layout": "Pinyin – Simplified"
@@ -59,6 +53,20 @@
       "shouldSwitchBack": true,
       "method": "搜狗拼音",
       "layout": "U.S."
+    },
+    {
+      "apps": [
+        "com.tw93.MiaoYan",
+        "com.tencent.xinWeChat",
+        "md.obsidian",
+        "com.bot.pc.doubao",
+        "abnerworks.Typora",
+        "com.openai.chat",
+        "ai.elementlabs.lmstudio"
+      ],
+      "method": "豆包输入法",
+      "shouldSwitchBack": true,
+      "layout": "ABC"
     }
   ]
 }

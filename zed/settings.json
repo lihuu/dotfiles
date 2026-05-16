@@ -3,13 +3,13 @@
     "dock": "left"
   },
   "outline_panel": {
-    "dock": "right"
+    "dock": "left"
   },
   "collaboration_panel": {
-    "dock": "right"
+    "dock": "left"
   },
   "git_panel": {
-    "dock": "right"
+    "dock": "left"
   },
   "agent_servers": {
     "claude-acp": {
@@ -35,13 +35,14 @@
     "provider": "copilot"
   },
   "agent": {
+    "default_profile": "write",
     "sidebar_side": "right",
     "button": true,
     "dock": "right",
     "default_model": {
-      "effort": "high",
+      "enable_thinking": true,
       "provider": "copilot_chat",
-      "model": "gpt-5-mini"
+      "model": "claude-haiku-4.5"
     },
   },
   "base_keymap": "JetBrains",
