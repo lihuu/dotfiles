@@ -1,0 +1,13 @@
+#!/bin/sh
+# pre-push: GitGuardian 深度扫描
+echo "🔍 Running GitGuardian deep scan..."
+ggshield secret scan pre-push "$@"
+RESULT=$?
+if [ $RESULT -ne 0 ]; then
+  echo ""
+  echo "❌ GitGuardian 检测到敏感信息，push 已拒绝。"
+  echo "   请作废已泄露的密钥并清理提交历史。"
+  exit 1
+fi
+echo "✅ GitGuardian scan passed"
+exit 0

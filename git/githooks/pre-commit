@@ -1,0 +1,13 @@
+#!/bin/sh
+# pre-commit: gitleaks 快速拦截密钥泄露
+echo "🔍 Running gitleaks secret scan..."
+gitleaks protect --staged --source . --no-banner 2>/dev/null
+RESULT=$?
+if [ $RESULT -ne 0 ]; then
+    echo ""
+    echo "❌ gitleaks 检测到敏感信息，commit 已拒绝。"
+    echo "   请移除密钥后再提交，或用 --no-verify 跳过（不推荐）。"
+    exit 1
+fi
+echo "✅ gitleaks scan passed"
+exit 0
