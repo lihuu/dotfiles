@@ -104,37 +104,6 @@ groups:
           summary: "磁盘剩余空间严重不足"
           description: "实例 {{ $labels.instance }} 的根卷/数据卷剩余空间低于 ${DISK_CRITICAL_THRESHOLD}% 并持续 2 分钟，必须立即处理！"
 
-
-      - alert: DiskWriteRateHigh
-        expr: |
-          max by (instance, device) (
-            rate(node_disk_written_bytes_total{
-              job="node_exporter",
-              device!~"loop.*|ram.*|sr.*|disk[0-9]+s[0-9]+.*"
-            }[5m])
-          ) > 30 * 1024 * 1024
-        for: 15m
-        labels:
-          severity: warning
-        annotations:
-          summary: "磁盘持续写入速率过高"
-          description: "实例 {{ $labels.instance }} 的磁盘 {{ $labels.device }} 写入速率连续 15 分钟高于 30 MiB/s，请检查 ClickHouse merge、日志或异常写入。"
-
-      - alert: DiskWriteVolumeHigh
-        expr: |
-          max by (instance, device) (
-            increase(node_disk_written_bytes_total{
-              job="node_exporter",
-              device!~"loop.*|ram.*|sr.*|disk[0-9]+s[0-9]+.*"
-            }[1h])
-          ) > 100 * 1024 * 1024 * 1024
-        for: 5m
-        labels:
-          severity: warning
-        annotations:
-          summary: "磁盘 1 小时写入量过高"
-          description: "实例 {{ $labels.instance }} 的磁盘 {{ $labels.device }} 最近 1 小时写入量超过 100 GiB，请检查是否有日志膨胀、数据库 merge 或备份任务。"
-
       - alert: HostExporterDown
         expr: up{job="node_exporter"} == 0
         for: 2m

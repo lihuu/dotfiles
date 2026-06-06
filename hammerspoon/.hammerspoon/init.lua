@@ -26,7 +26,7 @@ hs.loadSpoon("Shortcuts", true)
 hs.loadSpoon("AutoIme", true)
 spoon.Shortcuts:init(mods)
 spoon.Shortcuts:init(hhkbMods)
-spoon.AutoIme:init(false)
+spoon.AutoIme:init(true)
 spoon.AutoIme:start()
 
 hs.shutdownCallback = function()
