@@ -1,24 +1,26 @@
 {
-  "bundleIdToNameCache": {
-    "md.obsidian": "Obsidian",
-    "com.jetbrains.intellij": "IntelliJ IDEA Ultimate",
-    "dev.warp.Warp-Stable": "Warp",
-    "dev.zed.Zed": "Zed",
-    "com.neovide.neovide": "Neovide",
-    "com.openai.chat": "ChatGPT",
-    "com.yinxiang.Mac": "印象笔记",
-    "abnerworks.Typora": "Typora",
-    "com.microsoft.VSCode": "Visual Studio Code",
-    "com.bot.pc.doubao": "Doubao",
-    "com.tencent.xinWeChat": "WeChat",
-    "ai.elementlabs.lmstudio": "LM Studio",
-    "net.kovidgoyal.kitty": "kitty",
-    "com.tw93.MiaoYan": "MiaoYan",
-    "fun.tw93.kaku": "Kaku"
+  "bundleIdToNameCache" : {
+    "com.jetbrains.intellij" : "IntelliJ IDEA Ultimate",
+    "net.kovidgoyal.kitty" : "kitty",
+    "dev.warp.Warp-Stable" : "Warp",
+    "dev.zed.Zed" : "Zed",
+    "com.neovide.neovide" : "Neovide",
+    "com.openai.chat" : "ChatGPT",
+    "fun.tw93.kaku" : "Kaku",
+    "com.yinxiang.Mac" : "印象笔记",
+    "abnerworks.Typora" : "Typora",
+    "com.microsoft.VSCode" : "Visual Studio Code",
+    "com.bot.pc.doubao" : "Doubao",
+    "com.tencent.xinWeChat" : "WeChat",
+    "ai.elementlabs.lmstudio" : "LM Studio",
+    "com.tw93.MiaoYan" : "MiaoYan",
+    "com.openai.codex" : "Codex",
+    "ru.keepcoder.Telegram" : "Telegram",
+    "md.obsidian" : "Obsidian"
   },
-  "inputMethod": [
+  "inputMethod" : [
     {
-      "apps": [
+      "apps" : [
         "com.neovide.neovide",
         "net.kovidgoyal.kitty",
         "dev.warp.Warp-Stable",
@@ -27,46 +29,57 @@
         "com.jetbrains.intellij",
         "fun.tw93.kaku"
       ],
-      "layout": "ABC",
-      "shouldSwitchBack": false
+      "layout" : "ABC",
+      "shouldSwitchBack" : false
     },
     {
-      "apps": [],
-      "shouldSwitchBack": true,
-      "method": "Squirrel - Simplified",
-      "layout": "ABC"
+      "apps" : [
+
+      ],
+      "method" : "Squirrel - Simplified",
+      "shouldSwitchBack" : true,
+      "layout" : "ABC"
     },
     {
-      "apps": ["com.yinxiang.Mac"],
-      "shouldSwitchBack": true,
-      "method": "Shuangpin – Simplified",
-      "layout": "Shuangpin – Simplified"
+      "apps" : [
+
+      ],
+      "method" : "Shuangpin – Simplified",
+      "shouldSwitchBack" : true,
+      "layout" : "Shuangpin – Simplified"
     },
     {
-      "apps": [],
-      "shouldSwitchBack": true,
-      "method": "Pinyin – Simplified",
-      "layout": "Pinyin – Simplified"
+      "apps" : [
+
+      ],
+      "method" : "Pinyin – Simplified",
+      "shouldSwitchBack" : true,
+      "layout" : "Pinyin – Simplified"
     },
     {
-      "apps": [],
-      "shouldSwitchBack": true,
-      "method": "搜狗拼音",
-      "layout": "U.S."
+      "apps" : [
+
+      ],
+      "method" : "搜狗拼音",
+      "shouldSwitchBack" : true,
+      "layout" : "U.S."
     },
     {
-      "apps": [
+      "apps" : [
         "com.tw93.MiaoYan",
         "com.tencent.xinWeChat",
         "md.obsidian",
         "com.bot.pc.doubao",
         "abnerworks.Typora",
         "com.openai.chat",
-        "ai.elementlabs.lmstudio"
+        "ai.elementlabs.lmstudio",
+        "ru.keepcoder.Telegram",
+        "com.yinxiang.Mac",
+        "com.openai.codex"
       ],
-      "method": "豆包输入法",
-      "shouldSwitchBack": true,
-      "layout": "ABC"
+      "shouldSwitchBack" : true,
+      "method" : "豆包输入法",
+      "layout" : "ABC"
     }
   ]
 }

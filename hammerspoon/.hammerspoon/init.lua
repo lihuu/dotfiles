@@ -176,4 +176,28 @@ for key, bundleID in pairs(appKeymap) do
 	end)
 end
 
+-- 快捷键 cmd+option+shift+q: 优雅地退出所有运行的 GUI 程序
+hs.hotkey.bind({ "cmd", "alt", "shift" }, "q", function()
+	local result = hs.dialog.blockAlert(
+		"确认退出所有程序？",
+		"这将会尝试退出所有正在运行的应用程序（不包括系统核心进程及 Finder/Hammerspoon）。",
+		"确认",
+		"取消",
+		"warning"
+	)
+
+	if result == "确认" then
+		local apps = hs.application.runningApplications()
+		for _, app in ipairs(apps) do
+			local name = app:name()
+			local kind = app:kind()
+			-- kind == 1 表示在 Dock 中显示的 GUI 应用程序
+			if kind == 1 and name and name ~= "Finder" and name ~= "Hammerspoon" then
+				app:kill()
+			end
+		end
+	end
+end)
+
 hs.alert.show("App switcher loaded")
+
