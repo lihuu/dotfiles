@@ -1,0 +1,2 @@
+# 微信 deb(二进制安装包,不提交;从 https://linux.weixin.qq.com/ 下载 arm64 版)
+*.deb

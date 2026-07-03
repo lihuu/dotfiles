@@ -1,0 +1,5 @@
+[Hotkey]
+TriggerKeys=Control+grave
+
+[Behavior]
+ActiveByDefault=True
