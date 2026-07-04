@@ -176,8 +176,7 @@ for key, bundleID in pairs(appKeymap) do
 	end)
 end
 
--- 快捷键 cmd+option+shift+q: 优雅地退出所有运行的 GUI 程序
-hs.hotkey.bind({ "cmd", "alt", "shift" }, "q", function()
+local quitAllApp = function()
 	local result = hs.dialog.blockAlert(
 		"确认退出所有程序？",
 		"这将会尝试退出所有正在运行的应用程序（不包括系统核心进程及 Finder/Hammerspoon）。",
@@ -197,7 +196,10 @@ hs.hotkey.bind({ "cmd", "alt", "shift" }, "q", function()
 			end
 		end
 	end
-end)
+end
+
+-- 快捷键 cmd+option+shift+q: 优雅地退出所有运行的 GUI 程序
+hs.hotkey.bind(hhkbMods, "q", quitAllApp)
+hs.hotkey.bind(mods, "q", quitAllApp)
 
 hs.alert.show("App switcher loaded")
-
