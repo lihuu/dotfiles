@@ -1,6 +1,6 @@
 #!/bin/bash
 # 通过 xpra 在 OrbStack Ubuntu VM 运行 Linux 微信，rootless 转发到 macOS 桌面。
-# 详见 docs/orbstack-wechat-xpra-setup.md
+# 详见 README.md
 #
 # 环境变量（均可选）：
 #   ORBSTACK_WECHAT_MACHINE  OrbStack 机器名        (默认 ubuntu-24.04)

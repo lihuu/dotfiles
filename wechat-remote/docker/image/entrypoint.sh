@@ -1,6 +1,6 @@
 #!/bin/bash
 # 容器入口:启 D-Bus 会话 → xpra 虚拟显示 :10 → fcitx5 + wechat。
-# 详见 docs/orbstack-wechat-docker.md
+# 详见 ../README.md
 set -euo pipefail
 
 # HiDPI:由 start 脚本按 Mac backing scale 注入 QT_SCALE_FACTOR(默认 2)。

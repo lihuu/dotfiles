@@ -1,7 +1,7 @@
 #!/bin/bash
 # 通过 Docker 容器(xpra + fcitx5 + Linux 微信)运行微信,rootless 转发到 macOS 桌面。
-# 与 start-orbstack-wechat.sh(OrbStack VM 方案)并行,互不影响。
-# 详见 docs/orbstack-wechat-docker.md
+# 与 ../vm/start.sh(OrbStack VM 方案)并行,互不影响。
+# 详见 README.md
 #
 # 环境变量(均可选):
 #   WECHAT_DOCKER_IMAGE     镜像名          (默认 wechat-xpra)
@@ -16,6 +16,8 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+IMAGE_DIR="$SCRIPT_DIR/image"
 IMAGE="${WECHAT_DOCKER_IMAGE:-wechat-xpra}"
 CONTAINER="${WECHAT_DOCKER_CONTAINER:-wechat-xpra}"
 PORT="${WECHAT_DOCKER_PORT:-14501}"
@@ -23,7 +25,7 @@ DATA_VOLUME="${WECHAT_DOCKER_DATA:-wechat-xpra-data}"
 XPRA_APP="/Applications/Xpra.app/Contents/MacOS/Xpra"
 
 # 探测 macOS 主显示器 backing scale = 物理宽 / 逻辑宽。
-# 原理与 start-orbstack-wechat.sh 相同:xpra macOS 客户端只报逻辑分辨率,
+# 原理与 ../vm/start.sh 相同:xpra macOS 客户端只报逻辑分辨率,
 # 2x backing 不传,必须在 Mac 侧自己算喂给 xpra(--desktop-scaling)和 wechat(QT_SCALE_FACTOR)。
 detect_backing_scale() {
   local sp phys logical
@@ -52,8 +54,8 @@ echo "==> 显示器 backing scale=${SCALE} → desktop-scaling=${SCALING}, wecha
 
 # 1) 构建镜像(若不存在)
 if ! docker image inspect "$IMAGE" >/dev/null 2>&1; then
-  echo "==> 镜像 ${IMAGE} 不存在,开始构建(需先放好 docker/wechat/wechat.deb)..."
-  docker build -t "$IMAGE" docker/wechat
+  echo "==> 镜像 ${IMAGE} 不存在,开始构建(需先放好 ${IMAGE_DIR}/wechat.deb)..."
+  docker build -t "$IMAGE" "$IMAGE_DIR"
 fi
 
 # 2) 启动容器(若未运行)

@@ -1,6 +1,6 @@
 # Docker 部署 Linux 微信(xpra + fcitx5)探索
 
-把 OrbStack VM 方案(见 [orbstack-wechat-xpra-setup.md](orbstack-wechat-xpra-setup.md))里的"xpra + fcitx5 + Linux 微信"栈装进一个 Docker 容器,经 xpra TCP 转发到 macOS 桌面。**本文档为探索性质,产物未提交**,与 VM 方案并行,互不影响。
+把 OrbStack VM 方案(见 [../vm/README.md](../vm/README.md))里的"xpra + fcitx5 + Linux 微信"栈装进一个 Docker 容器,经 xpra TCP 转发到 macOS 桌面。**本文档为探索性质**,与 VM 方案并行,互不影响。
 
 - **定位**:VM 方案已验证可行且效果好;Docker 版主要收益是**可复现/可重建**(微信或 xpra 升级一条 `docker build` 重来,不漂移)。
 - **传输**:TCP(`--bind-tcp` + `tcp:localhost:PORT`),省去容器内 sshd 和密钥分发。SSH 方案见末尾"替代传输"。
@@ -16,7 +16,7 @@ macOS (xpra 客户端 6.5)                    Docker 容器(ubuntu:24.04 arm64)
 rootless 窗口转发       ─── tcp:14501 ──▶  ├── fcitx5 + 拼音
 XPRA_OSX_SHOW_MENU_DEFAULT=0               ├── wechat (Linux arm64 4.1.x, XCB)
                                            └── 虚拟显示 :10 (Xvfb)
-                                           dbus-run-session 提供 session bus
+                                           dbus-daemon 提供 session bus
 ```
 
 与 VM 方案的差异:宿主从"OrbStack Ubuntu VM"换成"Docker 容器";传输从 SSH 换成 TCP;多了 D-Bus/XDG_RUNTIME_DIR 的 entrypoint 处理。xpra 客户端、显示自适应、fcitx5 配置、wechat Qt 三件套全部不变。
@@ -28,21 +28,22 @@ XPRA_OSX_SHOW_MENU_DEFAULT=0               ├── wechat (Linux arm64 4.1.x, 
 - macOS(Apple Silicon)+ OrbStack(或任意能跑 arm64 容器的 Docker)。
 - Docker 镜像构建用 arm64 原生(Apple Silicon 上无模拟,性能与 VM 相当)。
 - macOS 已装 xpra 客户端:`brew install --cask xpra` + `xattr -dr com.apple.quarantine /Applications/Xpra.app`(详见 VM 文档步骤 3)。
-- **微信 arm64 deb**:从 https://linux.weixin.qq.com/ 下载 arm64 deb,放到 `docker/wechat/wechat.deb`(构建上下文读取;该 deb 不提交,版本随你)。
+- **微信 arm64 deb**:从 https://linux.weixin.qq.com/ 下载 arm64 deb,放到 `wechat-remote/docker/image/wechat.deb`(构建上下文读取;该 deb 不提交,版本随你)。
 
 ---
 
-## 3. 文件清单(均未提交,探索阶段)
+## 3. 文件清单
 
 ```
-docker/wechat/
-├── Dockerfile          # ubuntu:24.04 + xpra.org 6.x + fcitx5 + 字体 + wechat deb
-├── entrypoint.sh       # dbus-run-session → xpra start :10 --bind-tcp → fcitx5 + wechat
-└── fcitx5/
-    ├── profile         # keyboard-us + 拼音
-    └── config          # 触发键 Ctrl+`,默认中文
-scripts/
-└── start-docker-wechat.sh   # 探测 backing scale → 构建镜像 → 启动容器 → TCP attach
+wechat-remote/docker/
+├── README.md           # Docker 方案说明
+├── start.sh            # 探测 backing scale → 构建镜像 → 启动容器 → TCP attach
+└── image/
+    ├── Dockerfile      # ubuntu:24.04 + xpra.org 6.x + fcitx5 + 字体 + wechat deb
+    ├── entrypoint.sh   # dbus-daemon → xpra start :10 --bind-tcp → fcitx5 + wechat
+    └── fcitx5/
+        ├── profile     # keyboard-us + 拼音
+        └── config      # 触发键 Ctrl+`,默认中文
 ```
 
 ---
@@ -53,10 +54,10 @@ scripts/
 
 ```bash
 # 1. 放好微信 deb
-cp ~/Downloads/WeChatLinux_arm64.deb docker/wechat/wechat.deb
+cp ~/Downloads/WeChatLinux_arm64.deb wechat-remote/docker/image/wechat.deb
 
 # 2. 启动(首次自动构建镜像)
-./scripts/start-docker-wechat.sh
+./wechat-remote/docker/start.sh
 ```
 
 脚本逻辑:
@@ -89,7 +90,7 @@ cp ~/Downloads/WeChatLinux_arm64.deb docker/wechat/wechat.deb
 
 ```bash
 # 启动(构建 + 容器 + attach)
-./scripts/start-docker-wechat.sh
+./wechat-remote/docker/start.sh
 
 # 只停 attach(Mac 客户端)
 pkill -f "MacOS/Xpra attach"
@@ -99,7 +100,7 @@ pkill -f "MacOS/Xpra attach"
 # 彻底重建(换微信版本 / 升级 xpra / 改 scale)
 docker rm -f wechat-xpra
 docker rmi wechat-xpra
-./scripts/start-docker-wechat.sh
+./wechat-remote/docker/start.sh
 
 # 查看容器内 xpra 状态
 docker exec wechat-xpra xpra list
@@ -114,7 +115,7 @@ docker exec wechat-xpra xpra list
 | 隔离单元 | 完整 Ubuntu VM | 容器(更轻) |
 | 安装 | 手动步骤 1–3(一次性) | `docker build`(声明式、可重建) |
 | 传输 | SSH + OrbStack 密钥 | TCP(无密钥) |
-| D-Bus | VM 自带 systemd session bus | entrypoint `dbus-run-session` 包一层 |
+| D-Bus | VM 自带 systemd session bus | entrypoint 启动固定地址 `dbus-daemon` |
 | 数据持久化 | VM 磁盘(天然) | 显式 named volume |
 | 升级 | 手动 apt 升级,可能漂移 | 重建镜像,版本锁定 |
 | 显示/HiDPI | Mac 侧探测 backing scale(同) | 同 |
@@ -158,7 +159,7 @@ docker exec wechat-xpra xpra list
 
 ## 9. 已知限制 / 文件状态
 
-- **窗口拖动修复需要重建镜像**:修复点包含 Dockerfile 内的 xpra 源码 patch,已有容器不会自动生效。执行 `docker rm -f wechat-xpra && docker rmi wechat-xpra && ./scripts/start-docker-wechat.sh` 后再验证。当前方案不优雅,但实测可以通过 macOS 外层标题栏拖动。
+- **窗口拖动修复需要重建镜像**:修复点包含 Dockerfile 内的 xpra 源码 patch,已有容器不会自动生效。执行 `docker rm -f wechat-xpra && docker rmi wechat-xpra && ./wechat-remote/docker/start.sh` 后再验证。当前方案不优雅,但实测可以通过 macOS 外层标题栏拖动。
 - **fcitx5 候选窗偏小**:与 VM 方案同一限制(2x 屏 fcitx5 classic UI 不随微信放大),见 VM 文档第 9 节。
 - **新消息通知**:与 VM 方案同一限制(WeChat 走 SNI attention 闪烁,macOS 菜单栏不支持),见 VM 文档第 9 节。
 - **音频/通话**:xpra 客户端 adhoc 签名 + Hardened Runtime 限制,与传输方式无关,不可用。
@@ -167,7 +168,51 @@ docker exec wechat-xpra xpra list
 
 ---
 
-## 10. 替代传输:SSH(忠实现状)
+## 10. 后续优化方向
+
+Docker 是更理想的长期交付形态:可重建、可迁移、可多实例、数据隔离清晰。当前 VM
+方案仍作为体验基线;Docker 后续优化应以"接近 VM 的自然窗口行为"为目标,而不是
+长期依赖 `decorations=1` 的外层标题栏绕法。
+
+1. **对齐 VM 与 Docker 的自然拖动路径**
+
+   目标:弄清 VM 中微信为什么能直接拖自绘标题栏,而 Docker 里不能。重点比较
+   `xpra info`、`xwininfo`、`xprop` 中的 `override-redirect`、`window-type`、
+   `_MOTIF_WM_HINTS`、`_NET_WM_MOVERESIZE`、`frame`、`decorations`、窗口树结构。
+   成功标准:不强制 `decorations=1` 时,拖动微信自绘标题栏也能移动窗口。
+
+2. **系统化比较启动环境与会话环境差异**
+
+   目标:把 VM 和 Docker 的 WeChat 进程环境、D-Bus、`XDG_RUNTIME_DIR`、
+   locale、xpra `start-env`、`QT_*`、`GTK_*`、`MW*`、`XPRA_*` 差异整理成
+   可复现清单。当前已知 Docker 必须用 `env -i` 限制 xpra 默认注入变量,但还没有证明
+   哪个差异导致自绘标题栏拖动失败。
+   成功标准:能用最小变量集在 Docker 里复现 VM 的窗口行为,或能明确排除环境变量因素。
+
+3. **验证 `_NET_WM_MOVERESIZE` 事件链**
+
+   目标:确认 Docker 中点击微信自绘标题栏时,WeChat 是否发送 `_NET_WM_MOVERESIZE`;
+   xpra server 是否收到;Mac 客户端是否把对应拖动动作映射到本地窗口。必要时加 xpra
+   日志或 X11 event 监听。
+   成功标准:定位失败发生在 WeChat、X11 WM/xpra server、xpra protocol、还是 macOS client。
+
+4. **补齐或模拟 VM 中可能存在的 X11/WM/session 组件**
+
+   目标:检查 Docker 是否缺少 VM 中影响窗口管理的组件或状态,例如 systemd user session、
+   dbus user bus、XDG session 信息、X settings、轻量 WM 行为、Xorg/Xvfb 差异等。
+   这一步不要一开始就引入完整桌面;优先做最小组件实验。
+   成功标准:找到能让 Docker 主窗口行为靠近 VM 的最小运行时依赖。
+
+5. **产品化 Docker 启动与多实例能力**
+
+   目标:在窗口行为稳定后,把 Docker 方案整理成真正的一键交付:构建、启动、attach、
+   健康检查、日志定位、重建升级、不同账号多实例(volume/container/port/display 分离)。
+   成功标准:可以通过一个 applet 或脚本稳定启动多个独立 Docker 微信实例,且每个实例数据隔离、
+   端口不冲突、可重建。
+
+---
+
+## 11. 替代传输:SSH(忠实现状)
 
 若要和 VM 方案完全一致(SSH 加密、复用现有 attach 命令形态):
 

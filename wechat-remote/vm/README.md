@@ -236,11 +236,28 @@ UI Looks like: 1920 x 1080     ← 逻辑(1x 屏无此行 → 逻辑=物理 → 
 
 ## 7. 推荐安装方式
 
-**一键脚本** `scripts/start-orbstack-wechat.sh` 封装了步骤 4、5，处理会话已存在的情况，并自动探测显示器 backing scale 配好 Retina 清晰度（见第 5 节）：
+**一键脚本** `wechat-remote/vm/start.sh` 封装了步骤 4、5，处理会话已存在的情况，并自动探测显示器 backing scale 配好 Retina 清晰度（见第 5 节）：
 
 ```bash
-./scripts/start-orbstack-wechat.sh
+./wechat-remote/vm/start.sh
 ```
+
+也可以生成一个项目内的 macOS applet,之后双击启动:
+
+```bash
+./wechat-remote/vm/install-app.sh
+```
+
+默认生成到:
+
+```text
+wechat-remote/vm/apps/OrbStack WeChat.app
+```
+
+这个 app 不写死用户名或仓库绝对路径。它会根据自身位置反推出 `wechat-remote/vm`
+目录,再调用同目录下的 `start.sh`。因此移动仓库目录后,只要重新运行安装脚本生成
+app,双击启动仍然走同一套 VM/xpra 逻辑。启动失败日志写入
+`/tmp/orbstack-wechat-launcher.log`。
 
 可覆盖的环境变量：
 
@@ -264,7 +281,7 @@ UI Looks like: 1920 x 1080     ← 逻辑(1x 屏无此行 → 逻辑=物理 → 
 
 ```bash
 # 启动（VM 会话 + macOS attach）
-./scripts/start-orbstack-wechat.sh
+./wechat-remote/vm/start.sh
 
 # 只停 VM 会话（保留 macOS 客户端会自动断开）
 orb -m ubuntu-24.04 xpra stop :10

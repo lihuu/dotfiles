@@ -43,6 +43,9 @@ docs/superpowers/
 ### log files
 *.log
 
+### local macOS applets
+wechat-remote/**/apps/*.app/
+
 
 ### ingore submodules
 power-shell-config/

@@ -1,16 +1,16 @@
 # Linux 微信 + xpra + fcitx5,跑在 Docker 容器里,经 xpra TCP 转发到 macOS 桌面。
-# 与 OrbStack VM 方案(scripts/start-orbstack-wechat.sh)并行,互不影响。
-# 详见 docs/orbstack-wechat-docker.md
+# 与 OrbStack VM 方案(../vm/start.sh)并行,互不影响。
+# 详见 ../README.md
 #
 # 构建(Apple Silicon 原生 arm64,无模拟):
-#   # 1. 先下载微信 arm64 deb,放到 docker/wechat/wechat.deb
+#   # 1. 先下载微信 arm64 deb,放到 wechat-remote/docker/image/wechat.deb
 #   #    官方下载页:https://linux.weixin.qq.com/(选 arm64 deb)
-#   docker build -t wechat-xpra docker/wechat
+#   docker build -t wechat-xpra wechat-remote/docker/image
 #
 # 关键点:
 #   - xpra 必须用 xpra.org 仓库的 6.x(Ubuntu 自带 3.1.5 与 Mac 客户端 6.5 不兼容)
 #   - wechat 是静态链接 Qt 的自研应用,HiDPI 由 QT_SCALE_FACTOR 三件套控制
-#   - fcitx5/wechat 需要 D-Bus session bus → entrypoint 用 dbus-run-session 包一层
+#   - fcitx5/wechat 需要 D-Bus session bus → entrypoint 启动固定地址 dbus-daemon
 #   - 不需要 --privileged:xpra 自带 Xvfb 虚拟显示,不碰宿主 X/GPU
 
 FROM ubuntu:24.04
@@ -70,7 +70,7 @@ if old not in text:
 path.write_text(text.replace(old, new, 1))
 PY
 
-# 2) fcitx5 + 中文输入 + CJK 字体 + locale + dbus(dbus-x11 提供 dbus-run-session)
+# 2) fcitx5 + 中文输入 + CJK 字体 + locale + dbus(dbus-x11 提供 dbus-daemon)
 #    附带 wechat 运行时依赖(deb 声明不全,ldd 查出的缺失 .so 对应的包)
 RUN apt-get install -y --no-install-recommends \
       fcitx5 fcitx5-chinese-addons fcitx5-frontend-gtk3 fcitx5-frontend-gtk4 \
@@ -79,7 +79,7 @@ RUN apt-get install -y --no-install-recommends \
       libnss3 libnspr4 libasound2t64 && \
     locale-gen zh_CN.UTF-8
 
-# 3) Linux 微信 arm64 deb(构建前需放入 docker/wechat/wechat.deb)
+# 3) Linux 微信 arm64 deb(构建前需放入 wechat-remote/docker/image/wechat.deb)
 #    dpkg -i 装上,缺依赖用 apt-get install -f 自动补齐;末尾 ldd 自检无缺失 .so。
 #    包列表在这里清(rm -rf /var/lib/apt/lists/*),前面步骤共用步骤1的 update。
 ARG WECHAT_DEB=wechat.deb
