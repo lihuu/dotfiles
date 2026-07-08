@@ -13,10 +13,16 @@ TCP_BIND="${TCP_BIND:-0.0.0.0:14500}"
 
 mkdir -p "$XDG_RUNTIME_DIR" && chmod 700 "$XDG_RUNTIME_DIR"
 
-# 首次运行(volume 空)时种入 fcitx5 默认配置(拼音 + Ctrl+` + 默认中文)
+# 首次运行(volume 空)时种入 fcitx5 默认配置(拼音 + Ctrl+` + 默认中文 + 云拼音 + 联想)
 if [ ! -f "$HOME/.config/fcitx5/profile" ]; then
   mkdir -p "$HOME/.config/fcitx5"
   cp -a /etc/fcitx5-seed/. "$HOME/.config/fcitx5/"
+fi
+
+# 首次运行时种入扩展词库(zhwiki 维基百科 + moegirl 萌娘百科)
+if [ ! -d "$HOME/.local/share/fcitx5/pinyin/dictionaries" ]; then
+  mkdir -p "$HOME/.local/share/fcitx5/pinyin/dictionaries"
+  cp -a /usr/share/fcitx5-pinyin-seed/dictionaries/. "$HOME/.local/share/fcitx5/pinyin/dictionaries/" 2>/dev/null || true
 fi
 
 # 启动 D-Bus session bus(固定地址)。

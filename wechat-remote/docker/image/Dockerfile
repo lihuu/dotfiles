@@ -90,8 +90,18 @@ RUN dpkg -i /tmp/wechat.deb || apt-get install -y -f --no-install-recommends && 
     ! ldd /opt/wechat/wechat | grep -i 'not found'
 
 # 4) 非 root 用户(微信数据持久化用);fcitx5 种子配置(root 只读,entrypoint 拷到 $HOME)
+#    种子配置含优化的 pinyin.conf(云拼音+联想+9候选词)
 RUN useradd -m -s /bin/bash wechat
 COPY fcitx5/ /etc/fcitx5-seed/
+
+# 4.1) 下载 fcitx5 拼音扩展词库(zhwiki 维基百科 + moegirl 萌娘百科)
+#      首次启动时由 entrypoint 拷到 ~/.local/share/fcitx5/pinyin/dictionaries/
+RUN mkdir -p /usr/share/fcitx5-pinyin-seed/dictionaries && \
+    curl -fsSL -o /usr/share/fcitx5-pinyin-seed/dictionaries/zhwiki.dict \
+      "https://github.com/felixonmars/fcitx5-pinyin-zhwiki/releases/download/0.3.0/zhwiki-20251223.dict" && \
+    curl -fsSL -o /usr/share/fcitx5-pinyin-seed/dictionaries/moegirl.dict \
+      "https://github.com/outloudvi/mw2fcitx/releases/latest/download/moegirl.dict" && \
+    ls -la /usr/share/fcitx5-pinyin-seed/dictionaries/
 
 # 5) entrypoint + wechat popup watcher
 COPY wechat-popup-watcher.sh /usr/local/bin/wechat-popup-watcher
