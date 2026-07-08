@@ -37,11 +37,23 @@ COMMON_ENV="HOME=$HOME USER=wechat LOGNAME=wechat PATH=/usr/local/bin:/usr/bin:/
 
 # wechat Qt 缩放三件套 + DBUS_ADDR 一起注入 --start。
 # xpra --daemon=no 前台运行作为容器 PID 1;--exit-with-client=no 让会话在客户端断开后仍在。
-exec xpra start "$XPRA_DISPLAY" \
-  --bind-tcp="$TCP_BIND" \
-  --tcp-auth=none \
-  --mdns=no \
-  --start="env -i $COMMON_ENV fcitx5 -d" \
-  --start="env -i $COMMON_ENV QT_SCALE_FACTOR=$QT_SCALE_FACTOR QT_FONT_DPI=$QT_FONT_DPI QT_AUTO_SCREEN_SCALE_FACTOR=0 wechat" \
-  --exit-with-client=no \
-  --daemon=no
+#
+# popup watcher 默认启用,把表情面板等 utility 子窗口移到主窗口旁。
+# 设 WECHAT_POPUP_WATCHER=0 可关闭(无需重建镜像,容器启动时注入 -e 即可)。
+# WECHAT_POPUP_OFFSET_X/Y 控制 popup 相对主窗口左上角的偏移(默认 0,124)。
+XPRA_ARGS=(
+  start "$XPRA_DISPLAY"
+  --bind-tcp="$TCP_BIND"
+  --tcp-auth=none
+  --mdns=no
+  --start="env -i $COMMON_ENV fcitx5 -d"
+  --start="env -i $COMMON_ENV QT_SCALE_FACTOR=$QT_SCALE_FACTOR QT_FONT_DPI=$QT_FONT_DPI QT_AUTO_SCREEN_SCALE_FACTOR=0 wechat"
+)
+if [ "${WECHAT_POPUP_WATCHER:-1}" != "0" ]; then
+  XPRA_ARGS+=(
+    --start="env -i $COMMON_ENV WECHAT_POPUP_OFFSET_X=${WECHAT_POPUP_OFFSET_X:-0} WECHAT_POPUP_OFFSET_Y=${WECHAT_POPUP_OFFSET_Y:-124} wechat-popup-watcher"
+  )
+fi
+XPRA_ARGS+=(--exit-with-client=no --daemon=no)
+
+exec xpra "${XPRA_ARGS[@]}"

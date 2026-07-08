@@ -74,7 +74,7 @@ PY
 #    附带 wechat 运行时依赖(deb 声明不全,ldd 查出的缺失 .so 对应的包)
 RUN apt-get install -y --no-install-recommends \
       fcitx5 fcitx5-chinese-addons fcitx5-frontend-gtk3 fcitx5-frontend-gtk4 \
-      fonts-noto-cjk locales dbus-x11 python3-dbus im-config x11-utils \
+      fonts-noto-cjk locales dbus-x11 python3-dbus im-config x11-utils xdotool \
       libatomic1 libpulse0 libxcb-image0 libxcb-render-util0 \
       libnss3 libnspr4 libasound2t64 && \
     locale-gen zh_CN.UTF-8
@@ -93,9 +93,10 @@ RUN dpkg -i /tmp/wechat.deb || apt-get install -y -f --no-install-recommends && 
 RUN useradd -m -s /bin/bash wechat
 COPY fcitx5/ /etc/fcitx5-seed/
 
-# 5) entrypoint
+# 5) entrypoint + wechat popup watcher
+COPY wechat-popup-watcher.sh /usr/local/bin/wechat-popup-watcher
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+RUN chmod +x /entrypoint.sh /usr/local/bin/wechat-popup-watcher
 
 USER wechat
 ENV HOME=/home/wechat \
