@@ -91,6 +91,15 @@ fi
 #   --opengl=yes            客户端 GL 按设备像素 1:1 合成，不走 CoreGraphics 线性放大
 #   --encoding=rgb          本地无损传输，杜绝有损编码模糊
 echo "==> 从 macOS 附加 ${VM_USER}@${VM_HOST}/${DISPLAY_NUM}（菜单已禁用，scaling=${WECHAT_SCALING} opengl=${WECHAT_OPENGL} encoding=${WECHAT_ENCODING}）..."
+# 3. 后台看护:客户端附着后把微信主窗口拉到屏幕左上角 (0,0)
+#    无论微信记成什么离屏位置,启动都被拉回;只动主窗口(面积最大那个),
+#    不碰 44x44 托盘,避免 6.5.1 客户端的 ClientTray.move_resize 报错。
+HELPER="$(cd "$(dirname "$0")" 2>/dev/null && pwd)/wechat-topleft.sh"
+if [ -f "$HELPER" ]; then
+  orb -m "$VM_MACHINE" bash -c 'cat > /tmp/wechat-topleft.sh && chmod +x /tmp/wechat-topleft.sh' < "$HELPER" >/dev/null 2>&1 || true
+  orb -m "$VM_MACHINE" bash -c 'setsid sh /tmp/wechat-topleft.sh "'"${XPRA_DISPLAY}"'" </dev/null >/tmp/wechat-topleft.log 2>&1 &' >/dev/null 2>&1 || true
+fi
+
 exec env XPRA_OSX_SHOW_MENU_DEFAULT=0 "$XPRA_APP" attach \
   --opengl="${WECHAT_OPENGL}" \
   --desktop-scaling="${WECHAT_SCALING}" \
