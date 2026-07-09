@@ -1,5 +1,19 @@
 # Tailscale DERP 自建与多 Region 说明
 
+> ## ⚠️ 重要:自签证书方案的局限性
+>
+> 本文记录的「自签证书 + `CertName: sha256-raw:` 指纹绑定」方案,**只对 Tailscale 官方客户端
+> 有效**。第三方客户端(如小火箭/Shadowrocket)不支持指纹绑定,只走标准 TLS 证书链校验,因此
+> 无法连接使用自签证书的 DERP 节点(握手报错 `tls: unknown certificate`)。
+>
+> 如果你的 DERP 需要兼容第三方客户端,请改用 **Let's Encrypt IP 地址证书** 方案,详见:
+>
+> 👉 **[troubleshooting.md — 从自签证书到 IP 证书的完整排查](./troubleshooting.md)**
+>
+> 本文保留作参考,但自签证书相关内容(第 1.3、2.1 节的 `CertName` 用法)**已过时**,不要照搬。
+
+---
+
 这份笔记记录了一个没有域名、没有公网证书的 Linux 服务器如何作为 Tailscale DERP 使用，以及在 Tailscale 里如何配置自定义 DERP map。
 
 ## 1. 服务器侧部署思路
@@ -9,7 +23,7 @@
 - 只有公网 IP，没有域名
 - 没有现成的 HTTPS 证书
 - 希望使用 Tailscale 官方 `derper` 二进制
-- 通过 `ssh aliyun` 直接管理 Linux 服务器
+- 通过 `ssh vps` 直接管理 Linux 服务器
 
 ### 1.1 核心结论
 
@@ -76,8 +90,8 @@ Tailscale 里的自定义 DERP 是通过 **tailnet policy file** 的 `derpMap` �
     "Regions": {
       "900": {
         "RegionID": 900,
-        "RegionCode": "aliyun",
-        "RegionName": "Aliyun DERP",
+        "RegionCode": "myvps",
+        "RegionName": "My VPS DERP",
         "Nodes": [
           {
             "Name": "900a",
@@ -101,10 +115,10 @@ Tailscale 里的自定义 DERP 是通过 **tailnet policy file** 的 `derpMap` �
   - 这是 Tailscale 预留给用户自建 DERP 的区间
 
 - `RegionCode`
-  - 简短代码，例如 `aliyun`
+  - 简短代码，例如 `myvps`
 
 - `RegionName`
-  - 人类可读名称，例如 `Aliyun DERP`
+  - 人类可读名称，例如 `My VPS DERP`
 
 - `HostName`
   - 这里可以直接写公网 IP
@@ -270,7 +284,7 @@ curl -vk https://<PUBLIC_IP>:8443/
 ### 6.4 服务器侧看日志
 
 ```bash
-ssh aliyun 'sudo journalctl -u derper -f'
+ssh vps 'sudo journalctl -u derper -f'
 ```
 
 如果 `tailscale netcheck` 或重新连接客户端时能触发访问，日志里会看到连接信息。
@@ -280,16 +294,16 @@ ssh aliyun 'sudo journalctl -u derper -f'
 ## 7. 服务器侧验证命令
 
 ```bash
-ssh aliyun 'sudo systemctl status derper --no-pager'
-ssh aliyun 'sudo ss -lntup | grep -E ":8443|:3478"'
-ssh aliyun 'sudo ls -l /var/lib/derper/derper.key /var/lib/derper/certs'
+ssh vps 'sudo systemctl status derper --no-pager'
+ssh vps 'sudo ss -lntup | grep -E ":8443|:3478"'
+ssh vps 'sudo ls -l /var/lib/derper/derper.key /var/lib/derper/certs'
 ```
 
 ---
 
 ## 8. 常见注意点
 
-- 阿里云安全组要放行 `8443/tcp` 和 `3478/udp`
+- 云服务商安全组要放行 `8443/tcp` 和 `3478/udp`
 - `HostName` 如果填 IP，就必须和 `CertName` 对应
 - 自建 DERP 不会自动替代官方 DERP
 - 如果你后面再加第二台自建 DERP，想让它们互转发，需要再做 mesh
