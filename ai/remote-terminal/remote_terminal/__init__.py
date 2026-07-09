@@ -8,6 +8,7 @@ from remote_terminal.models import (
     SessionRef,
     ValidationError,
 )
+from remote_terminal.tmux_backend import TmuxBackend
 
 __all__ = [
     "BackendCommandError",
@@ -17,5 +18,6 @@ __all__ = [
     "MissingDependencyError",
     "RemoteTerminalError",
     "SessionRef",
+    "TmuxBackend",
     "ValidationError",
 ]
