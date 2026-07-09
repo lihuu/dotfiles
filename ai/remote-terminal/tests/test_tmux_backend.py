@@ -290,3 +290,65 @@ def test_exec_rejects_non_positive_poll_interval():
         backend.exec(SessionRef("macmini", "main"), "pwd", poll_interval=0)
 
     assert runner.calls == []
+
+
+def test_exec_skips_literal_marker_text_and_parses_real_marker():
+    # When send-keys -l sends the marker command line to the pane, the
+    # literal text "__REMOTE_TERMINAL_DONE:<nonce>:%s\n' \"$?\"" appears
+    # in the pane before printf executes. _parse_marker must skip that
+    # occurrence and find the real marker line with an integer exit code.
+    runner = FakeRunner(
+        [
+            completed(),
+            completed(),
+            completed(),
+            completed(),
+            # First poll: literal marker command text visible, no real
+            # marker output yet — must NOT raise MarkerParseError.
+            completed(
+                stdout=(
+                    "$ pwd\n"
+                    "$ printf '\\n__REMOTE_TERMINAL_DONE:nonce-skip:%s\\n' \"$?\"\n"
+                )
+            ),
+            # Second poll: real marker line now present.
+            completed(
+                stdout=(
+                    "$ pwd\n/tmp\n"
+                    "$ printf '\\n__REMOTE_TERMINAL_DONE:nonce-skip:%s\\n' \"$?\"\n"
+                    "\n__REMOTE_TERMINAL_DONE:nonce-skip:0\n"
+                )
+            ),
+        ]
+    )
+    clock = FakeClock()
+    backend = TmuxBackend(
+        command_runner=runner,
+        nonce_factory=lambda: "nonce-skip",
+        sleeper=clock.sleep,
+        clock=clock,
+    )
+
+    result = backend.exec(
+        SessionRef("macmini", "main"),
+        "pwd",
+        timeout=5.0,
+        poll_interval=0.5,
+    )
+
+    assert result.exit_code == 0
+    assert result.marker == "__REMOTE_TERMINAL_DONE:nonce-skip:"
+    assert "/tmp" in result.output
+
+
+def test_parse_marker_returns_none_when_only_literal_text_present():
+    # Unit-level: when the pane contains only the echoed marker command
+    # (no real marker output yet), _parse_marker must return None so the
+    # poll loop continues, rather than raising MarkerParseError.
+    from remote_terminal.tmux_backend import TmuxBackend
+
+    marker = "__REMOTE_TERMINAL_DONE:nonce-x:"
+    pane_with_literal_only = (
+        "$ printf '\\n__REMOTE_TERMINAL_DONE:nonce-x:%s\\n' \"$?\"\n"
+    )
+    assert TmuxBackend._parse_marker(pane_with_literal_only, marker) is None

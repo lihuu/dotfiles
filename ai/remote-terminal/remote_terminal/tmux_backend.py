@@ -165,17 +165,38 @@ class TmuxBackend(TerminalBackend):
 
     @staticmethod
     def _parse_marker(output: str, marker: str) -> tuple[int, str] | None:
-        marker_index = output.rfind(marker)
-        if marker_index < 0:
-            return None
+        # Search from the end for a marker line whose exit code is a plain
+        # integer. The literal marker command text (sent via send-keys -l)
+        # also contains the marker prefix followed by "%s\n' \"$?\"", so a
+        # naive rfind can match the echoed command line instead of the real
+        # marker output. We distinguish the two by checking whether the
+        # remainder after the marker prefix looks like the echoed printf
+        # command (contains %s or quote/$ characters). If it does, skip it
+        # and keep searching. If it's a standalone marker line with an
+        # unparseable exit code, raise MarkerParseError as before.
+        search_from = len(output)
+        while True:
+            marker_index = output.rfind(marker, 0, search_from)
+            if marker_index < 0:
+                return None
 
-        line_end = output.find("\n", marker_index)
-        marker_line = output[marker_index:] if line_end < 0 else output[marker_index:line_end]
-        exit_text = marker_line[len(marker) :].strip()
-        try:
-            exit_code = int(exit_text)
-        except ValueError as exc:
-            raise MarkerParseError(f"could not parse exec marker exit code from {marker_line!r}") from exc
+            line_end = output.find("\n", marker_index)
+            marker_line = output[marker_index:] if line_end < 0 else output[marker_index:line_end]
+            exit_text = marker_line[len(marker) :].strip()
+            try:
+                exit_code = int(exit_text)
+            except ValueError:
+                # If this looks like the echoed printf command text (contains
+                # printf's %s placeholder or shell quoting), skip it and keep
+                # searching backwards for the real marker output line.
+                if "%" in exit_text or "'" in exit_text or '"' in exit_text or "$" in exit_text:
+                    search_from = marker_index
+                    continue
+                # This is a standalone marker line with an exit code that
+                # genuinely cannot be parsed — raise as before.
+                raise MarkerParseError(
+                    f"could not parse exec marker exit code from {marker_line!r}"
+                )
 
-        command_output = output[:marker_index]
-        return exit_code, command_output
+            command_output = output[:marker_index]
+            return exit_code, command_output
