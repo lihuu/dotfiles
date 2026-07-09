@@ -43,7 +43,7 @@ def completed(args=None, returncode=0, stdout="", stderr=""):
     return subprocess.CompletedProcess(args or [], returncode, stdout, stderr)
 
 
-@pytest.mark.parametrize("host", ["-bad", "bad\nhost", "bad\rhost", ""])
+@pytest.mark.parametrize("host", ["-bad", "bad\nhost", "bad\rhost", "\x01host", "host\x07", "\thost", "host\x1b", ""])
 def test_rejects_invalid_host_before_ssh(host):
     runner = FakeRunner()
     backend = TmuxBackend(command_runner=runner)
@@ -260,3 +260,33 @@ def test_nonzero_backend_command_includes_context():
     assert "main" in message
     assert "255" in message
     assert "connection failed" in message
+
+
+def test_read_rejects_non_positive_lines():
+    runner = FakeRunner()
+    backend = TmuxBackend(command_runner=runner)
+
+    with pytest.raises(ValidationError):
+        backend.read(SessionRef("macmini", "main"), lines=0)
+
+    assert runner.calls == []
+
+
+def test_exec_rejects_non_positive_timeout():
+    runner = FakeRunner()
+    backend = TmuxBackend(command_runner=runner)
+
+    with pytest.raises(ValidationError):
+        backend.exec(SessionRef("macmini", "main"), "pwd", timeout=0)
+
+    assert runner.calls == []
+
+
+def test_exec_rejects_non_positive_poll_interval():
+    runner = FakeRunner()
+    backend = TmuxBackend(command_runner=runner)
+
+    with pytest.raises(ValidationError):
+        backend.exec(SessionRef("macmini", "main"), "pwd", poll_interval=0)
+
+    assert runner.calls == []

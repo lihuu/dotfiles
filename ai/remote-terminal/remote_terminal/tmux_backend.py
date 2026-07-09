@@ -158,7 +158,7 @@ class TmuxBackend(TerminalBackend):
 
     @staticmethod
     def _validate_session(session: SessionRef) -> None:
-        if not session.host or session.host.startswith("-") or any(ch in session.host for ch in "\r\n\0"):
+        if not session.host or session.host.startswith("-") or any(ord(ch) < 0x20 or ord(ch) == 0x7f for ch in session.host):
             raise ValidationError(f"invalid host: {session.host!r}")
         if not SESSION_NAME_RE.fullmatch(session.name):
             raise ValidationError(f"invalid tmux session name: {session.name!r}")
