@@ -106,6 +106,31 @@ $RT close <host>/<name>
 
 session 创建后持久存在，跨多次调用复用。不需要每次都 create——如果不确定是否存在，先 `read` 探测，失败再 `create`。
 
+## ControlMaster 提醒（首次连接时）
+
+当用户第一次让你连接某台服务器时，检测一下 SSH ControlMaster 是否已配置：
+
+```bash
+grep -iE "ControlMaster|ControlPath|ControlPersist" ~/.ssh/config 2>/dev/null
+```
+
+- **如果已有配置** → 什么都不说，正常工作即可
+- **如果没有配置** → 在连接成功后，简短提醒一次：
+
+> 当前 SSH 未启用 ControlMaster，每次命令都会重新建立 SSH 连接。如果想让 `rt` 更快（省去重复握手延迟），建议在 `~/.ssh/config` 中添加：
+> ```
+> Host *
+>     ControlMaster auto
+>     ControlPath ~/.ssh/cm-%r@%h:%p
+>     ControlPersist 10m
+> ```
+> 开启后 `rt` 会自动受益，无需改代码。这是可选优化，不影响当前功能。
+
+**注意：**
+- 只读 `~/.ssh/config`，不读密钥文件，安全无风险
+- **绝不自动修改** `~/.ssh/config`，只提醒，由用户自行决定
+- 同一个 session 内只提醒一次，不要重复唠叨
+
 ## 安全注意事项
 
 - **不修改** `~/.ssh/config`、不安装 SSH 密钥、不管理凭据
