@@ -35,6 +35,9 @@ src/main/resources/static/node_modules/
 ### AI Agents ###
 .claude/
 docs/superpowers/
+# ZCode: 保留 skills（配置资产），忽略会话临时产物
+.zcode/plans/
+.zcode/agents/
 
 ### Frontend files
 **/node_modules/
