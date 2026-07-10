@@ -26,9 +26,18 @@ description: 远程终端交互工具。通过 SSH + tmux 操作持久远程终�
 
 ### 何时**不**使用
 
-- 单次 `ssh host command` 一把梭的场景——直接用 ssh 即可，不需要持久会话
-- 需要结构化 stdout/stderr 分离的场景——`rt` 返回的是终端 pane 文本，不是管道输出
+- 需要结构化 stdout/stderr 分离的场景——`rt` 返回的是终端 pane 文本（tmux 模式）或 stdout（ssh-direct 模式），不是管道 transcript
 - Windows 远程主机——当前版本仅支持 Unix-like 远端
+
+## 自动 Fallback（无需 tmux）
+
+如果远端没有安装 tmux，`rt` 会自动回退到 **ssh-direct 模式**：直接用 `ssh <host> <command>` 执行。
+
+- **自动检测**：`create` 时先试 tmux，如果远端报 `command not found: tmux`，自动切换到 ssh-direct 模式
+- **只支持 exec**：ssh-direct 模式下只有 `exec` 有真正语义，`write`/`read`/`interrupt`/`close` 是 no-op
+- **无需持久会话**：没有 tmux 就没有 session 持久化，每次 exec 是独立的 SSH 调用
+- **连接复用**：如果本地配置了 SSH ControlMaster，exec 仍能享受连接复用
+- **无状态 fallback**：即使不先 `create`，直接 `exec <host>/<name> "命令"` 也会自动 fallback
 
 ## 命令速查
 

@@ -9,6 +9,7 @@ from remote_terminal.models import (
     ValidationError,
 )
 from remote_terminal.runtime import RemoteTerminalRuntime
+from remote_terminal.ssh_direct_backend import SshDirectBackend
 from remote_terminal.tmux_backend import TmuxBackend
 
 __all__ = [
@@ -20,6 +21,7 @@ __all__ = [
     "RemoteTerminalError",
     "RemoteTerminalRuntime",
     "SessionRef",
+    "SshDirectBackend",
     "TmuxBackend",
     "ValidationError",
 ]

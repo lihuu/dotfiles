@@ -150,10 +150,28 @@ print(result.output)
 
 The returned output is terminal pane text observed around the marker. It is not a structured stdout/stderr pipe transcript.
 
+In ssh-direct fallback mode, `exec()` runs `ssh <host> <command>` directly and returns stdout + exit code — no marker, no polling.
+
+## SSH-Direct Fallback (No tmux Required)
+
+If the remote host does not have tmux installed, the runtime automatically falls back to **ssh-direct mode**: commands are executed via `ssh <host> <command>` directly.
+
+- **Automatic**: `create` tries tmux first; if the remote reports `command not found: tmux`, it switches to ssh-direct.
+- **exec only**: In ssh-direct mode, only `exec` has real semantics. `write`, `read`, `interrupt`, and `close` are no-ops.
+- **No persistent session**: Without tmux there is no session persistence — each `exec` is an independent SSH call. SSH connection reuse still works if ControlMaster is configured.
+- **Stateless fallback**: `exec <host>/<name> "command"` works even without a prior `create` — the fallback triggers automatically.
+
+```bash
+# Host without tmux — falls back automatically
+remote-terminal create banwagong main
+remote-terminal exec banwagong/main "uname -a"
+# Works: returns stdout + exit code via direct SSH
+```
+
 ## First-Version Limitations
 
 - Unix-like remotes only.
-- Requires remote `tmux`.
+- Requires remote `tmux` for persistent sessions; falls back to ssh-direct (exec-only) when tmux is absent.
 - Does not implement SSH or manage SSH credentials.
 - Does not edit `~/.ssh/config`.
 - Does not implement tmux control mode.

@@ -1,4 +1,4 @@
-from remote_terminal.models import ExecResult, SessionRef
+from remote_terminal.models import ExecResult, MissingDependencyError, SessionRef
 from remote_terminal.runtime import RemoteTerminalRuntime
 
 
@@ -28,6 +28,21 @@ class FakeBackend:
         self.calls.append(("close", session))
 
 
+class FakeTmuxBackend(FakeBackend):
+    """Tmux backend that always reports missing tmux."""
+
+    def create_session(self, host, name):
+        raise MissingDependencyError(f"remote host {host!r} needs tmux installed")
+
+
+class FakeSshBackend(FakeBackend):
+    """Ssh-direct backend that succeeds on create."""
+
+    def create_session(self, host, name):
+        self.calls.append(("create_session", host, name))
+        return SessionRef(host, name, backend="ssh")
+
+
 def test_runtime_delegates_all_operations_to_backend():
     backend = FakeBackend()
     runtime = RemoteTerminalRuntime(backend=backend)
@@ -48,3 +63,44 @@ def test_runtime_delegates_all_operations_to_backend():
         ("interrupt", session),
         ("close", session),
     ]
+
+
+def test_runtime_falls_back_to_ssh_when_tmux_missing():
+    ssh_backend = FakeSshBackend()
+    runtime = RemoteTerminalRuntime(
+        backend=None,  # force auto-fallback path
+    )
+    # Inject our fake backends so we control the behavior
+    runtime._tmux_backend = FakeTmuxBackend()
+    runtime._ssh_backend = ssh_backend
+
+    session = runtime.create_session("banwagong", "main")
+
+    assert session.backend == "ssh"
+    result = runtime.exec(session, "uname -a")
+    assert result.exit_code == 0
+    # Verify exec was routed to the ssh backend
+    assert ("exec", session, "uname -a", 30.0, 0.25) in ssh_backend.calls
+
+
+def test_runtime_uses_tmux_when_available():
+    tmux_backend = FakeBackend()
+    runtime = RemoteTerminalRuntime(backend=None)
+    runtime._tmux_backend = tmux_backend
+    runtime._ssh_backend = FakeSshBackend()
+
+    session = runtime.create_session("vm-ubuntu", "main")
+
+    assert session.backend == "tmux"
+    assert ("create_session", "vm-ubuntu", "main") in tmux_backend.calls
+
+
+def test_runtime_explicit_backend_does_not_fallback():
+    explicit = FakeBackend()
+    runtime = RemoteTerminalRuntime(backend=explicit)
+    runtime._tmux_backend = FakeTmuxBackend()  # would raise if used
+
+    session = runtime.create_session("vm-ubuntu", "main")
+
+    assert session.backend == "tmux"
+    assert ("create_session", "vm-ubuntu", "main") in explicit.calls
