@@ -15,10 +15,36 @@ ControlMaster does not preserve shell state. The tmux session does.
 
 ```text
 RemoteTerminalRuntime
-  -> TmuxBackend
-    -> ssh <host> <tmux command>
-      -> remote tmux session
+  -> TmuxBackend (or SshDirectBackend fallback)
+    -> ssh <host> <command>
+      -> remote tmux session (if tmux available)
         -> remote shell
+```
+
+## Project Structure
+
+```
+ai/remote-terminal/
+├── README.md                      # this file
+├── pyproject.toml                 # build config, console scripts (rt + remote-terminal)
+├── remote_terminal/               # Python package
+│   ├── __init__.py                # public exports
+│   ├── models.py                  # SessionRef, ExecResult, exception hierarchy
+│   ├── backends.py                # TerminalBackend ABC
+│   ├── tmux_backend.py            # TmuxBackend (tmux + SSH)
+│   ├── ssh_direct_backend.py      # SshDirectBackend (fallback, no tmux)
+│   ├── runtime.py                 # RemoteTerminalRuntime facade + auto fallback
+│   └── cli.py                     # argparse CLI
+├── skill/                         # agent skill (platform-agnostic)
+│   ├── SKILL.md                   # skill definition (triggers, commands, workflow)
+│   ├── references/usage.md        # detailed scenarios + troubleshooting
+│   └── scripts/run-rt             # launcher: finds rt binary across install methods
+└── tests/                         # pytest suite (fake runners, no real SSH/tmux)
+    ├── test_models.py
+    ├── test_tmux_backend.py
+    ├── test_ssh_direct_backend.py
+    ├── test_runtime.py
+    └── test_cli.py
 ```
 
 ## Requirements
@@ -31,23 +57,87 @@ Local machine:
 Remote host:
 
 - Unix-like shell environment
-- `tmux`
+- `tmux` (optional — falls back to ssh-direct mode if absent)
 
-## Install for Development
+## Installation
+
+### 1. Install the CLI
+
+**Option A: pipx (recommended — isolated environment, global access)**
 
 ```bash
 cd ai/remote-terminal
-python3 -m pip install -e ".[test]"
+pipx install -e .
 ```
 
-The package installs two equivalent commands:
+This installs two equivalent commands to `~/.local/bin/`:
 
 ```bash
 rt --help                    # recommended — short, Unix-style
 remote-terminal --help        # same thing, longer name
 ```
 
+Verify the install:
+
+```bash
+which rt                     # ~/.local/bin/rt
+rt --help                    # shows subcommands: create, write, read, exec, interrupt, close
+```
+
+**Option B: pip editable (for development with test deps)**
+
+```bash
+cd ai/remote-terminal
+python3 -m pip install -e ".[test]"
+```
+
+Note: on macOS with system Python (externally-managed), use `pipx` or add `--break-system-packages` to pip.
+
 All examples below use `rt`. The longer `remote-terminal` works identically.
+
+### 2. Install the Agent Skill
+
+The skill lives at `ai/remote-terminal/skill/`. It is platform-agnostic — install it by symlinking (or copying) into your agent's skill directory.
+
+**ZCode** (auto-discovers `<workspace>/.zcode/skills/*/SKILL.md`):
+
+```bash
+# From the workspace root (e.g. /Users/lihu/git/dotfiles)
+ln -s ../../ai/remote-terminal/skill .zcode/skills/rt
+```
+
+Verify:
+
+```bash
+ls -la .zcode/skills/rt/SKILL.md          # should resolve through symlink
+.zcode/skills/rt/scripts/run-rt --help    # launcher should find rt
+```
+
+**Other agent platforms** (Codex, etc.):
+
+```bash
+# Link or copy to the platform's skill directory
+ln -s /path/to/ai/remote-terminal/skill ~/.codex/skills/rt
+# or
+cp -r ai/remote-terminal/skill ~/.codex/skills/rt
+```
+
+The skill's `scripts/run-rt` launcher auto-detects the `rt` binary in this order:
+
+1. `$REMOTE_TERMINAL_BIN` env var (explicit override)
+2. `<project>/.venv/bin/rt` (project-local venv)
+3. `rt` on PATH (pipx global install)
+4. `remote-terminal` on PATH
+5. `python3 -m remote_terminal.cli` with PYTHONPATH fallback
+
+### 3. Run Tests (optional)
+
+```bash
+cd ai/remote-terminal
+python3 -m pytest -v
+```
+
+Tests use fake command runners — no real SSH server or tmux required.
 
 ## Usage
 
@@ -203,17 +293,6 @@ Expected observations:
 - `pwd` reports `/tmp`, showing cwd state persisted.
 - `python3 -q` remains attached to the same tmux terminal until interrupted.
 - `tmux attach -t main` shows the same session the runtime operated.
-
-## Agent Skill
-
-A ZCode agent skill is provided at `.zcode/skills/rt/` so ZCode can automatically use this tool when the user says things like "connect to my server" or "run a command on macmini". The skill handles:
-
-- Natural language triggers → `rt` command mapping
-- macOS vs Linux remote detection (automatic `--tmux` / `--shell` flags)
-- ControlMaster first-use reminder
-- Session lifecycle management
-
-See `.zcode/skills/rt/SKILL.md` for the skill definition.
 
 ## Tests
 

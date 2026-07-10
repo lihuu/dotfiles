@@ -1,30 +1,37 @@
 #!/bin/sh
 set -eu
 
+# Resolve the project directory (skill/scripts/ → skill/ → ai/remote-terminal/)
 script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
-project_dir=$(CDPATH= cd -- "$script_dir/../../.." && pwd -P)
+project_dir=$(CDPATH= cd -- "$script_dir/../.." && pwd -P)
 
+# 1. Explicit override via env var
 if [ -n "${REMOTE_TERMINAL_BIN:-}" ]; then
     exec "$REMOTE_TERMINAL_BIN" "$@"
 fi
 
+# 2. Project-local venv
 if [ -x "$project_dir/.venv/bin/rt" ]; then
     exec "$project_dir/.venv/bin/rt" "$@"
 fi
 
+# 3. rt on PATH (pipx global install)
 if command -v rt >/dev/null 2>&1; then
     exec rt "$@"
 fi
 
+# 4. remote-terminal on PATH
 if command -v remote-terminal >/dev/null 2>&1; then
     exec remote-terminal "$@"
 fi
 
+# 5. python3 -m with PYTHONPATH fallback
 if command -v python3 >/dev/null 2>&1 && [ -d "$project_dir/remote_terminal" ]; then
     PYTHONPATH="$project_dir${PYTHONPATH:+:$PYTHONPATH}"
     export PYTHONPATH
     exec python3 -m remote_terminal.cli "$@"
 fi
 
-echo "remote-terminal is unavailable; install ai/remote-terminal or set REMOTE_TERMINAL_BIN" >&2
+echo "remote-terminal is unavailable; install with 'pipx install -e .' from $project_dir" >&2
+echo "or set REMOTE_TERMINAL_BIN to the rt binary path" >&2
 exit 127
