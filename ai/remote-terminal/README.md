@@ -86,6 +86,27 @@ Close the tmux session:
 remote-terminal close macmini/main
 ```
 
+## macOS Remote Hosts
+
+macOS remotes (e.g. a Mac mini with Homebrew) need two extra flags:
+
+```bash
+remote-terminal --tmux /opt/homebrew/bin/tmux --shell "/bin/zsh -f" create macmini main
+remote-terminal --tmux /opt/homebrew/bin/tmux --shell "/bin/zsh -f" exec macmini/main "pwd"
+```
+
+**Why:**
+
+- `--tmux /opt/homebrew/bin/tmux`: non-interactive SSH on macOS does not include `/opt/homebrew/bin` in PATH, so `tmux` is not found. This flag specifies the full path and automatically prepends it to the remote PATH.
+- `--shell "/bin/zsh -f"`: the default zsh loads `~/.zshrc`, which may register fzf zle widgets (`eval "$(fzf --zsh)"`) that prevent tmux `send-keys` input from being consumed. `-f` skips all user config. `/bin/sh` also works and is the default for non-macOS hosts.
+
+**Troubleshooting:**
+
+- If `create` reports `command not found: tmux`, specify `--tmux` with the full path.
+- If `create` succeeds but `exec` times out with no output, the remote shell config is blocking input — try `--shell "/bin/sh"` or `--shell "/bin/zsh -f"`.
+
+Linux remotes typically need no extra flags.
+
 ## Human Takeover
 
 The runtime uses ordinary named tmux sessions. A human can attach to the same terminal:
@@ -100,10 +121,25 @@ tmux attach -t main
 ```python
 from remote_terminal import RemoteTerminalRuntime
 
+# Linux remote — defaults work
 runtime = RemoteTerminalRuntime()
-session = runtime.create_session("macmini", "main")
+session = runtime.create_session("vm-ubuntu", "main")
 runtime.write(session, "cd ~/project\n")
 result = runtime.exec(session, "pwd")
+print(result.exit_code)
+print(result.output)
+```
+
+```python
+from remote_terminal import RemoteTerminalRuntime
+
+# macOS remote — specify tmux path and clean shell
+runtime = RemoteTerminalRuntime(
+    remote_tmux="/opt/homebrew/bin/tmux",
+    remote_shell="/bin/zsh -f",
+)
+session = runtime.create_session("macmini", "main")
+result = runtime.exec(session, "uname -a")
 print(result.exit_code)
 print(result.output)
 ```
@@ -147,6 +183,17 @@ Expected observations:
 - `pwd` reports `/tmp`, showing cwd state persisted.
 - `python3 -q` remains attached to the same tmux terminal until interrupted.
 - `tmux attach -t main` shows the same session the runtime operated.
+
+## Agent Skill
+
+An agent skill is provided at `.zcode/skills/rt/` so that ZCode can automatically use this tool when the user says things like "connect to my server" or "run a command on macmini". The skill handles:
+
+- Natural language triggers → `rt` command mapping
+- macOS vs Linux remote detection (automatic `--tmux` / `--shell` flags)
+- ControlMaster first-use reminder
+- Session lifecycle management
+
+See `.zcode/skills/rt/SKILL.md` for the skill definition.
 
 ## Tests
 
