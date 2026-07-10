@@ -43,9 +43,11 @@ python3 -m pip install -e ".[test]"
 The package installs two equivalent commands:
 
 ```bash
-rt --help
-remote-terminal --help  # same thing, longer name
+rt --help                    # recommended — short, Unix-style
+remote-terminal --help        # same thing, longer name
 ```
+
+All examples below use `rt`. The longer `remote-terminal` works identically.
 
 ## Usage
 
