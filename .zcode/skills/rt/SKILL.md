@@ -39,6 +39,24 @@ CLI 路径：`/Users/lihu/git/dotfiles/ai/remote-terminal/.venv/bin/rt`
 RT="/Users/lihu/git/dotfiles/ai/remote-terminal/.venv/bin/rt"
 ```
 
+### macOS 远端主机（重要）
+
+macOS 主机（如 macmini）有两个兼容性问题：
+
+1. **tmux 不在默认 PATH**：非交互 SSH 的 PATH 不含 `/opt/homebrew/bin`，需要 `--tmux /opt/homebrew/bin/tmux`
+2. **zsh 配置卡住**：默认 zsh 加载 `~/.zshrc` 后 `eval "$(fzf --zsh)"` 注册的 zle widget 会导致 send-keys 输入不被消费，需要 `--shell "/bin/zsh -f"` 跳过用户配置
+
+因此连 macOS 主机时**必须**加这两个参数：
+
+```bash
+$RT --tmux /opt/homebrew/bin/tmux --shell "/bin/zsh -f" create macmini main
+$RT --tmux /opt/homebrew/bin/tmux --shell "/bin/zsh -f" exec macmini/main "pwd"
+```
+
+Linux 主机（如 vm-ubuntu、aliyun）通常不需要这些参数，默认即可。
+
+**判断逻辑**：如果 `rt create <host>` 报 `command not found: tmux`，说明远端 tmux 在非标准路径，用 `--tmux <完整路径>`。如果 create 成功但 exec 超时或无输出，说明远端 shell 配置有问题，用 `--shell "/bin/sh"` 或 `--shell "/bin/zsh -f"`。
+
 ### create — 创建或接入持久会话
 
 ```bash

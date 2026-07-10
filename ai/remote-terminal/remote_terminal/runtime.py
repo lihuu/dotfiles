@@ -4,8 +4,16 @@ from remote_terminal.tmux_backend import TmuxBackend
 
 
 class RemoteTerminalRuntime:
-    def __init__(self, backend: TerminalBackend | None = None) -> None:
-        self._backend = backend or TmuxBackend()
+    def __init__(
+        self,
+        backend: TerminalBackend | None = None,
+        remote_tmux: str = "tmux",
+        remote_shell: str = "/bin/sh",
+    ) -> None:
+        self._backend = backend or TmuxBackend(
+            remote_tmux=remote_tmux,
+            remote_shell=remote_shell,
+        )
 
     def create_session(self, host: str, name: str) -> SessionRef:
         return self._backend.create_session(host, name)

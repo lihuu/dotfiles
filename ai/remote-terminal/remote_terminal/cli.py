@@ -16,6 +16,17 @@ def parse_session_id(value: str) -> SessionRef:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="remote-terminal")
+    parser.add_argument(
+        "--tmux",
+        default="tmux",
+        help="remote tmux binary path (default: tmux; use /opt/homebrew/bin/tmux on macOS)",
+    )
+    parser.add_argument(
+        "--shell",
+        default="/bin/sh",
+        help="shell for new tmux sessions (default: /bin/sh; use a clean shell to avoid "
+        "interactive zsh config issues)",
+    )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     create_parser = subparsers.add_parser("create")
@@ -50,7 +61,10 @@ def main(
 ) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
-    active_runtime = runtime or RemoteTerminalRuntime()
+    active_runtime = runtime or RemoteTerminalRuntime(
+        remote_tmux=args.tmux,
+        remote_shell=args.shell,
+    )
 
     try:
         if args.command == "create":

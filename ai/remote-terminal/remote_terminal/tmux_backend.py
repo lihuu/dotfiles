@@ -31,11 +31,15 @@ class TmuxBackend(TerminalBackend):
         nonce_factory: Callable[[], str] | None = None,
         sleeper: Callable[[float], None] | None = None,
         clock: Callable[[], float] | None = None,
+        remote_tmux: str = "tmux",
+        remote_shell: str = "/bin/sh",
     ) -> None:
         self._command_runner = command_runner or self._default_command_runner
         self._nonce_factory = nonce_factory or (lambda: uuid.uuid4().hex)
         self._sleeper = sleeper or time.sleep
         self._clock = clock or time.monotonic
+        self._remote_tmux = remote_tmux
+        self._remote_shell = remote_shell
 
     def create_session(self, host: str, name: str) -> SessionRef:
         session = SessionRef(host=host, name=name)
@@ -49,7 +53,9 @@ class TmuxBackend(TerminalBackend):
                 f"remote host {host!r} needs tmux installed: {result.stderr.strip()}"
             )
 
-        self._run_tmux("create_session", session, ["new-session", "-d", "-s", name])
+        self._run_tmux(
+            "create_session", session, ["new-session", "-d", "-s", name, self._remote_shell]
+        )
         return session
 
     def write(self, session: SessionRef, data: str) -> None:
@@ -147,9 +153,20 @@ class TmuxBackend(TerminalBackend):
             )
         return result
 
-    @staticmethod
-    def _remote_tmux_command(tmux_args: list[str]) -> str:
-        return "tmux " + " ".join(shlex.quote(arg) for arg in tmux_args)
+    def _remote_tmux_command(self, tmux_args: list[str]) -> str:
+        tmux_bin = self._remote_tmux
+        quoted_args = " ".join(shlex.quote(arg) for arg in tmux_args)
+        command = f"{shlex.quote(tmux_bin)} {quoted_args}"
+        # When using a non-standard tmux path (e.g. /opt/homebrew/bin/tmux on
+        # macOS), the remote non-interactive SSH PATH may not include that
+        # directory. Wrap the command in a shell that prepends common Homebrew
+        # paths so tmux is found.
+        if tmux_bin != "tmux" and "/" in tmux_bin:
+            tmux_dir = tmux_bin.rsplit("/", 1)[0]
+            # Don't quote $PATH — it must expand on the remote shell.
+            prefix = f"PATH={tmux_dir}:$PATH"
+            command = f"{prefix} {command}"
+        return command
 
     @staticmethod
     def _looks_like_missing_tmux(result: subprocess.CompletedProcess[str]) -> bool:

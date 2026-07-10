@@ -89,7 +89,37 @@ def test_create_session_creates_missing_session():
     assert session == SessionRef(host="macmini", name="main")
     assert runner.calls == [
         ["ssh", "macmini", "tmux has-session -t main"],
-        ["ssh", "macmini", "tmux new-session -d -s main"],
+        ["ssh", "macmini", "tmux new-session -d -s main /bin/sh"],
+    ]
+
+
+def test_create_session_uses_custom_tmux_path_and_shell():
+    runner = FakeRunner(
+        [
+            completed(returncode=1, stderr="can't find session"),
+            completed(stdout=""),
+        ]
+    )
+    backend = TmuxBackend(
+        command_runner=runner,
+        remote_tmux="/opt/homebrew/bin/tmux",
+        remote_shell="/bin/zsh -f",
+    )
+
+    session = backend.create_session("macmini", "main")
+
+    assert session == SessionRef(host="macmini", name="main")
+    assert runner.calls == [
+        [
+            "ssh",
+            "macmini",
+            "PATH=/opt/homebrew/bin:$PATH /opt/homebrew/bin/tmux has-session -t main",
+        ],
+        [
+            "ssh",
+            "macmini",
+            "PATH=/opt/homebrew/bin:$PATH /opt/homebrew/bin/tmux new-session -d -s main '/bin/zsh -f'",
+        ],
     ]
 
 
