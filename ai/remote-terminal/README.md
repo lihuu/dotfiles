@@ -43,8 +43,8 @@ python3 -m pip install -e ".[test]"
 The package installs two equivalent commands:
 
 ```bash
-remote-terminal --help
 rt --help
+remote-terminal --help  # same thing, longer name
 ```
 
 ## Usage
@@ -52,38 +52,38 @@ rt --help
 Create or attach to a persistent session:
 
 ```bash
-remote-terminal create macmini main
+rt create macmini main
 ```
 
 Type into the terminal:
 
 ```bash
-remote-terminal write macmini/main "cd ~/project
+rt write macmini/main "cd ~/project
 "
 ```
 
 Run a helper command and wait for its completion marker:
 
 ```bash
-remote-terminal exec macmini/main "pwd"
+rt exec macmini/main "pwd"
 ```
 
 Read the latest pane content:
 
 ```bash
-remote-terminal read macmini/main --lines 200
+rt read macmini/main --lines 200
 ```
 
 Interrupt the foreground process:
 
 ```bash
-remote-terminal interrupt macmini/main
+rt interrupt macmini/main
 ```
 
 Close the tmux session:
 
 ```bash
-remote-terminal close macmini/main
+rt close macmini/main
 ```
 
 ## macOS Remote Hosts
@@ -91,8 +91,8 @@ remote-terminal close macmini/main
 macOS remotes (e.g. a Mac mini with Homebrew) need two extra flags:
 
 ```bash
-remote-terminal --tmux /opt/homebrew/bin/tmux --shell "/bin/zsh -f" create macmini main
-remote-terminal --tmux /opt/homebrew/bin/tmux --shell "/bin/zsh -f" exec macmini/main "pwd"
+rt --tmux /opt/homebrew/bin/tmux --shell "/bin/zsh -f" create macmini main
+rt --tmux /opt/homebrew/bin/tmux --shell "/bin/zsh -f" exec macmini/main "pwd"
 ```
 
 **Why:**
@@ -163,8 +163,8 @@ If the remote host does not have tmux installed, the runtime automatically falls
 
 ```bash
 # Host without tmux — falls back automatically
-remote-terminal create banwagong main
-remote-terminal exec banwagong/main "uname -a"
+rt create banwagong main
+rt exec banwagong/main "uname -a"
 # Works: returns stdout + exit code via direct SSH
 ```
 
@@ -184,14 +184,14 @@ remote-terminal exec banwagong/main "uname -a"
 Use a host alias that already works with `ssh <host>`.
 
 ```bash
-remote-terminal create <host> main
-remote-terminal write <host>/main "cd /tmp
+rt create <host> main
+rt write <host>/main "cd /tmp
 "
-remote-terminal exec <host>/main "pwd"
-remote-terminal write <host>/main "python3 -q
+rt exec <host>/main "pwd"
+rt write <host>/main "python3 -q
 "
-remote-terminal read <host>/main
-remote-terminal interrupt <host>/main
+rt read <host>/main
+rt interrupt <host>/main
 ssh <host>
 tmux attach -t main
 ```
@@ -204,7 +204,7 @@ Expected observations:
 
 ## Agent Skill
 
-An agent skill is provided at `.zcode/skills/rt/` so that ZCode can automatically use this tool when the user says things like "connect to my server" or "run a command on macmini". The skill handles:
+A ZCode agent skill is provided at `.zcode/skills/rt/` so ZCode can automatically use this tool when the user says things like "connect to my server" or "run a command on macmini". The skill handles:
 
 - Natural language triggers → `rt` command mapping
 - macOS vs Linux remote detection (automatic `--tmux` / `--shell` flags)
