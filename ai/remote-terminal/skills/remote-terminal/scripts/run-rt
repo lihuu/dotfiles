@@ -1,0 +1,30 @@
+#!/bin/sh
+set -eu
+
+script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
+project_dir=$(CDPATH= cd -- "$script_dir/../../.." && pwd -P)
+
+if [ -n "${REMOTE_TERMINAL_BIN:-}" ]; then
+    exec "$REMOTE_TERMINAL_BIN" "$@"
+fi
+
+if [ -x "$project_dir/.venv/bin/rt" ]; then
+    exec "$project_dir/.venv/bin/rt" "$@"
+fi
+
+if command -v rt >/dev/null 2>&1; then
+    exec rt "$@"
+fi
+
+if command -v remote-terminal >/dev/null 2>&1; then
+    exec remote-terminal "$@"
+fi
+
+if command -v python3 >/dev/null 2>&1 && [ -d "$project_dir/remote_terminal" ]; then
+    PYTHONPATH="$project_dir${PYTHONPATH:+:$PYTHONPATH}"
+    export PYTHONPATH
+    exec python3 -m remote_terminal.cli "$@"
+fi
+
+echo "remote-terminal is unavailable; install ai/remote-terminal or set REMOTE_TERMINAL_BIN" >&2
+exit 127

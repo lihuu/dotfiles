@@ -17,6 +17,9 @@ test = ["pytest>=8"]
 remote-terminal = "remote_terminal.cli:main"
 rt = "remote_terminal.cli:main"
 
+[tool.setuptools]
+packages = ["remote_terminal"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
