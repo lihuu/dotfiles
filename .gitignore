@@ -60,3 +60,7 @@ CLAUDE.md
 ts
 tst
 *.bak
+
+### zsh 本地隔离层（秘密 + 安装器注入，绝不进仓库）
+**/.zshrc.private
+**/.zshrc.local

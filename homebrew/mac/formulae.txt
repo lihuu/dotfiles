@@ -63,3 +63,4 @@ woff2
 xcbeautify
 xcode-build-server
 yakitrak/yakitrak/obsidian-cli
+zoxide

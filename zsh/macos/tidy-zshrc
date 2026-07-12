@@ -1,0 +1,202 @@
+#!/bin/zsh
+# tidy-zshrc — 清理安装器往 ~/.zshrc 里塞的漂移内容
+#
+# 工作原理：
+#   安装器往 ~/.zshrc 追加内容时，通常带固定格式的注释标记：
+#     1. # >>> marker >>>  ...  # <<< marker <<<   （配对标记）
+#     2. # xxx block begin ...  # xxx block end     （配对标记）
+#     3. # Added by xxx    + 紧跟的非空行            （单行标记，无结束）
+#   本脚本识别这三种标记，把命中的块搬到 ~/.zshrc.local，恢复入口干净。
+#
+# 用法：
+#   tidy-zshrc              预览漂移内容，不改任何文件（默认）
+#   tidy-zshrc --apply      备份 + 搬迁 + 从 ~/.zshrc 移除，改前交互确认
+#   tidy-zshrc --diff       显示检测到的块（不交互）
+#   tidy-zshrc -h | --help  帮助
+#
+# 安全约束：
+#   - 默认只预览，--apply 才真改
+#   --apply 前自动备份 ~/.zshrc
+#   - 只搬有安装器标记的块，不碰你自己手写的内容
+#   - 搬迁的块带时间戳注释写入 ~/.zshrc.local，方便追溯
+set -euo pipefail
+
+# --- 路径 ---
+# 支持环境变量覆盖（测试用）
+zshrc="${ZSHRC_TARGET:-$HOME/.zshrc}"
+local_file="${ZSHRC_LOCAL_TARGET:-$HOME/.zshrc.local}"
+
+# --- usage ---
+usage() {
+    print -- "Usage: ${0:t} [--apply|--diff|-h|--help]"
+    print -- ""
+    print -- "  (无参数)    预览检测到的安装器块，不改任何文件"
+    print -- "  --apply     备份 + 搬迁到 ~/.zshrc.local + 从 ~/.zshrc 移除"
+    print -- "  --diff      显示检测到的块（不交互）"
+    print -- "  -h, --help  帮助"
+}
+
+# --- 参数解析 ---
+mode="preview"
+show_diff_only=false
+for arg in "$@"; do
+    case "$arg" in
+        --apply)       mode="apply" ;;
+        --diff)        show_diff_only=true ;;
+        -h|--help)     usage; exit 0 ;;
+        *) print -u2 -- "${0:t}: 未知参数 '$arg'"; usage; exit 64 ;;
+    esac
+done
+
+if [[ ! -f "$zshrc" ]]; then
+    print -u2 -- "${0:t}: $zshrc 不存在"
+    exit 66
+fi
+
+# --- 核心扫描：用 awk 状态机识别三种安装器块 ---
+# 每个块的内容写到独立临时文件，行号区间输出到 stdout
+# 格式：<start>:<end>\t<block_file_path>
+blocks_dir=$(mktemp -d)
+tmp_out=""
+trap 'rm -rf "$blocks_dir" ${tmp_out:+$tmp_out}' EXIT
+
+scan_result=$(awk -v outdir="$blocks_dir" '
+BEGIN { state=0; start=0; block_idx=0; outfile="" }
+function flush_block(end_line) {
+    if (state > 0) {
+        block_idx++
+        outfile = outdir "/block_" block_idx ".txt"
+        printf "%s", content > outfile
+        close(outfile)
+        printf "%d:%d\t%s\n", start, end_line, outfile
+        state=0; start=0; content=""
+    }
+}
+{
+    line = $0
+    # 判断是否是某种标记
+    is_begin_pair = (line ~ /^# >>> .+ >>>$/) || (line ~ /^# .+ block begin$/)
+    is_end_pair   = (line ~ /^# <<< .+ <<<$/) || (line ~ /^# .+ block end$/)
+    is_added      = (line ~ /^# Added by .+$/)
+
+    if (state == 0) {
+        # 不在块内，检查是否进入新块
+        if (is_begin_pair) {
+            state=1; start=NR; content=line "\n"
+        } else if (is_added) {
+            state=2; start=NR; content=line "\n"
+        }
+    } else if (state == 1) {
+        # 配对块内：收集内容，遇到结束标记则 flush
+        content = content line "\n"
+        if (is_end_pair) {
+            flush_block(NR)
+        }
+    } else if (state == 2) {
+        # Added by 块内：无结束标记
+        # 遇到空行，或下一个标记开始，则结束
+        if (line == "" || is_begin_pair || is_added) {
+            # 结束上一块（结束行号是 NR-1）
+            flush_block(NR - 1)
+            # 如果这行是新块开始，进入新块
+            if (is_begin_pair) { state=1; start=NR; content=line "\n" }
+            else if (is_added) { state=2; start=NR; content=line "\n" }
+        } else {
+            content = content line "\n"
+        }
+    }
+}
+END { flush_block(NR) }
+' "$zshrc")
+
+# --- 解析扫描结果 ---
+typeset -a block_ranges block_contents
+if [[ -n "$scan_result" ]]; then
+    while IFS=$'\t' read -r range blockfile; do
+        block_ranges+=("$range")
+        block_contents+=("$(cat "$blockfile")")
+    done <<< "$scan_result"
+fi
+
+block_count=${#block_contents[@]}
+
+# --- 结果输出 ---
+if [[ $block_count -eq 0 ]]; then
+    print -- "✅ ~/.zshrc 干净，未检测到安装器注入块。"
+    exit 0
+fi
+
+print -- "检测到 $block_count 个安装器注入块："
+print -- ""
+for i in {1..$block_count}; do
+    print -- "  📦 块 $i (行 ${block_ranges[$i]})："
+    print -- "${block_contents[$i]}" | sed 's/^/    /'
+    print -- ""
+done
+
+if $show_diff_only; then
+    exit 0
+fi
+
+if [[ "$mode" == "preview" ]]; then
+    print -- "预览模式：未修改任何文件。运行 ${0:t} --apply 执行清理。"
+    exit 0
+fi
+
+# --- --apply：交互确认 ---
+total_lines=0
+for c in "${block_contents[@]}"; do
+    total_lines=$((total_lines + $(print -- "$c" | grep -c .)))
+done
+print -- "即将执行："
+print -- "  1. 备份 $zshrc → ${zshrc}.bak.<时间戳>"
+print -- "  2. 把 $block_count 个块（约 $total_lines 行）追加到 $local_file"
+print -- "  3. 从 $zshrc 移除这些块"
+print -- ""
+printf "确认执行？(y/N) "
+read -r confirm
+if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
+    print -- "已取消。"
+    exit 0
+fi
+
+# --- 备份 ---
+timestamp=$(date +%Y%m%d-%H%M%S)
+backup="${zshrc}.bak.$timestamp"
+cp "$zshrc" "$backup"
+print -- "✅ 已备份: $backup"
+
+# --- 搬迁块到 .local ---
+{
+    print -- ""
+    print -- "# === $timestamp 从 $zshrc 搬迁（tidy-zshrc）==="
+    for c in "${block_contents[@]}"; do
+        print -- "$c"
+        print -- ""
+    done
+} >> "$local_file"
+print -- "✅ 已搬入 $local_file: $block_count 个块"
+
+# --- 从 ~/.zshrc 移除块 ---
+typeset -A remove_lines
+for range in "${block_ranges[@]}"; do
+    s="${range%%:*}"; e="${range##*:}"
+    for ((ln = s; ln <= e; ln++)); do
+        remove_lines[$ln]=1
+    done
+done
+
+tmp_out=$(mktemp)
+lineno=0
+while IFS= read -r line || [[ -n "$line" ]]; do
+    lineno=$((lineno + 1))
+    [[ -z "${remove_lines[$lineno]:-}" ]] && print -r -- "$line" >> "$tmp_out"
+done < "$zshrc"
+
+# 压缩连续空行为单个空行
+awk 'NF {blank=0; print; next} {blank++; if (blank<=1) print}' "$tmp_out" > "${tmp_out}.clean"
+cp "${tmp_out}.clean" "$zshrc"
+
+print -- "✅ 已从 $zshrc 移除 $block_count 个块"
+print -- ""
+print -- "清理完成。备份在 $backup，如需回滚：cp \"$backup\" \"$zshrc\""
