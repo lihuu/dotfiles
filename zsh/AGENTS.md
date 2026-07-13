@@ -68,6 +68,21 @@ Linux 配置（`zsh/linux/`）独立于本结构，本次不涉及。
 
 如果遇到不在这三种格式内的安装器注入，应该扩展 `tidy-zshrc` 的识别规则，而不是手动处理。
 
+## zoxide 收录策略
+
+zoxide 用 `--hook none` 关掉默认收录，由自定义 `my_zoxide_add` 函数接管 `chpwd` 钩子。规则：
+
+- **白名单前缀**（`~/git/`、`~/MyFiles/`、`~/ZCodeProject/`）下才检查 `.git`；不在白名单内的目录直接收录，跳过 git 检查（省 stat 开销）
+- **在 git 仓库内**：只收录 repo 根目录，不收录子目录（避免 `j hermes` 命中 `~/Code/Hermes/src` 等子目录）
+- **非 git 目录**或**白名单内但无 `.git`**：正常收录当前目录
+- 新增仓库区时，往 `my_zoxide_add` 的 `case` 里加一行前缀即可
+
+修改 `my_zoxide_add` 时注意：
+
+- 不要改回 `--hook pwd`（默认 hook 会收录所有子目录，包括 git 子目录）
+- 白名单前缀用 `$HOME` 变量，不硬编码路径
+- 函数注册用 `chpwd_functions+=(my_zoxide_add)`，不要覆盖已有的 chpwd 函数
+
 ## 禁止行为
 
 - 禁止往 `zsh/macos/.zshrc` 里塞具体配置（alias/env/函数/安装器内容），入口只做 source
