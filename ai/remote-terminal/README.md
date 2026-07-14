@@ -102,7 +102,7 @@ The skill lives at `ai/remote-terminal/skill/`. It is platform-agnostic — inst
 **ZCode** (auto-discovers `<workspace>/.zcode/skills/*/SKILL.md`):
 
 ```bash
-# From the workspace root (e.g. /Users/lihu/git/dotfiles)
+# From the workspace root (e.g. ~/git/dotfiles)
 ln -s ../../ai/remote-terminal/skill .zcode/skills/rt
 ```
 
@@ -117,13 +117,13 @@ ls -la .zcode/skills/rt/SKILL.md          # should resolve through symlink
 
 ```bash
 # 一次安装，所有项目都能用 rt skill
-ln -s /Users/lihu/git/dotfiles/ai/remote-terminal/skill ~/.agents/skills/rt
+ln -s "$HOME/git/dotfiles/ai/remote-terminal/skill" "$HOME/.agents/skills/rt"
 ```
 
 Verify:
 
 ```bash
-ls -la ~/.agents/skills/rt/SKILL.md       # should resolve through symlink
+ls -la "$HOME/.agents/skills/rt/SKILL.md"   # should resolve through symlink
 ```
 
 > 注意：全局 symlink 指向仓库源码，换机器或仓库迁移后需要重新创建。
