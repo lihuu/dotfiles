@@ -116,17 +116,17 @@ ls -la .zcode/skills/rt/SKILL.md          # should resolve through symlink
 **ZCode 全局安装**（所有项目都生效，auto-discovers `~/.agents/skills/*/SKILL.md`）:
 
 ```bash
-# 一次安装，所有项目都能用 rt skill
-ln -s "$HOME/git/dotfiles/ai/remote-terminal/skill" "$HOME/.agents/skills/rt"
+# 拷贝到全局 skill 目录，所有项目都能用 rt skill
+cp -r "$HOME/git/dotfiles/ai/remote-terminal/skill" "$HOME/.agents/skills/rt"
 ```
 
 Verify:
 
 ```bash
-ls -la "$HOME/.agents/skills/rt/SKILL.md"   # should resolve through symlink
+ls -la "$HOME/.agents/skills/rt/SKILL.md"   # should exist
 ```
 
-> 注意：全局 symlink 指向仓库源码，换机器或仓库迁移后需要重新创建。
+> 注意：拷贝是独立副本，源码更新后需要重新拷贝同步。
 
 **Other agent platforms** (Codex, etc.):
 
