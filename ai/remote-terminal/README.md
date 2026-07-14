@@ -113,6 +113,21 @@ ls -la .zcode/skills/rt/SKILL.md          # should resolve through symlink
 .zcode/skills/rt/scripts/run-rt --help    # launcher should find rt
 ```
 
+**ZCode 全局安装**（所有项目都生效，auto-discovers `~/.agents/skills/*/SKILL.md`）:
+
+```bash
+# 一次安装，所有项目都能用 rt skill
+ln -s /Users/lihu/git/dotfiles/ai/remote-terminal/skill ~/.agents/skills/rt
+```
+
+Verify:
+
+```bash
+ls -la ~/.agents/skills/rt/SKILL.md       # should resolve through symlink
+```
+
+> 注意：全局 symlink 指向仓库源码，换机器或仓库迁移后需要重新创建。
+
 **Other agent platforms** (Codex, etc.):
 
 ```bash
