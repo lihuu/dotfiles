@@ -48,6 +48,9 @@ export NODE_OPTIONS='--no-deprecation'
 export ZSH_AI_PROVIDER="ollama"
 export ZSH_AI_OLLAMA_MODEL="qwen3:1.7b"
 
+# codewhale: 允许 HTTP 协议的 OpenAI 兼容端点（本地网关）
+export DEEPSEEK_ALLOW_INSECURE_HTTP=true
+
 # --- 收集 PATH 项（依赖上面的 env 变量）---
 add_to_path "$HOME/.local/bin"
 add_to_path "$BUN_INSTALL/bin"
