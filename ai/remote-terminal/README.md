@@ -102,7 +102,7 @@ The skill lives at `ai/remote-terminal/skill/`. It is platform-agnostic — inst
 **ZCode** (auto-discovers `<workspace>/.zcode/skills/*/SKILL.md`):
 
 ```bash
-# From the workspace root (e.g. ~/git/dotfiles)
+# From the workspace root (e.g. /Users/lihu/git/dotfiles)
 ln -s ../../ai/remote-terminal/skill .zcode/skills/rt
 ```
 
@@ -112,21 +112,6 @@ Verify:
 ls -la .zcode/skills/rt/SKILL.md          # should resolve through symlink
 .zcode/skills/rt/scripts/run-rt --help    # launcher should find rt
 ```
-
-**ZCode 全局安装**（所有项目都生效，auto-discovers `~/.agents/skills/*/SKILL.md`）:
-
-```bash
-# 在仓库根目录下执行，拷贝到全局 skill 目录
-cp -r ai/remote-terminal/skill ~/.agents/skills/rt
-```
-
-Verify:
-
-```bash
-ls -la ~/.agents/skills/rt/SKILL.md   # should exist
-```
-
-> 注意：拷贝是独立副本，源码更新后需要重新拷贝同步。
 
 **Other agent platforms** (Codex, etc.):
 
