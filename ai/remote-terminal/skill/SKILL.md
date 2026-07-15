@@ -91,6 +91,24 @@ attach-or-create 语义：如果 tmux 会话已存在则直接复用，不存在
 
 exec 发送命令 + 唯一完成 marker，轮询 pane 直到 marker 出现或超时。返回的是 pane 文本（含命令回显、prompt），不是纯 stdout。
 
+#### --timeout 设置建议
+
+默认 30 秒对多数命令够用，但耗时命令需要显式加大，否则 marker 还没出现就超时误报为失败（命令实际可能已成功）：
+
+| 命令类型 | 建议 --timeout | 示例 |
+|----------|---------------|------|
+| 普通命令 | 30（默认） | `pwd`、`ls`、`git status` |
+| git pull/install | 60 | `git pull origin master` |
+| brew install | 300 | `brew install zoxide`（下载+编译可能数分钟） |
+| 长时间构建 | 600 | `make`、`cargo build`、`npm install` |
+
+超时后用 `read` 确认实际结果，不要只看 exec 的退出码：
+```bash
+"$RT" read <host>/<name>   # 检查 pane 末尾，命令可能已完成
+```
+
+**判断**：如果 exec 报超时但 read 显示命令已正常完成（pane 里有输出 + 回到 prompt），说明是超时设置过小，不是命令失败。
+
 ### read — 读取终端 pane 内容
 
 ```bash
