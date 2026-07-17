@@ -63,3 +63,41 @@ function mvm() {
     echo "正在移动 '$file' -> '$target_dir' ..."
     mv "$file" "$target_dir/" && echo "✅ 完成！"
 }
+
+
+# === macOS Keychain 密钥管理 ===
+# 通过 security 命令操作 macOS 钥匙串，避免在配置文件里明文存密钥。
+# 用法:
+#   add_secret <service> <secret>   存密钥
+#   get_secret <service>            取密钥（可配合 $(get_secret xxx) 注入环境变量）
+# 非 macOS 系统（无 security 命令）不创建函数，避免误用。
+if command -v security >/dev/null 2>&1; then
+    add_secret() {
+        local service="$1"
+        local secret="$2"
+        if [[ -z "$service" || -z "$secret" ]]; then
+            echo "用法: add_secret <service> <secret>" >&2
+            return 1
+        fi
+        security add-generic-password -a "$USER" -s "$service" -w "$secret"
+    }
+
+    get_secret() {
+        local service="$1"
+        if [[ -z "$service" ]]; then
+            echo "用法: get_secret <service>" >&2
+            return 1
+        fi
+        security find-generic-password -a "$USER" -s "$service" -w
+    }
+else
+    # 非 macOS（无 security 命令）：定义占位函数，调用时打印 warning
+    add_secret() {
+        print -u2 -- "⚠️  add_secret: macOS Keychain 不可用（无 security 命令），请手动管理密钥"
+        return 1
+    }
+    get_secret() {
+        print -u2 -- "⚠️  get_secret: macOS Keychain 不可用（无 security 命令），请手动管理密钥"
+        return 1
+    }
+fi
