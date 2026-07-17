@@ -51,6 +51,11 @@ export ZSH_AI_OLLAMA_MODEL="qwen3:1.7b"
 # codewhale: 允许 HTTP 协议的 OpenAI 兼容端点（本地网关）
 export DEEPSEEK_ALLOW_INSECURE_HTTP=true
 
+# af-magic 主题的 afmagic_dashes() 引用 ${VIRTUAL_ENV:-$CONDA_DEFAULT_ENV}，
+# 若 CONDA_DEFAULT_ENV 未定义会报 "parameter not set"。
+# conda 已卸载，这里预定义为空字符串避免报错；将来重装 conda 会自动覆盖。
+export CONDA_DEFAULT_ENV=""
+
 # --- 收集 PATH 项（依赖上面的 env 变量）---
 add_to_path "$HOME/.local/bin"
 add_to_path "$BUN_INSTALL/bin"
