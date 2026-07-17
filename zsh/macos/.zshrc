@@ -9,8 +9,11 @@
 # 安装器若再次往本文件塞内容，定期把它们剪到 ~/.zshrc.local 即可。
 
 # --- 1. 主配置模块（按编号顺序加载）---
-# 使用 glob 限定符 (N) 开启 nullglob，匹配为空时不报错
-for f in "$HOME/.zshrc.d"/*.zsh(N); do
+# 只匹配以数字前缀开头的 .zsh 文件（如 10-path.zsh、60-tools.zsh），
+# 排除 zshrc.d/ 里的独立脚本（tidy-zshrc、import-zoxide-history.zsh 等），
+# 它们带 set -euo pipefail，被 source 会污染整个交互式 shell。
+# glob 限定符 (N) 开启 nullglob，匹配为空时不报错
+for f in "$HOME/.zshrc.d"/[0-9]*.zsh(N); do
     source "$f"
 done
 

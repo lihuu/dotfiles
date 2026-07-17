@@ -37,7 +37,8 @@ Linux 配置（`zsh/linux/`）独立于本结构，本次不涉及。
 
 - 文件名以数字前缀开头（`10-`、`20-`、…），数字代表加载顺序，数字小的先加载
 - 扩展名必须为 `.zsh`，否则不会被入口的 glob 匹配加载
-- 禁止无前缀文件或非 `.zsh` 扩展名文件（`tidy-zshrc` 例外，它是工具不是模块，特意无 `.zsh` 扩展名避免被 source）
+- **入口 glob 只匹配 `[0-9]*.zsh`**：非数字开头的 `.zsh` 文件不会被 source。这是为了把独立脚本（`tidy-zshrc`、`import-zoxide-history.zsh` 等）和模块隔离开--独立脚本带 `set -euo pipefail`，被 source 会污染整个交互式 shell（开启 nounset，导致 prompt 主题引用未定义变量时报 `parameter not set`）
+- 禁止把带 `set -euo pipefail` 的独立脚本放进 `zshrc.d/`（即使它非数字开头不会被 source，也容易在部署时误中）。独立脚本放 `zsh/` 根目录或 `zsh/scripts/`，不放 `zshrc.d/`
 - 新增模块时，编号要和现有模块语义对齐（PATH 架构在 env 之前、工具初始化在最后）
 
 加载顺序的硬约束：
