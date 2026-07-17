@@ -11,7 +11,9 @@
 #   7. --dry-run 绝不修改文件
 set -euo pipefail
 
-tidy="$HOME/.zshrc.d/tidy-zshrc"
+# 定位被测脚本（和 test-import-zoxide-history.zsh 一样用仓库相对路径）
+script_dir="${0:A:h}"
+tidy="$script_dir/../macos/tidy-zshrc"
 
 if [[ ! -x "$tidy" ]]; then
     print -u2 -- "找不到 tidy-zshrc: $tidy"

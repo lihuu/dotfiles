@@ -118,22 +118,28 @@ info "部署可分享配置(从仓库到 $dest_home)..."
 cp "$src_macos/.zshrc" "$dest_zshrc"
 ok ".zshrc"
 
-# ~/.zshrc.d/ 模块 + tidy-zshrc
+# ~/.zshrc.d/ 模块（只拷数字前缀的模块文件，不拷独立脚本）
+# 独立脚本 tidy-zshrc / import-zoxide-history.zsh 不放 ~/.zshrc.d/，
+# 否则带 set -euo pipefail 的脚本被入口 glob 误 source 会污染 shell。
 mkdir -p "$dest_zshrc_d"
-cp "$src_macos"/zshrc.d/*.zsh "$dest_zshrc_d/"
-cp "$src_macos/tidy-zshrc" "$dest_zshrc_d/"
-chmod +x "$dest_zshrc_d/tidy-zshrc"
-ok "~/.zshrc.d/ ($(( $(ls "$dest_zshrc_d"/*.zsh "$dest_zshrc_d"/tidy-zshrc | wc -l) )) 个文件)"
+cp "$src_macos"/zshrc.d/[0-9]*.zsh "$dest_zshrc_d/"
+ok "~/.zshrc.d/ ($(( $(ls "$dest_zshrc_d"/*.zsh | wc -l) )) 个模块)"
 
 # ~/.zshrc.tests/
 mkdir -p "$dest_zshrc_tests"
 cp "$src_tests"/test-*.zsh "$dest_zshrc_tests/"
 ok "~/.zshrc.tests/"
 
-# import-zoxide-history.zsh(放在 ~/.zshrc.d/ 旁，和现有结构一致)
-cp "$src_zsh/import-zoxide-history.zsh" "$dest_zshrc_d/"
-chmod +x "$dest_zshrc_d/import-zoxide-history.zsh"
-ok "import-zoxide-history.zsh"
+# 独立脚本部署到 ~/.zshrc.scripts/（不放 ~/.zshrc.d/，避免被入口 glob 误 source）
+# tidy-zshrc：安装器注入清理脚本
+# import-zoxide-history.zsh：zoxide 历史导入脚本
+dest_scripts="$dest_home/.zshrc.scripts"
+mkdir -p "$dest_scripts"
+cp "$src_macos/tidy-zshrc" "$dest_scripts/"
+chmod +x "$dest_scripts/tidy-zshrc"
+cp "$src_zsh/import-zoxide-history.zsh" "$dest_scripts/"
+chmod +x "$dest_scripts/import-zoxide-history.zsh"
+ok "~/.zshrc.scripts/ (tidy-zshrc + import-zoxide-history.zsh)"
 
 # --- 4. 隔离层文件：不覆盖 ---
 echo ""
@@ -161,10 +167,10 @@ echo "下一步："
 echo "  1. 拷贝 ~/.zshrc.private(从旧机器，含 API key/token)"
 echo "  2. 生效配置:  source ~/.zshrc"
 echo "  3. 导入 zoxide 历史(冷启动):"
-echo "       zsh ~/.zshrc.d/import-zoxide-history.zsh --dry-run   # 先预览"
-echo "       zsh ~/.zshrc.d/import-zoxide-history.zsh             # 确认后执行"
+echo "       zsh ~/.zshrc.scripts/import-zoxide-history.zsh --dry-run   # 先预览"
+echo "       zsh ~/.zshrc.scripts/import-zoxide-history.zsh             # 确认后执行"
 echo "  4. 后续安装器往 .zshrc 塞内容时，整理:"
-echo "       ~/.zshrc.d/tidy-zshrc --apply"
+echo "       ~/.zshrc.scripts/tidy-zshrc --apply"
 echo ""
 echo "备份在: $backup_dir"
-echo "如需回滚: cp $backup_dir/.zshrc ~/.zshrc && rm -rf ~/.zshrc.d ~/.zshrc.tests"
+echo "如需回滚: cp $backup_dir/.zshrc ~/.zshrc && rm -rf ~/.zshrc.d ~/.zshrc.tests ~/.zshrc.scripts"
