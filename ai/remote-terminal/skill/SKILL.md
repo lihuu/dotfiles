@@ -56,18 +56,28 @@ launcher 会依次查找：`$REMOTE_TERMINAL_BIN` → 项目 `.venv/bin/rt` → 
 macOS 主机（如 macmini）有两个兼容性问题：
 
 1. **tmux 不在默认 PATH**：非交互 SSH 的 PATH 不含 `/opt/homebrew/bin`，需要 `--tmux /opt/homebrew/bin/tmux`
-2. **zsh 配置卡住**：默认 zsh 加载 `~/.zshrc` 后 `eval "$(fzf --zsh)"` 注册的 zle widget 会导致 send-keys 输入不被消费，需要 `--shell "/bin/zsh -f"` 跳过用户配置
+2. **默认 shell 不加载用户配置**：tmux 启动的 zsh 是非交互式，不加载 `~/.zshrc`，导致 `j`（zoxide）、alias 等不可用
 
-因此连 macOS 主机时**必须**加这两个参数：
+因此连 macOS 主机时**必须**加 `--tmux` 参数，并在需要用户配置时先 source：
 
 ```bash
-"$RT" --tmux /opt/homebrew/bin/tmux --shell "/bin/zsh -f" create macmini main
-"$RT" --tmux /opt/homebrew/bin/tmux --shell "/bin/zsh -f" exec macmini/main "pwd"
+# 基本连接（tmux 用 homebrew 路径，shell 用干净 zsh）
+"$RT" --tmux /opt/homebrew/bin/tmux create macmini main
+
+# 需要用户配置（j/alias/env）时，在 exec 里先 source ~/.zshrc
+"$RT" --tmux /opt/homebrew/bin/tmux exec macmini/main "source ~/.zshrc 2>/dev/null; j dotfiles"
+```
+
+注意：`source ~/.zshrc` 会触发 prompt 渲染，exec 输出会含 prompt 噪音，需要用 `2>/dev/null` 抑制。如果只需要某个工具（如 zoxide），可以单独 source 对应模块：
+
+```bash
+# 只加载 zoxide（不需要完整 zshrc）
+"$RT" --tmux /opt/homebrew/bin/tmux exec macmini/main 'eval "$(zoxide init zsh --cmd j)"; j dotfiles'
 ```
 
 Linux 主机（如 vm-ubuntu、aliyun）通常不需要这些参数，默认即可。
 
-**判断逻辑**：如果 `create` 报 `command not found: tmux`，说明远端 tmux 在非标准路径，用 `--tmux <完整路径>`。如果 create 成功但 exec 超时或无输出，说明远端 shell 配置有问题，用 `--shell "/bin/sh"` 或 `--shell "/bin/zsh -f"`。
+**判断逻辑**：如果 `create` 报 `command not found: tmux`，说明远端 tmux 在非标准路径，用 `--tmux <完整路径>`。如果 exec 命令报 `command not found`（如 brew/zoxide），说明 PATH 不全，在命令前加 `source ~/.zshrc 2>/dev/null` 或显式用完整路径。
 
 ## 命令速查
 
