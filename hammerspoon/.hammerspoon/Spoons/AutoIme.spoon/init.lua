@@ -155,6 +155,7 @@ function obj:start()
 	windowFilter:unsubscribeAll()
 	local inputMethodConfig = self.inputMethodConfig or {}
 	local inputMethodBeforeSwitch = {}
+	local lastInputMethod = {}
 
 	windowFilter:subscribe(hs.window.filter.windowFocused, function(win)
 		local appName = getAppBundleId(win)
@@ -166,8 +167,15 @@ function obj:start()
 		if config.shouldSwitchBack then
 			inputMethodBeforeSwitch[appName] =
 				{ layout = hs.keycodes.currentLayout(), method = hs.keycodes.currentMethod() }
+			changeInputMethodDelayed(config.inputMethod)
+		else
+			local lastUsed = lastInputMethod[appName]
+			if lastUsed then
+				changeInputMethodDelayed(lastUsed)
+			else
+				changeInputMethodDelayed(config.inputMethod)
+			end
 		end
-		changeInputMethodDelayed(config.inputMethod)
 		print_log("----Current App: " .. appName .. "message END----")
 	end)
 
@@ -185,6 +193,9 @@ function obj:start()
 			print_log("----Switch Back App: " .. bundleId .. "message START----")
 			changeInputMethodDelayed(oldInputMethod)
 			print_log("----Switch Back App: " .. bundleId .. "message END----")
+		else
+			lastInputMethod[bundleId] =
+				{ layout = hs.keycodes.currentLayout(), method = hs.keycodes.currentMethod() }
 		end
 	end)
 

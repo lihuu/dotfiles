@@ -1,22 +1,23 @@
 {
   "bundleIdToNameCache" : {
     "com.jetbrains.intellij" : "IntelliJ IDEA Ultimate",
-    "net.kovidgoyal.kitty" : "kitty",
+    "dev.zcode.app" : "ZCode",
     "dev.warp.Warp-Stable" : "Warp",
     "dev.zed.Zed" : "Zed",
     "com.neovide.neovide" : "Neovide",
     "com.openai.chat" : "ChatGPT",
-    "fun.tw93.kaku" : "Kaku",
     "com.yinxiang.Mac" : "印象笔记",
+    "md.obsidian" : "Obsidian",
     "abnerworks.Typora" : "Typora",
+    "fun.tw93.kaku" : "Kaku",
     "com.microsoft.VSCode" : "Visual Studio Code",
-    "com.bot.pc.doubao" : "Doubao",
-    "com.tencent.xinWeChat" : "WeChat",
     "ai.elementlabs.lmstudio" : "LM Studio",
+    "com.tencent.xinWeChat" : "WeChat",
     "com.tw93.MiaoYan" : "MiaoYan",
+    "com.bot.pc.doubao" : "Doubao",
     "com.openai.codex" : "Codex",
     "ru.keepcoder.Telegram" : "Telegram",
-    "md.obsidian" : "Obsidian"
+    "net.kovidgoyal.kitty" : "kitty"
   },
   "inputMethod" : [
     {
@@ -29,42 +30,44 @@
         "com.jetbrains.intellij",
         "fun.tw93.kaku"
       ],
-      "layout" : "ABC",
-      "shouldSwitchBack" : false
-    },
-    {
-      "apps" : [
-
-      ],
-      "method" : "Squirrel - Simplified",
-      "shouldSwitchBack" : true,
+      "shouldSwitchBack" : false,
       "layout" : "ABC"
     },
     {
+      "method" : "Squirrel - Simplified",
+      "shouldSwitchBack" : true,
       "apps" : [
 
       ],
+      "layout" : "ABC"
+    },
+    {
       "method" : "Shuangpin – Simplified",
       "shouldSwitchBack" : true,
+      "apps" : [
+
+      ],
       "layout" : "Shuangpin – Simplified"
     },
     {
+      "method" : "Pinyin – Simplified",
+      "shouldSwitchBack" : true,
       "apps" : [
 
       ],
-      "method" : "Pinyin – Simplified",
-      "shouldSwitchBack" : true,
       "layout" : "Pinyin – Simplified"
     },
     {
+      "method" : "搜狗拼音",
+      "shouldSwitchBack" : true,
       "apps" : [
 
       ],
-      "method" : "搜狗拼音",
-      "shouldSwitchBack" : true,
       "layout" : "U.S."
     },
     {
+      "method" : "豆包输入法",
+      "shouldSwitchBack" : true,
       "apps" : [
         "com.tw93.MiaoYan",
         "com.tencent.xinWeChat",
@@ -75,10 +78,9 @@
         "ai.elementlabs.lmstudio",
         "ru.keepcoder.Telegram",
         "com.yinxiang.Mac",
-        "com.openai.codex"
+        "com.openai.codex",
+        "dev.zcode.app"
       ],
-      "shouldSwitchBack" : true,
-      "method" : "豆包输入法",
       "layout" : "ABC"
     }
   ]
