@@ -18,7 +18,7 @@ class FakeRunner:
         self.calls = []
         self.responses = list(responses or [])
 
-    def __call__(self, args):
+    def __call__(self, args, **kwargs):
         self.calls.append(args)
         if self.responses:
             response = self.responses.pop(0)
@@ -152,3 +152,28 @@ def test_close_is_noop():
     backend.close(SessionRef("vm-ubuntu", "main", "ssh"))
 
     assert runner.calls == []
+
+
+def test_exec_merges_stderr_into_output():
+    runner = FakeRunner(
+        [completed(stdout="partial\n", stderr="ls: /nope: No such file or directory\n", returncode=1)]
+    )
+    backend = SshDirectBackend(command_runner=runner)
+
+    result = backend.exec(SessionRef("vm-ubuntu", "main", "ssh"), "ls /nope")
+
+    assert result.exit_code == 1
+    assert "partial\n" in result.output
+    assert "No such file or directory" in result.output
+
+
+def test_exec_returns_stderr_only_when_stdout_empty():
+    runner = FakeRunner(
+        [completed(stdout="", stderr="permission denied\n", returncode=126)]
+    )
+    backend = SshDirectBackend(command_runner=runner)
+
+    result = backend.exec(SessionRef("vm-ubuntu", "main", "ssh"), "./script.sh")
+
+    assert result.exit_code == 126
+    assert result.output == "permission denied\n"

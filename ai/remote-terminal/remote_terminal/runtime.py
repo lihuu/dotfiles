@@ -1,3 +1,5 @@
+import sys
+
 from remote_terminal.backends import TerminalBackend
 from remote_terminal.models import (
     BackendCommandError,
@@ -56,6 +58,12 @@ class RemoteTerminalRuntime:
             self._backend_map[session.session_id] = "tmux"
             return session
         except MissingDependencyError:
+            print(
+                f"warning: tmux not available on {host!r}, falling back to "
+                f"ssh-direct mode (no session persistence; "
+                f"write/read/interrupt disabled)",
+                file=sys.stderr,
+            )
             session = self._ssh_backend.create_session(host, name)
             self._backend_map[session.session_id] = "ssh"
             return session
@@ -97,5 +105,11 @@ class RemoteTerminalRuntime:
             return getattr(self._tmux_backend, method)(session, *args, **kwargs)
         except MissingDependencyError:
             # Remote has no tmux — fall back to ssh-direct.
+            print(
+                f"warning: tmux not available on {session.host!r}, falling back to "
+                f"ssh-direct mode (no session persistence; "
+                f"write/read/interrupt disabled)",
+                file=sys.stderr,
+            )
             self._backend_map[session.session_id] = "ssh"
             return getattr(self._ssh_backend, method)(session, *args, **kwargs)

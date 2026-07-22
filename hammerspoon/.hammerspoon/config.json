@@ -83,5 +83,36 @@
       ],
       "layout" : "ABC"
     }
-  ]
+  ],
+  "tuiTitleDetection" : {
+    "apps" : [
+      "net.kovidgoyal.kitty",
+      "dev.warp.Warp-Stable"
+    ],
+    "rules" : [
+      {
+        "name" : "qwen-code",
+        "patterns" : [
+          "^[Qq]wen%s*%-"
+        ],
+        "contains" : [
+          "qwen -"
+        ],
+        "layout" : "ABC",
+        "method" : "豆包输入法"
+      },
+      {
+        "name" : "grok-build",
+        "patterns" : [
+          "[Gg]rok%s*[Bb]uild",
+          "^[Gg]rok%s"
+        ],
+        "contains" : [
+          "grok"
+        ],
+        "layout" : "ABC",
+        "method" : "豆包输入法"
+      }
+    ]
+  }
 }

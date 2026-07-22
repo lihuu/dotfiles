@@ -5,11 +5,7 @@ local obj = {
 obj.__index = obj
 
 obj.name = "AutoIme"
-obj.version = "1.0"
-
-local function now()
-	return hs.timer.secondsSinceEpoch()
-end
+obj.version = "1.1"
 
 local function startWith(str, prefix)
 	return str:sub(1, #prefix) == prefix
@@ -54,7 +50,6 @@ local function appNameFromBundleId(bundleId)
 end
 
 -- convert bundleId to appName and ignore unknown app
---
 local function bundleIdToAppName(bundleId)
 	local appName = appNameFromBundleId(bundleId)
 	print("Find valid AppName: ", appName)
@@ -62,11 +57,15 @@ local function bundleIdToAppName(bundleId)
 end
 
 local getAppBundleId = function(win)
-	return win:application():bundleID()
+	local app = win and win:application()
+	return app and app:bundleID() or nil
 end
 
 -- 设置的时候，layout和method都要设置
 local changeInputMethod = function(config)
+	if not config or not config.layout then
+		return
+	end
 	local layout = config.layout
 	local method = config.method
 	local currentLayout = hs.keycodes.currentLayout()
@@ -91,6 +90,31 @@ local changeInputMethodDelayed = function(config, delay)
 	hs.timer.doAfter(delay, function()
 		changeInputMethod(config)
 	end)
+end
+
+--- 标题是否命中某条 TUI 规则（Lua pattern + 大小写不敏感 contains）
+local function matchTuiTitleRule(title, rules)
+	if not title or title == "" or not rules then
+		return nil
+	end
+	local lowerTitle = title:lower()
+	for _, rule in ipairs(rules) do
+		if rule.patterns then
+			for _, pattern in ipairs(rule.patterns) do
+				if title:match(pattern) then
+					return rule
+				end
+			end
+		end
+		if rule.contains then
+			for _, needle in ipairs(rule.contains) do
+				if needle and needle ~= "" and lowerTitle:find(needle:lower(), 1, true) then
+					return rule
+				end
+			end
+		end
+	end
+	return nil
 end
 
 function obj:init(debug)
@@ -127,9 +151,30 @@ function obj:init(debug)
 		end
 	end
 
+	-- 终端内 TUI 标题检测（目前仅 qwen-code；后续可扩展 grok 等）
+	local tuiTitleDetection = initConfig.tuiTitleDetection or {}
+	local tuiApps = {}
+	for _, bundleId in ipairs(tuiTitleDetection.apps or {}) do
+		tuiApps[bundleId] = true
+		-- 确保这些终端也在 windowFilter 中（通常已在 inputMethod 里）
+		local appName = bundleIdToNameCache[bundleId]
+		if appName == nil then
+			appName = bundleIdToAppName(bundleId)
+			bundleIdToNameCache[bundleId] = appName
+			configChanged = true
+		end
+		if appName then
+			windowFilter:setAppFilter(appName, true)
+		end
+	end
+
 	if configChanged then
-		-- 如果有修改，保存到文件中
-		local newConfig = { inputMethod = initConfig.inputMethod, bundleIdToNameCache = bundleIdToNameCache }
+		-- 保留原有其它配置字段，只更新缓存
+		local newConfig = {}
+		for k, v in pairs(initConfig) do
+			newConfig[k] = v
+		end
+		newConfig.bundleIdToNameCache = bundleIdToNameCache
 		local file = io.open(configPath, "w")
 		if file then
 			file:write(hs.json.encode(newConfig, true))
@@ -141,6 +186,8 @@ function obj:init(debug)
 	end
 
 	self.inputMethodConfig = inputMethodConfig
+	self.tuiApps = tuiApps
+	self.tuiTitleRules = tuiTitleDetection.rules or {}
 	self._subscribed = false
 	self.wf = windowFilter
 	self.wf:setCurrentSpace(true)
@@ -154,45 +201,121 @@ function obj:start()
 	local windowFilter = self.wf
 	windowFilter:unsubscribeAll()
 	local inputMethodConfig = self.inputMethodConfig or {}
+	local tuiApps = self.tuiApps or {}
+	local tuiTitleRules = self.tuiTitleRules or {}
 	local inputMethodBeforeSwitch = {}
 	local lastInputMethod = {}
 
-	windowFilter:subscribe(hs.window.filter.windowFocused, function(win)
-		local appName = getAppBundleId(win)
-		local config = inputMethodConfig[appName]
-		if config == nil then
+	--- 根据当前窗口决定应使用的输入法配置
+	local function resolveInputMethod(win, appConfig)
+		local bundleId = getAppBundleId(win)
+		if not bundleId or not appConfig then
+			return nil, nil
+		end
+
+		-- 终端 App：优先按标题判断是否在跑 TUI（如 qwen-code）
+		if tuiApps[bundleId] then
+			local title = win:title() or ""
+			local rule = matchTuiTitleRule(title, tuiTitleRules)
+			if rule then
+				print_log(
+					string.format(
+						"TUI title match: name=%s title=%s",
+						rule.name or "?",
+						title
+					)
+				)
+				return {
+					layout = rule.layout,
+					method = rule.method,
+				}, "tui:" .. (rule.name or "unknown")
+			end
+			-- 未命中 TUI：强制默认（ABC），不用 lastUsed，避免从 TUI 带出中文到 shell
+			print_log("TUI title no match, use default IME for terminal. title=" .. title)
+			return appConfig.inputMethod, "terminal-default"
+		end
+
+		if appConfig.shouldSwitchBack then
+			return appConfig.inputMethod, "switch-back"
+		end
+
+		local lastUsed = lastInputMethod[bundleId]
+		if lastUsed then
+			return lastUsed, "last-used"
+		end
+		return appConfig.inputMethod, "default"
+	end
+
+	local function applyForWindow(win, reason)
+		if not win then
 			return
 		end
-		print_log("----Current App: " .. appName .. "message START----")
-		if config.shouldSwitchBack then
-			inputMethodBeforeSwitch[appName] =
-				{ layout = hs.keycodes.currentLayout(), method = hs.keycodes.currentMethod() }
-			changeInputMethodDelayed(config.inputMethod)
-		else
-			local lastUsed = lastInputMethod[appName]
-			if lastUsed then
-				changeInputMethodDelayed(lastUsed)
-			else
-				changeInputMethodDelayed(config.inputMethod)
-			end
-		end
-		print_log("----Current App: " .. appName .. "message END----")
-	end)
-
-	windowFilter:subscribe(hs.window.filter.windowUnfocused, function(win)
 		local bundleId = getAppBundleId(win)
+		if not bundleId then
+			return
+		end
 		local config = inputMethodConfig[bundleId]
 		if config == nil then
 			return
 		end
+
+		print_log("----" .. (reason or "apply") .. " App: " .. bundleId .. " START----")
+
+		-- shouldSwitchBack 的 App：进入时记下当前输入法
+		if config.shouldSwitchBack and not tuiApps[bundleId] then
+			inputMethodBeforeSwitch[bundleId] =
+				{ layout = hs.keycodes.currentLayout(), method = hs.keycodes.currentMethod() }
+		end
+
+		local target, source = resolveInputMethod(win, config)
+		print_log("resolved source=" .. (source or "nil"))
+		if target then
+			changeInputMethodDelayed(target)
+		end
+		print_log("----" .. (reason or "apply") .. " App: " .. bundleId .. " END----")
+	end
+
+	windowFilter:subscribe(hs.window.filter.windowFocused, function(win)
+		applyForWindow(win, "Focused")
+	end)
+
+	-- 同一终端窗口内启动/退出 qwen 时，标题变化需要重新判断
+	windowFilter:subscribe(hs.window.filter.windowTitleChanged, function(win)
+		if not win then
+			return
+		end
+		local focused = hs.window.focusedWindow()
+		if not focused or focused:id() ~= win:id() then
+			return
+		end
+		local bundleId = getAppBundleId(win)
+		if not bundleId or not tuiApps[bundleId] then
+			return
+		end
+		applyForWindow(win, "TitleChanged")
+	end)
+
+	windowFilter:subscribe(hs.window.filter.windowUnfocused, function(win)
+		local bundleId = getAppBundleId(win)
+		local config = bundleId and inputMethodConfig[bundleId]
+		if config == nil then
+			return
+		end
+
+		-- 终端 TUI 检测 App：不记忆 lastUsed，始终以标题/默认定输入法
+		if tuiApps[bundleId] then
+			print_log("----Unfocused terminal (tui-aware): " .. bundleId .. "----")
+			return
+		end
+
 		if config.shouldSwitchBack then
 			local oldInputMethod = inputMethodBeforeSwitch[bundleId]
 			if oldInputMethod == nil then
 				return
 			end
-			print_log("----Switch Back App: " .. bundleId .. "message START----")
+			print_log("----Switch Back App: " .. bundleId .. " START----")
 			changeInputMethodDelayed(oldInputMethod)
-			print_log("----Switch Back App: " .. bundleId .. "message END----")
+			print_log("----Switch Back App: " .. bundleId .. " END----")
 		else
 			lastInputMethod[bundleId] =
 				{ layout = hs.keycodes.currentLayout(), method = hs.keycodes.currentMethod() }
@@ -200,6 +323,7 @@ function obj:start()
 	end)
 
 	self._subscribed = true
+	return self
 end
 
 function obj:stop()

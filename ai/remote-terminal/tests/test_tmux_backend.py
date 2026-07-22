@@ -18,7 +18,7 @@ class FakeRunner:
         self.calls = []
         self.responses = list(responses or [])
 
-    def __call__(self, args):
+    def __call__(self, args, **kwargs):
         self.calls.append(args)
         if self.responses:
             response = self.responses.pop(0)
@@ -160,12 +160,22 @@ def test_read_captures_requested_line_count():
 def test_exec_sends_marker_polls_and_parses_exit_code():
     runner = FakeRunner(
         [
-            completed(),
-            completed(),
-            completed(),
-            completed(),
+            completed(),  # send-keys -l (start marker printf)
+            completed(),  # send-keys Enter
+            completed(),  # send-keys -l (pwd)
+            completed(),  # send-keys Enter
+            completed(),  # send-keys -l (end marker printf)
+            completed(),  # send-keys Enter
             completed(stdout="waiting\n"),
-            completed(stdout="pwd\n/tmp\n__REMOTE_TERMINAL_DONE:nonce-1:0\n"),
+            completed(
+                stdout=(
+                    "sh-3.2$ printf '__REMOTE_TERMINAL_START:nonce-1\\n'\n"
+                    "__REMOTE_TERMINAL_START:nonce-1\n"
+                    "sh-3.2$ pwd\n/tmp\n"
+                    "sh-3.2$ printf '\\n__REMOTE_TERMINAL_DONE:nonce-1:%s\\n' \"$?\"\n"
+                    "\n__REMOTE_TERMINAL_DONE:nonce-1:0\n"
+                )
+            ),
         ]
     )
     clock = FakeClock()
@@ -187,7 +197,15 @@ def test_exec_sends_marker_polls_and_parses_exit_code():
     assert result.exit_code == 0
     assert result.marker == "__REMOTE_TERMINAL_DONE:nonce-1:"
     assert "/tmp" in result.output
+    # Output must NOT contain the start marker printf echo or output
+    assert "__REMOTE_TERMINAL_START" not in result.output
     assert runner.calls == [
+        [
+            "ssh",
+            "macmini",
+            "tmux send-keys -t main -l -- 'printf '\"'\"'__REMOTE_TERMINAL_START:nonce-1\\n'\"'\"''",
+        ],
+        ["ssh", "macmini", "tmux send-keys -t main Enter"],
         ["ssh", "macmini", "tmux send-keys -t main -l -- pwd"],
         ["ssh", "macmini", "tmux send-keys -t main Enter"],
         [
@@ -204,10 +222,12 @@ def test_exec_sends_marker_polls_and_parses_exit_code():
 def test_exec_raises_timeout_with_latest_output():
     runner = FakeRunner(
         [
-            completed(),
-            completed(),
-            completed(),
-            completed(),
+            completed(),  # send-keys -l (start marker printf)
+            completed(),  # send-keys Enter
+            completed(),  # send-keys -l (command)
+            completed(),  # send-keys Enter
+            completed(),  # send-keys -l (end marker printf)
+            completed(),  # send-keys Enter
             completed(stdout="still running\n"),
             completed(stdout="latest output\n"),
             completed(stdout="latest output\n"),
@@ -238,10 +258,12 @@ def test_exec_raises_timeout_with_latest_output():
 def test_exec_raises_marker_parse_error_for_bad_exit_code():
     runner = FakeRunner(
         [
-            completed(),
-            completed(),
-            completed(),
-            completed(),
+            completed(),  # send-keys -l (start marker printf)
+            completed(),  # send-keys Enter
+            completed(),  # send-keys -l (command)
+            completed(),  # send-keys Enter
+            completed(),  # send-keys -l (end marker printf)
+            completed(),  # send-keys Enter
             completed(stdout="__REMOTE_TERMINAL_DONE:nonce-bad:not-an-int\n"),
         ]
     )
@@ -323,20 +345,24 @@ def test_exec_rejects_non_positive_poll_interval():
 
 
 def test_exec_skips_literal_marker_text_and_parses_real_marker():
-    # When send-keys -l sends the marker command line to the pane, the
+    # When send-keys -l sends the marker command lines to the pane, the
     # literal text "__REMOTE_TERMINAL_DONE:<nonce>:%s\n' \"$?\"" appears
     # in the pane before printf executes. _parse_marker must skip that
     # occurrence and find the real marker line with an integer exit code.
     runner = FakeRunner(
         [
-            completed(),
-            completed(),
-            completed(),
-            completed(),
+            completed(),  # send-keys -l (start marker printf)
+            completed(),  # send-keys Enter
+            completed(),  # send-keys -l (pwd)
+            completed(),  # send-keys Enter
+            completed(),  # send-keys -l (end marker printf)
+            completed(),  # send-keys Enter
             # First poll: literal marker command text visible, no real
             # marker output yet — must NOT raise MarkerParseError.
             completed(
                 stdout=(
+                    "sh-3.2$ printf '__REMOTE_TERMINAL_START:nonce-skip\\n'\n"
+                    "__REMOTE_TERMINAL_START:nonce-skip\n"
                     "$ pwd\n"
                     "$ printf '\\n__REMOTE_TERMINAL_DONE:nonce-skip:%s\\n' \"$?\"\n"
                 )
@@ -344,6 +370,8 @@ def test_exec_skips_literal_marker_text_and_parses_real_marker():
             # Second poll: real marker line now present.
             completed(
                 stdout=(
+                    "sh-3.2$ printf '__REMOTE_TERMINAL_START:nonce-skip\\n'\n"
+                    "__REMOTE_TERMINAL_START:nonce-skip\n"
                     "$ pwd\n/tmp\n"
                     "$ printf '\\n__REMOTE_TERMINAL_DONE:nonce-skip:%s\\n' \"$?\"\n"
                     "\n__REMOTE_TERMINAL_DONE:nonce-skip:0\n"
@@ -369,6 +397,8 @@ def test_exec_skips_literal_marker_text_and_parses_real_marker():
     assert result.exit_code == 0
     assert result.marker == "__REMOTE_TERMINAL_DONE:nonce-skip:"
     assert "/tmp" in result.output
+    # Output is between start and end markers — no start marker text
+    assert "__REMOTE_TERMINAL_START" not in result.output
 
 
 def test_parse_marker_returns_none_when_only_literal_text_present():
@@ -377,8 +407,83 @@ def test_parse_marker_returns_none_when_only_literal_text_present():
     # poll loop continues, rather than raising MarkerParseError.
     from remote_terminal.tmux_backend import TmuxBackend
 
-    marker = "__REMOTE_TERMINAL_DONE:nonce-x:"
+    end_marker = "__REMOTE_TERMINAL_DONE:nonce-x:"
+    start_marker = "__REMOTE_TERMINAL_START:nonce-x"
     pane_with_literal_only = (
         "$ printf '\\n__REMOTE_TERMINAL_DONE:nonce-x:%s\\n' \"$?\"\n"
     )
-    assert TmuxBackend._parse_marker(pane_with_literal_only, marker) is None
+    assert TmuxBackend._parse_marker(pane_with_literal_only, end_marker, start_marker) is None
+
+
+def test_exec_excludes_previous_history():
+    # The start marker ensures exec returns only the current command's
+    # output, not accumulated history from previous exec calls.
+    runner = FakeRunner(
+        [
+            completed(),  # send-keys -l (start marker printf)
+            completed(),  # send-keys Enter
+            completed(),  # send-keys -l (echo BBB)
+            completed(),  # send-keys Enter
+            completed(),  # send-keys -l (end marker printf)
+            completed(),  # send-keys Enter
+            # Pane contains history from a previous exec (echo AAA) plus
+            # the current exec (echo BBB).
+            completed(
+                stdout=(
+                    "sh-3.2$ printf '__REMOTE_TERMINAL_START:old-nonce\\n'\n"
+                    "__REMOTE_TERMINAL_START:old-nonce\n"
+                    "sh-3.2$ echo AAA\nAAA\n"
+                    "sh-3.2$ printf '\\n__REMOTE_TERMINAL_DONE:old-nonce:%s\\n' \"$?\"\n"
+                    "\n__REMOTE_TERMINAL_DONE:old-nonce:0\n"
+                    "sh-3.2$ printf '__REMOTE_TERMINAL_START:nonce-2\\n'\n"
+                    "__REMOTE_TERMINAL_START:nonce-2\n"
+                    "sh-3.2$ echo BBB\nBBB\n"
+                    "sh-3.2$ printf '\\n__REMOTE_TERMINAL_DONE:nonce-2:%s\\n' \"$?\"\n"
+                    "\n__REMOTE_TERMINAL_DONE:nonce-2:0\n"
+                )
+            ),
+        ]
+    )
+    backend = TmuxBackend(
+        command_runner=runner,
+        nonce_factory=lambda: "nonce-2",
+    )
+
+    result = backend.exec(SessionRef("macmini", "main"), "echo BBB")
+
+    assert result.exit_code == 0
+    assert "BBB" in result.output
+    # Previous command's output must NOT appear
+    assert "AAA" not in result.output
+    assert "old-nonce" not in result.output
+    assert "__REMOTE_TERMINAL_START" not in result.output
+
+
+def test_create_session_quotes_tmux_path_with_spaces():
+    runner = FakeRunner(
+        [
+            completed(returncode=1, stderr="can't find session"),
+            completed(stdout=""),
+        ]
+    )
+    backend = TmuxBackend(
+        command_runner=runner,
+        remote_tmux="/opt/my tools/tmux",
+    )
+
+    session = backend.create_session("macmini", "main")
+
+    assert session == SessionRef(host="macmini", name="main")
+    # The PATH prefix must quote the directory to handle spaces
+    assert runner.calls == [
+        [
+            "ssh",
+            "macmini",
+            "PATH='/opt/my tools':$PATH '/opt/my tools/tmux' has-session -t main",
+        ],
+        [
+            "ssh",
+            "macmini",
+            "PATH='/opt/my tools':$PATH '/opt/my tools/tmux' new-session -d -s main /bin/sh",
+        ],
+    ]

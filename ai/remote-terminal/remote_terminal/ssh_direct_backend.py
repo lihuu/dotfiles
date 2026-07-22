@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import re
-import shlex
 import subprocess
 from collections.abc import Callable
 
@@ -16,8 +14,6 @@ from remote_terminal.models import (
 )
 
 CommandRunner = Callable[[list[str]], subprocess.CompletedProcess[str]]
-
-SESSION_NAME_RE = re.compile(r"^[A-Za-z0-9_.-]+$")
 
 
 class SshDirectBackend(TerminalBackend):
@@ -62,10 +58,14 @@ class SshDirectBackend(TerminalBackend):
             raise ValidationError("timeout must be greater than zero")
 
         result = self._run_ssh("exec", session, command, timeout=timeout)
+        # Merge stderr into output so error messages are not silently lost.
+        output = result.stdout
+        if result.stderr:
+            output = f"{output}{result.stderr}" if output else result.stderr
         return ExecResult(
             command=command,
             exit_code=result.returncode,
-            output=result.stdout,
+            output=output,
             marker="",
         )
 
@@ -78,8 +78,10 @@ class SshDirectBackend(TerminalBackend):
         pass
 
     @staticmethod
-    def _default_command_runner(args: list[str]) -> subprocess.CompletedProcess[str]:
-        return subprocess.run(args, text=True, capture_output=True, check=False)
+    def _default_command_runner(
+        args: list[str], timeout: float | None = None
+    ) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(args, text=True, capture_output=True, check=False, timeout=timeout)
 
     def _run_ssh(
         self,
@@ -90,7 +92,7 @@ class SshDirectBackend(TerminalBackend):
     ) -> subprocess.CompletedProcess[str]:
         ssh_args = ["ssh", session.host, remote_command]
         try:
-            result = self._command_runner(ssh_args)
+            result = self._command_runner(ssh_args, timeout=timeout)
         except FileNotFoundError as exc:
             raise MissingDependencyError(
                 "local OpenSSH client executable 'ssh' was not found"
@@ -107,12 +109,3 @@ class SshDirectBackend(TerminalBackend):
                 f"with exit code {result.returncode}: {result.stderr.strip()}"
             )
         return result
-
-    @staticmethod
-    def _validate_session(session: SessionRef) -> None:
-        if not session.host or session.host.startswith("-") or any(
-            ord(ch) < 0x20 or ord(ch) == 0x7f for ch in session.host
-        ):
-            raise ValidationError(f"invalid host: {session.host!r}")
-        if not SESSION_NAME_RE.fullmatch(session.name):
-            raise ValidationError(f"invalid session name: {session.name!r}")
