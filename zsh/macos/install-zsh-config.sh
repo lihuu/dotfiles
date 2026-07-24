@@ -130,6 +130,17 @@ mkdir -p "$dest_zshrc_tests"
 cp "$src_tests"/test-*.zsh "$dest_zshrc_tests/"
 ok "~/.zshrc.tests/"
 
+# ~/.zsh/completions/ 自定义补全（fpath 由 20-oh-my-zsh.zsh 加入）
+# compinit 会扫描 fpath 里的 _* 文件并写进 zcompdump，新开 shell 读 dump 关联仍在。
+# 只拷补全文件（_ 开头），无补全文件时静默跳过（幂等）
+mkdir -p "$dest_home/.zsh/completions"
+if ls "$src_macos"/completions/_* >/dev/null 2>&1; then
+    cp "$src_macos"/completions/_* "$dest_home/.zsh/completions/"
+    ok "~/.zsh/completions/ (自定义补全)"
+else
+    ok "~/.zsh/completions/ (无自定义补全文件，仅建目录)"
+fi
+
 # 独立脚本部署到 ~/.zshrc.scripts/（不放 ~/.zshrc.d/，避免被入口 glob 误 source）
 # tidy-zshrc：安装器注入清理脚本
 # import-zoxide-history.zsh：zoxide 历史导入脚本
@@ -161,7 +172,7 @@ fi
 
 # --- 5. 完成 ---
 echo ""
-info "\033[32m部署完成\033[0m"
+info "部署完成"
 echo ""
 echo "下一步："
 echo "  1. 拷贝 ~/.zshrc.private(从旧机器，含 API key/token)"

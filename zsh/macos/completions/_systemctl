@@ -1,0 +1,76 @@
+#compdef systemctl
+# _systemctl - macOS launchctl 封装版 systemctl 的 zsh 补全
+#
+# 配套 55-systemctl.zsh 中定义的 systemctl() 函数。
+# 放在 ~/.zsh/completions/（由 20-oh-my-zsh.zsh 加入 fpath），
+# compinit 扫描 fpath 里的 _* 文件并自动注册，写进 zcompdump，
+# 新开 shell 读 dump 时关联仍在。
+#
+# 补全两级：
+#   1. 子命令：list/status/start/stop/restart/enable/disable/cat/edit/logs
+#   2. 服务名：实时收集 launchctl list + LaunchAgents/LaunchDaemons 下的 plist，
+#      过滤规则与 55-systemctl.zsh 的 _systemctl_resolve_label 一致
+#      （拒绝 com.apple.* / application.*）。
+#   logs 的第三参数补全 -f / --follow。
+#
+# ⚠️ 已知限制：Warp 终端不支持 compdef 注册的自定义补全，
+#   按 Tab 会回退到文件/目录补全，忽略 _comps 关联（见 Warp issue #8869）。
+#   本补全在 iTerm2 / Terminal.app / Ghostty 等标准 zsh 终端下生效。
+
+_systemctl_services() {
+    local -a labels fields
+    local label
+
+    # 1. 已加载服务：launchctl list 输出 "PID\tStatus\tLabel"
+    while IFS=$'\t' read -rA fields; do
+        label="${fields[3]:-}"
+        [[ -z "$label" ]] && continue
+        [[ "$label" == com.apple.* ]] && continue
+        [[ "$label" == application.* ]] && continue
+        (( ${labels[(I)$label]} )) || labels+=("$label")
+    done < <(launchctl list 2>/dev/null)
+
+    # 2. plist 文件名（未加载的服务也会出现在这里）
+    local f
+    for f in ~/Library/LaunchAgents/*.plist \
+             /Library/LaunchAgents/*.plist \
+             /Library/LaunchDaemons/*.plist; do
+        [[ -f "$f" ]] || continue
+        label="${f:t:r}"
+        [[ "$label" == com.apple.* ]] && continue
+        [[ "$label" == application.* ]] && continue
+        (( ${labels[(I)$label]} )) || labels+=("$label")
+    done
+
+    _wanted services expl 'service' compadd -- "$labels[@]"
+}
+
+_systemctl() {
+    local curcontext="${curcontext:-}" state
+    local -a cmds
+    cmds=(
+        'list:列出第三方服务（过滤 com.apple.*）'
+        'status:查看服务状态（支持模糊匹配）'
+        'start:启动服务'
+        'stop:停止服务（SIGTERM）'
+        'restart:重启服务'
+        'enable:开机启动（enable + bootstrap）'
+        'disable:取消开机启动（disable + bootout）'
+        'cat:显示 plist 文件内容'
+        'edit:编辑 plist 文件'
+        'logs:查看日志（-f 实时跟踪）'
+    )
+
+    _arguments -C \
+        '1: :->cmd' \
+        '2: :->svc' \
+        '3: :->follow'
+
+    case ${state:-} in
+        cmd)    _describe 'command' cmds ;;
+        svc)    _systemctl_services ;;
+        follow) _wanted follow expl 'follow option' compadd -- '-f' '--follow' ;;
+    esac
+}
+
+_systemctl "$@"

@@ -16,7 +16,8 @@
 仓库中的对应位置：
 
 - `zsh/macos/.zshrc` — 薄入口模板
-- `zsh/macos/zshrc.d/` — 主配置模块（6 个文件，编号前缀控制加载顺序）
+- `zsh/macos/zshrc.d/` — 主配置模块（编号前缀控制加载顺序）
+- `zsh/macos/completions/` — 自定义补全文件（`_*`，部署到 `~/.zsh/completions/`，由 `20-oh-my-zsh.zsh` 加入 fpath）
 - `zsh/macos/tidy-zshrc` — 安装器注入清理脚本
 - `zsh/tests/` — 测试（改配置必须跑）
 
@@ -115,6 +116,17 @@ zsh zsh/tests/test-tidy-zshrc.zsh
 ```
 
 任何 zsh 配置改动，两个测试必须全部 PASS。如果新增模块，应该补对应测试。
+
+## 已知限制
+
+### Warp 终端不支持 compdef 自定义补全
+
+Warp 终端不触发 zsh 通过 `compdef` 注册的自定义补全函数，按 Tab 会直接回退到文件/目录补全，完全忽略 `_comps` 关联表。
+
+- 现象：`_comps[cmd]` 返回正确的补全函数名，但按 Tab 时该函数从未被调用（补全函数内写文件日志不会生成）。`exec zsh` 后偶尔能用，新开 tab 一定不能用。
+- 影响范围：所有 `compdef` 注册的自定义补全，包括本仓库的 `systemctl`（`zsh/macos/completions/_systemctl`）。
+- 上游 issue：[warpdotdev/Warp#8869](https://github.com/warpdotdev/Warp/issues/8869)「Custom zsh compdef completions not surfaced by Tab — falls back to file completion」，状态 OPEN，未修复。
+- 结论：配置本身正确，在 iTerm2 / Terminal.app / Ghostty 等标准 zsh 终端下补全正常生效。Warp 下不生效是终端 bug，不是配置问题，无需为 Warp 改配置。
 
 ## 安全基线
 
