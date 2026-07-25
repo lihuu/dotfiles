@@ -38,6 +38,7 @@ docs/superpowers/
 # ZCode: 保留 skills（配置资产），忽略会话临时产物
 .zcode/plans/
 .zcode/agents/
+.zcode/prompts/
 # rt skill 是 ai/remote-terminal/skill/ 的 symlink（安装产物，不跟踪）
 .zcode/skills/rt
 
