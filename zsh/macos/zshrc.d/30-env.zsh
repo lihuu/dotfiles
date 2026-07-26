@@ -5,7 +5,6 @@
 # 放在 alias/函数/工具初始化之前：它们可能依赖这些 env。
 
 # --- 开发工具 ---
-export VOLTA_FEATURE_PNPM=1
 export GOROOT_BOOTSTRAP=/opt/homebrew/Cellar/go/1.24.4/libexec
 export DOOM_EMACS_HOME=$HOME/.config/emacs
 export EMACS_HOME=/Applications/Emacs.app/Contents/MacOS
@@ -67,7 +66,6 @@ add_to_path "$EMACS_HOME"
 add_to_path "$IDEA_HOME"
 add_to_path "$HOME/.m2"
 add_to_path "/usr/local/opt/openssl/bin"
-add_to_path "$HOME/.volta/bin"
 add_to_path "/opt/homebrew/bin"
 add_to_path "/opt/homebrew/sbin"
 add_to_path "$HOME/.lmstudio/bin"
@@ -75,7 +73,6 @@ add_to_path "$HOME/Documents/scripts"
 add_to_path "$HOME/.antigravity/antigravity/bin"
 add_to_path "$HOME/Library/Android/sdk/platform-tools"
 add_to_path "$HOME/.opencode/bin"
-add_to_path "/opt/homebrew/Cellar/node/25.8.2/bin"
 
 # === PATH 变量统一组装 ===
 # 启用唯一性约束，确保没有重复项
