@@ -32,7 +32,7 @@
     }
   },
   "edit_predictions": {
-    "provider": "copilot"
+    "provider": "none"
   },
   "agent": {
     "default_profile": "write",
