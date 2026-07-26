@@ -66,7 +66,6 @@ add_to_path "$HOME/.lmstudio/bin"
 add_to_path "$HOME/Documents/scripts"
 add_to_path "$HOME/.antigravity/antigravity/bin"
 add_to_path "$HOME/Library/Android/sdk/platform-tools"
-add_to_path "$HOME/.opencode/bin"
 
 # === PATH 变量统一组装 ===
 # 启用唯一性约束，确保没有重复项
