@@ -18,7 +18,8 @@ export SCCACHE_CACHE_SIZE="20G"
 #export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-17.0.3.1.jdk/Contents/Home
 
 #export JAVA_HOME=/Library/Java/JavaVirtualMachines/graalvm-17.jdk/Contents/Home
-export JAVA_HOME=$HOME/Library/Java/JavaVirtualMachines/openjdk-25/Contents/Home
+# OpenJDK 25（保留 25.0.2 补丁版，删除旧的 openjdk-25）
+export JAVA_HOME=$HOME/Library/Java/JavaVirtualMachines/openjdk-25.0.2/Contents/Home
 
 #export http_proxy="127.0.0.1:1080"
 #export https_proxy="127.0.0.1:1080"
