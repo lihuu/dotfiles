@@ -51,3 +51,10 @@ fi
 
 # zsh-ai 插件（当前保持注释，未启用）
 #source $(brew --prefix)/share/zsh-ai/zsh-ai.plugin.zsh
+
+# mise — 多语言版本管理（替代 nvm/volta/asdf/pyenv 等）
+# 仅当 mise 已安装时才激活，避免在新机器或最小安装环境下报错。
+# activate 会在 PATH 前插入 mise 的 shims，由 mise 接管各语言版本切换。
+if command -v mise >/dev/null 2>&1; then
+    eval "$(mise activate zsh)"
+fi
