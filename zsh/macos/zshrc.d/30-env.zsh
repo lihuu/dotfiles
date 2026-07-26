@@ -5,7 +5,6 @@
 # 放在 alias/函数/工具初始化之前：它们可能依赖这些 env。
 
 # --- 开发工具 ---
-export GOROOT_BOOTSTRAP=/opt/homebrew/Cellar/go/1.24.4/libexec
 export DOOM_EMACS_HOME=$HOME/.config/emacs
 export EMACS_HOME=/Applications/Emacs.app/Contents/MacOS
 
@@ -28,14 +27,12 @@ export no_proxy="127.0.0.1,localhost,*.marketup.local"
 #export https_proxy="http://127.0.0.1:7890"
 #export http_proxy=socks5://127.0.0.1:8001
 #export https_proxy=socks5://127.0.0.1:8001
-#export GOROOT=/usr/local/go
+# GOROOT 由 mise 管 go 时自动设置，无需手动 export
 export GOPATH=$HOME/go
-export GOBIN=$GOPATH/bin
 export IDEA_HOME="/Applications/IntelliJ IDEA.app/Contents/MacOS"
 export HOMEBREW_NO_AUTO_UPDATE=true
 export LDFLAGS="-L/usr/local/opt/openssl/lib"
 export CPPFLAGS="-I/usr/local/opt/openssl/include"
-export BUN_INSTALL="$HOME/.bun"
 export LANG=zh_CN.UTF-8
 export NODE_OPTIONS='--no-deprecation'
 #export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
@@ -57,10 +54,7 @@ export CONDA_DEFAULT_ENV=""
 
 # --- 收集 PATH 项（依赖上面的 env 变量）---
 add_to_path "$HOME/.local/bin"
-add_to_path "$BUN_INSTALL/bin"
 add_to_path "$MYSQL_HOME/bin"
-add_to_path "$GOBIN"
-add_to_path "$GOROOT/bin"
 add_to_path "$DOOM_EMACS_HOME/bin"
 add_to_path "$EMACS_HOME"
 add_to_path "$IDEA_HOME"
