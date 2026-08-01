@@ -112,6 +112,21 @@
         ],
         "layout" : "ABC",
         "method" : "豆包输入法"
+      },
+      {
+        "name" : "claude-code",
+        "patterns" : [
+          "^[Cc]laude",
+          "[Cc]laude%s*[Cc]ode",
+          "^[Cc]laudex",
+          "%f[%a]claudex%f[%A]"
+        ],
+        "contains" : [
+          "claude",
+          "claudex"
+        ],
+        "layout" : "ABC",
+        "method" : "豆包输入法"
       }
     ]
   }

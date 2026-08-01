@@ -1,7 +1,7 @@
 # AutoIme：终端内 TUI 自动切换输入法 — 方案调研
 
 > 状态：调研结论文档（可长期维护）  
-> 范围：Hammerspoon `AutoIme` spoon + 终端（kitty / Warp）+ TUI（qwen-code / Grok Build）  
+> 范围：Hammerspoon `AutoIme` spoon + 终端（kitty / Warp）+ TUI（qwen-code / Grok Build / Claude Code）  
 > 约束：若采用 shell 上报，**仅考虑 zsh**（bash/fish 不在范围内）  
 > 相关代码：
 >
@@ -17,7 +17,7 @@
 |------|------------|
 | 普通 App（微信、Obsidian 等） | 中文（豆包等，见 `config.json`） |
 | 编码类 App / 终端默认（shell、CLI） | 英文（ABC） |
-| 终端内运行需要中文输入的 TUI（qwen-code、Grok Build） | 中文（豆包） |
+| 终端内运行需要中文输入的 TUI（qwen-code、Grok Build、Claude Code） | 中文（豆包） |
 | 离开 TUI 回到 shell，或离开终端 | 回到合理状态（终端默认英文；其它 App 按各自规则） |
 
 核心难点不是「前台是不是 Warp」，而是：
@@ -49,7 +49,8 @@ macOS / Hammerspoon 只认 GUI App 进程；Warp 是一个 App，内部 shell/TU
   "apps": ["net.kovidgoyal.kitty", "dev.warp.Warp-Stable"],
   "rules": [
     { "name": "qwen-code",  "patterns": ["^[Qq]wen%s*%-"], "contains": ["qwen -"], ... },
-    { "name": "grok-build", "patterns": ["[Gg]rok%s*[Bb]uild", "^[Gg]rok%s"], "contains": ["grok"], ... }
+    { "name": "grok-build", "patterns": ["[Gg]rok%s*[Bb]uild", "^[Gg]rok%s"], "contains": ["grok"], ... },
+    { "name": "claude-code", "patterns": ["^[Cc]laude", "[Cc]laude%s*[Cc]ode", "^[Cc]laudex"], "contains": ["claude", "claudex"], ... }
   ]
 }
 ```
@@ -75,6 +76,7 @@ L2 不用 `lastUsed`，是为了避免：在 qwen 里用了豆包 → 退出到 
 
 - qwen-code：标题形态 `Qwen - <folder>` 可稳定触发（默认未关 `hideWindowTitle`）。
 - Grok Build：默认 `ui.notifications.title.enabled = true`，`title.items` 含 `grok`，标题方案可用。
+- Claude Code：进程/默认标题多为 `claude`；alias `claudex` 也可能出现在标题中。
 - 手动 Reload Config 即可生效；**不依赖** `hs.ipc`（ipc 仅用于从终端遥控 HS，与标题检测无关）。
 
 ---
@@ -98,7 +100,17 @@ L2 不用 `lastUsed`，是为了避免：在 qwen 里用了豆包 → 退出到 
 | 默认 | `enabled = true`，`items` 含 `action-required` / `spinner` / `activity` / `session-name` / **`grok`** |
 | 风险 | 见下节误伤；用户关掉 `title.enabled` 则失效 |
 
-### 3.3 已知误伤：`contains: ["grok"]`
+### 3.3 Claude Code（`claude` / `claudex`）
+
+| 项 | 说明 |
+|----|------|
+| 进程名 | 二进制一般为 `claude`；`claudex` 是 alias（如 `claude --dangerously-skip-permissions`），进程仍是 `claude` |
+| 常见标题 | 终端显示运行进程名时多为 `claude`；Oh My Zsh 自动标题可能短暂/持续显示命令名 `claudex` |
+| 其它形态 | 社区/后续版本可能写 `Claude Code - …` 或会话摘要标题 |
+| 规则 | `patterns` 覆盖 `^Claude…` / `Claude Code` / `claudex`；`contains` 含 `claude`、`claudex` |
+| 风险 | 与 grok 类似：路径含 `claude` 时 `contains` 可能误伤 |
+
+### 3.4 已知误伤：`contains: ["grok"]`
 
 **结论：真实问题，不是纯理论。**
 
@@ -467,7 +479,7 @@ focus Warp → 读状态已是 grok → 豆包
 
 | 阶段 | 内容 | 状态 |
 |------|------|------|
-| 0 | L1 App 映射 + L2 标题（qwen + grok） | **已落地** |
+| 0 | L1 App 映射 + L2 标题（qwen + grok + claude） | **已落地** |
 | 0.1 | 收紧 grok 标题（去掉裸 `contains: ["grok"]`） | 已识别，**暂不改**（用户确认） |
 | 1 | zsh 写状态文件 + HS focus 读取（MVP，单会话/启发式对齐） | 未做 |
 | 1b | Grok 原生 `SessionStart`/`SessionEnd` 写入同一状态（可选增强） | 未做；能力已调研 |
@@ -525,4 +537,5 @@ focus Warp → 读状态已是 grok → 豆包
 | 2026-07-21 | 增加 grok-build 标题规则；确认 `contains: ["grok"]` 路径误伤；完成 hooks/shell 上报调研 |
 | 2026-07-21 | 本文档落盘：现状、边界、备选方案、zsh 上报设计、路线图 |
 | 2026-07-21 | 补充 Grok Build 原生 lifecycle hooks 调研（事件表、与 notification hooks 区分、与 zsh 分工） |
+| 2026-07-29 | 增加 claude-code 标题规则（`claude` / `claudex` / `Claude Code`） |
 | 2026-07-21 | 明确放弃 App 级进程树主方案（单进程多窗口）；继续以标题检测为线上方案 |

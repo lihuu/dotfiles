@@ -19,7 +19,7 @@
 ## AutoIme（自动输入法）
 
 - **L1**：按 `bundleId` 切换（终端默认英文，聊天/笔记等中文）。  
-- **L2**：kitty / Warp 下按窗口标题识别 qwen-code、Grok Build，在 TUI 内切中文。  
+- **L2**：kitty / Warp 下按窗口标题识别 qwen-code、Grok Build、Claude Code（含 `claudex`），在 TUI 内切中文。  
 
 细节、误伤分析（如路径含 `grok`）、以及 **zsh 主动上报** 等后续方案见：
 
