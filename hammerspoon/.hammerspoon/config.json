@@ -127,6 +127,14 @@
         ],
         "layout" : "ABC",
         "method" : "豆包输入法"
+      },
+      {
+        "name" : "opencode",
+        "patterns" : [
+          "^OC%s*|"
+        ],
+        "layout" : "ABC",
+        "method" : "豆包输入法"
       }
     ]
   }

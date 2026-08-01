@@ -151,7 +151,7 @@ function obj:init(debug)
 		end
 	end
 
-	-- 终端内 TUI 标题检测（qwen-code / grok-build / claude-code 等，见 config.json）
+	-- 终端内 TUI 标题检测（qwen-code / grok-build / claude-code / opencode 等，见 config.json）
 	local tuiTitleDetection = initConfig.tuiTitleDetection or {}
 	local tuiApps = {}
 	for _, bundleId in ipairs(tuiTitleDetection.apps or {}) do
