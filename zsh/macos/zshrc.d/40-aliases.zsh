@@ -16,6 +16,7 @@ alias apt=brew
 alias mcp-get="npx @michaellatman/mcp-get"
 alias antigravity="agy"
 alias claudex="claude --dangerously-skip-permissions"
+alias deepcodex='CODEX_HOME="$HOME/.codex-deepseek" codex'
 #alias grep=rg
 #alias cat=bat
 #alias python=/opt/homebrew/bin/python3
